@@ -1,0 +1,457 @@
+
+
+/* Container do formulário */
+.login-container-unique {
+  width: 100%;
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 40px;
+  border: 1px solid;
+  border-image: linear-gradient(to bottom, #2496ff, #a6ff98);
+  border-image-slice: 1;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Título do formulário */
+.login-container-unique h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #2496ff;
+}
+
+/* Estilo dos grupos de formulário */
+.login-container-unique .form-group-unique {
+  margin-bottom: 15px;
+}
+
+/* Rótulo dos inputs */
+.login-container-unique .form-group-unique label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #4f90ff;
+}
+
+/* Estilo dos inputs */
+.login-container-unique .form-group-unique input {
+  width: 94%;
+  padding: 10px;
+  border: 1px solid #6fc1ff;
+  border-radius: 3px;
+  font-size: 16px;
+}
+
+/* Mensagem de erro */
+.login-container-unique .error-unique {
+  color: #d8000c;
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Botão de login */
+.login-container-unique button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #2496ff;
+  color: #fff;
+  border: 2px solid transparent;
+  border-image-slice: 1;
+  border-radius: 3px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-container-unique button[type="submit"]:hover {
+  background-color: #4f90ff;
+}
+
+.entity-list {
+  max-width: 430px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: transparent;
+  border-radius: 10px;
+  border: 1px solid;
+  border-image: linear-gradient(to bottom, #a6ff98, #ec0402);
+  border-image-slice: 1;
+  
+}
+
+#novo-user{
+  color:#ec0402;
+}
+
+.entity-list h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  font-weight: 100;
+  color: #2496ff ;
+  text-align: left;
+}
+
+.entity-list ul {
+  list-style: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.entity-list li {
+  font-size: 1.2rem;
+  padding: 8px 12px;
+  margin: 5px 0;
+  background: #fff;
+  border-radius: 5px;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.entity-list li:hover {
+  background: #e3e3e3;
+  transform: translateX(5px);
+}
+
+/* Container dos botões */
+.button-container {
+  display: flex;
+  justify-self: center; 
+  gap: 10px; 
+  margin-top: 20px;
+}
+
+/* Estilização base dos botões */
+.button-container button {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #4f90ff;
+  background-color: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  height: 150px;
+  width: 150px;
+}
+
+/* Cores específicas para cada botão */
+.show-ent, .entry {
+  border: 1px solid;
+  border-image: linear-gradient(to bottom, #2496ff, #a6ff98);
+  border-image-slice: 1;
+}
+
+.create-entity, .leave {
+  border: 1px solid;
+  border-image: linear-gradient(to bottom, #2496ff, #a6ff98);
+  border-image-slice: 1;
+}
+
+.new-user, .show-reg {
+  border: 1px solid;
+  border-image: linear-gradient(to bottom, #2496ff, #a6ff98);
+  border-image-slice: 1;
+}
+
+
+
+/* Efeito hover */
+.button-container button:hover, #logout:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .button-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .button-container button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Container do formulário */
+.nova-entidade-container-unique {
+  width: 100%;
+  max-width: 390px;
+  margin: 25px auto;
+  padding: 40px;
+  border: 1px solid;
+  border-image: linear-gradient(to bottom, #a6ff98, #ec0402);
+  border-image-slice: 1;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Título do formulário */
+.nova-entidade-container-unique h2 {
+  text-align: left;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #2496ff;
+}
+
+/* Estilo dos grupos de formulário */
+.nova-entidade-container-entidade .form-group-unique {
+  margin-bottom: 15px;
+}
+
+/* Rótulo dos inputs */
+.nova-entidade-container-entidade .form-group-unique label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #4f90ff;
+}
+
+/* Estilo dos inputs */
+.form-group-entidade input {
+  width: 94%;
+  padding: 10px;
+  border: 1px solid #6fc1ff;
+  border-radius: 3px;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nova-entidade-container-unique .form-group-entidade input:focus {
+  border-color: #2496ff;
+  box-shadow: 0 0 5px rgba(36, 150, 255, 0.5);
+  outline: none;
+}
+
+/* Mensagem de erro */
+.nova-entidade-container-unique .error-unique {
+  color: #d8000c;
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Botão de criação */
+.nova-entidade-container-unique button[type="submit"] {
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #2496ff;
+  color: #fff;
+  border: 2px solid transparent;
+  border-image-slice: 1;
+  border-radius: 3px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nova-entidade-container-unique button[type="submit"]:hover {
+  background-color: #4f90ff;
+}
+
+/* Estilo do select */
+#entidade  {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #6fc1ff;
+  border-radius: 3px;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* Container nova entidade */
+.entidade-container {
+  
+  border-image-slice: 1;
+  background: #fff;
+}
+
+/* Título */
+.entidade-container h2 {
+  text-align: left;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #2496ff;
+}
+
+/* Estilização dos parágrafos */
+.entidade-info p {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Inputs */
+.entidade-info input {
+  width: 90%;
+  padding: 8px;
+  margin-left: 10px;
+  border: 1px solid #6fc1ff;
+  border-radius: 3px;
+  font-size: 16px;
+  background-color: #f8f9fa;
+}
+
+.entidade-info input:focus {
+  border-color: #2496ff;
+  box-shadow: 0 0 5px rgba(36, 150, 255, 0.5);
+  outline: none;
+}
+
+/* Botões */
+.entidade-botoes, .details-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.entidade-botoes button,.edit, .show-cron {
+  flex: 1;
+  padding: 10px;
+  background-color: #2496ff;
+  color: #fff;
+  border: 2px solid transparent;
+  border-radius: 3px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.entidade-botoes button:hover {
+  background-color: #4f90ff;
+}
+
+.entidade-botoes .cancelar {
+  background-color: #d8000c;
+}
+
+.entidade-botoes .cancelar:hover {
+  background-color: #ff4c4c;
+}
+
+
+.table-container {
+  width: 100%;
+  max-width: 470px;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px auto;
+  border: 1px solid;
+  border-image: linear-gradient(to bottom, #a6ff98, #ec0402);
+  border-image-slice: 1;
+  border-radius: 5px;
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  
+}
+
+thead {
+  background: transparent;
+  color: #2496ff;
+}
+
+th, td {
+  padding: 15px;
+  text-align: center;
+}
+
+th {
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+tbody tr {
+  border-bottom: 1px solid #ddd;
+  transition: background 0.3s ease;
+}
+
+tbody tr:hover {
+  background: #f0f8ff;
+}
+
+tbody tr:last-child {
+  border-bottom: none;
+}
+
+td {
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  th, td {
+      padding: 10px;
+      font-size: 12px;
+  }
+}
+
+
+#logout {
+  display: flex;
+  justify-self: center;
+  align-items: center; 
+  justify-content: center;
+  margin: 25px;
+  background-color: transparent;
+  border: 1px solid;
+  border-image: linear-gradient(to bottom, #ec0402, #690000);
+  border-image-slice: 1;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #690000;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  height: 100px;
+  width: 475px;
+}
+
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: white; /* Para evitar sobreposição de fundo */
+  z-index: 10; /* Para garantir que fique sobre outros elementos */
+}
+
+.months-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+}
+
+.months-container button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.months-container button:hover {
+  background-color: #0056b3;
+}
+
