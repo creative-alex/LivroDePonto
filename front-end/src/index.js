@@ -71,7 +71,7 @@ const App = () => {
             setActivePage('allregister');
           }} />
         </div>
-        {activePage === 'allregister' && <TableHours username={username} month={currentMonth} />}
+        {activePage === 'allregister' && <TableHours username={username} month={currentMonth} isSuperAdmin={isAdmin} />}
         <Logout onClick={handleLogout} />
       </>
     )
