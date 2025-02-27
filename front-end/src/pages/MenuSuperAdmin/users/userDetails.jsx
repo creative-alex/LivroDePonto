@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import EditButton from '../buttons/editEntityButton';
 import ShowTimeLine from '../buttons/showTimelineButton';
-import TableHours from '../../MenuUser/pointRegister';
+import TimeLine from './timeline';
 
 const UserDetails = ({ userName }) => {
   const [userDetails, setUserDetails] = useState(null);
@@ -142,7 +142,7 @@ const UserDetails = ({ userName }) => {
           )}
 
           {selectedMonth && (
-            <TableHours username={userName} month={selectedMonth} isSuperAdmin={userDetails?.role === "SuperAdmin"} />
+            <TimeLine username={userName} month={selectedMonth}  />
           )}
         </div>
       )}

@@ -455,3 +455,26 @@ thead th {
   background-color: #0056b3;
 }
 
+.ex {
+  display: flex;
+  justify-self: center;
+  background-color: transparent; 
+  color: #ec0402;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: solid 1px #ec0402;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.ex:hover {
+  background-color: #a6ff98; /* Azul mais escuro */
+  transform: scale(1.05); /* Efeito de leve aumento ao passar o mouse */
+}
+
+.ex:active {
+  background-color: #003f7f; /* Azul ainda mais escuro */
+  transform: scale(0.95)
+}

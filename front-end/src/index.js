@@ -37,7 +37,6 @@ const App = () => {
     setUsername(nome);
     setIsLoggedIn(true);
     setIsAdmin(role === "SuperAdmin");
-    localStorage.setItem('user', JSON.stringify({ nome, role })); 
   };
 
   const handleLogout = () => {
@@ -71,7 +70,7 @@ const App = () => {
             setActivePage('allregister');
           }} />
         </div>
-        {activePage === 'allregister' && <TableHours username={username} month={currentMonth} isSuperAdmin={isAdmin} />}
+        {activePage === 'allregister' && <TableHours username={username} month={currentMonth}  />}
         <Logout onClick={handleLogout} />
       </>
     )
