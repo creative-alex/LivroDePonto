@@ -2,6 +2,53 @@ const admin = require("firebase-admin");
 const path = require("path");
 const db = admin.firestore();
 
+const createUser = async (req, res) => {
+  try {
+      const { nome, email, entidade, role } = req.body;
+
+      if (!nome || !email || !entidade) {
+          console.log('Erro: Nome, email ou entidade ausentes.');
+          return res.status(400).json({ error: 'Nome, email e entidade são obrigatórios' });
+      }
+
+      // Gerar o ID base do user
+      let baseUserId = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+      let userId = baseUserId;
+      let counter = 1;
+
+      // Verificar se o ID já existe no Firestore
+      let userRef = db.collection('users').doc(userId);
+      let doc = await userRef.get();
+
+      while (doc.exists) {
+          counter++;
+          userId = `${baseUserId}-${String(counter).padStart(2, '0')}`; // id-02, id-03...
+          userRef = db.collection('users').doc(userId);
+          doc = await userRef.get();
+      }
+
+      // Criar referência da entidade no Firestore
+      const entityId = entidade.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+      const entityRef = `entidades/${entityId}`;
+
+      const userRole = role.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+
+      // Criar documento do user com ID único
+      await userRef.set({
+          nome,
+          email,
+          entidade: entityRef,
+          createdAt: new Date().toISOString(),
+          role: userRole,
+      });
+
+      res.status(201).json({ message: 'User criado com sucesso', id: userId });
+
+  } catch (error) {
+      console.error('Erro ao criar user no banco de dados:', error);
+      res.status(500).json({ error: 'Erro ao criar user no banco de dados' });
+  }
+};
 const verifyToken = async (req, res) => {
   try {
 
@@ -18,7 +65,7 @@ const verifyToken = async (req, res) => {
       message: 'Token válido',
       uid: decodedToken.uid,
       email: decodedToken.email,
-      displayName: userRecord.displayName // Adiciona o nome do usuário na resposta
+      displayName: userRecord.displayName // Adiciona o nome do user na resposta
     });
   } catch (error) {
     console.error('Erro ao verificar token:', error);
@@ -71,51 +118,57 @@ const getUserInfo = async (req, res) => {
       }
   }
 };
-const createUser = async (req, res) => {
+const userDetails = async (req, res) => {
   try {
-      const { nome, email, entidade, role } = req.body;
+    const { userName } = req.body;
 
-      if (!nome || !email || !entidade) {
-          console.log('Erro: Nome, email ou entidade ausentes.');
-          return res.status(400).json({ error: 'Nome, email e entidade são obrigatórios' });
+    if (!userName) {
+      return res.status(400).json({ error: "O campo userName é obrigatório." });
+    }
+
+    // Buscar usuário no Firestore
+    const usersRef = db.collection("users");
+    const snapshot = await usersRef.where("nome", "==", userName).limit(1).get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    const userDoc = snapshot.docs[0];
+    const userData = userDoc.data();
+
+    // Buscar entidade relacionada
+    let entidadeNome = "Desconhecida";
+
+    if (userData.entidade && typeof userData.entidade === "string") {
+      const entidadeParts = userData.entidade.split("/"); // ['entidades', 'coorperativa-comenius']
+
+      if (entidadeParts.length === 2 && entidadeParts[0] === "entidades") {
+        const entidadeId = entidadeParts[1]; // 'coorperativa-comenius'
+
+        try {
+          const entidadeRef = await db.collection("entidades").doc(entidadeId).get();
+          if (entidadeRef.exists) {
+            entidadeNome = entidadeRef.data().nome || "Desconhecida";
+          }
+        } catch (err) {
+          console.warn("⚠️ Erro ao buscar entidade:", err);
+        }
       }
+    }
 
-      // Gerar o ID base do user
-      let baseUserId = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
-      let userId = baseUserId;
-      let counter = 1;
+    // Montar objeto de resposta
+    const userDetails = {
+      email: userData.email || "N/A",
+      entidade: entidadeNome,
+      nome: userData.nome || "N/A",
+      role: userData.role || "N/A",
+    };
 
-      // Verificar se o ID já existe no Firestore
-      let userRef = db.collection('users').doc(userId);
-      let doc = await userRef.get();
-
-      while (doc.exists) {
-          counter++;
-          userId = `${baseUserId}-${String(counter).padStart(2, '0')}`; // id-02, id-03...
-          userRef = db.collection('users').doc(userId);
-          doc = await userRef.get();
-      }
-
-      // Criar referência da entidade no Firestore
-      const entityId = entidade.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
-      const entityRef = `entidades/${entityId}`;
-
-      const userRole = role.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
-
-      // Criar documento do user com ID único
-      await userRef.set({
-          nome,
-          email,
-          entidade: entityRef,
-          createdAt: new Date().toISOString(),
-          role: userRole,
-      });
-
-      res.status(201).json({ message: 'User criado com sucesso', id: userId });
-
+    res.json(userDetails);
   } catch (error) {
-      console.error('Erro ao criar user no banco de dados:', error);
-      res.status(500).json({ error: 'Erro ao criar user no banco de dados' });
+    console.error("🚨 Erro ao buscar detalhes do usuário:", error);
+    res.status(500).json({ error: "Erro ao buscar detalhes do usuário." });
   }
 };
 const registerEntry = async (req, res) => {
@@ -507,63 +560,7 @@ const getUsersByEntity = async (req, res) => {
     return res.status(500).json({ error: "Erro ao buscar usuários." });
   }
 };
-const userDetails = async (req, res) => {
-  try {
-    const { userName } = req.body;
-
-    if (!userName) {
-      return res.status(400).json({ error: "O campo userName é obrigatório." });
-    }
-
-    // Buscar usuário no Firestore
-    const usersRef = db.collection("users");
-    const snapshot = await usersRef.where("nome", "==", userName).limit(1).get();
-
-    if (snapshot.empty) {
-      return res.status(404).json({ error: "Usuário não encontrado." });
-    }
-
-    const userDoc = snapshot.docs[0];
-    const userData = userDoc.data();
-
-    // Buscar entidade relacionada
-    let entidadeNome = "Desconhecida";
-
-    if (userData.entidade && typeof userData.entidade === "string") {
-      const entidadeParts = userData.entidade.split("/"); // ['entidades', 'coorperativa-comenius']
-
-      if (entidadeParts.length === 2 && entidadeParts[0] === "entidades") {
-        const entidadeId = entidadeParts[1]; // 'coorperativa-comenius'
-
-        try {
-          const entidadeRef = await db.collection("entidades").doc(entidadeId).get();
-          if (entidadeRef.exists) {
-            entidadeNome = entidadeRef.data().nome || "Desconhecida";
-          }
-        } catch (err) {
-          console.warn("⚠️ Erro ao buscar entidade:", err);
-        }
-      }
-    }
-
-    // Montar objeto de resposta
-    const userDetails = {
-      email: userData.email || "N/A",
-      entidade: entidadeNome,
-      nome: userData.nome || "N/A",
-      role: userData.role || "N/A",
-    };
-
-    res.json(userDetails);
-  } catch (error) {
-    console.error("🚨 Erro ao buscar detalhes do usuário:", error);
-    res.status(500).json({ error: "Erro ao buscar detalhes do usuário." });
-  }
-};
 
 module.exports = { getUserInfo, verifyToken, createUser, registerEntry, 
                   registerLeave, getUserRecords, getUsersByEntity, userDetails, 
                   checkEntry, checkLeave, updateUserTime };
-  
-
-

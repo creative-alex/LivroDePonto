@@ -34,9 +34,9 @@ const Login = ({ onLoginSuccess }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");  
-    console.log("Tentando fazer login com:", email);
   
     const auth = getAuth(app);
+
   
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -61,7 +61,6 @@ const Login = ({ onLoginSuccess }) => {
   
       const roleData = await roleResponse.json();
       if (!roleResponse.ok) throw new Error(roleData.message || "Erro ao obter papel do user");
-      console.log("Dados do usuário recebidos:", roleData);
     
       // Passa o papel e nome do usuário para o App
       onLoginSuccess(roleData.role, roleData.nome);

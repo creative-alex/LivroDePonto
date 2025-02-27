@@ -12,7 +12,7 @@ const { checkEntry } = require('../controllers/usersController');
 const { checkLeave } = require('../controllers/usersController');
 const { updateUserTime } = require('../controllers/usersController');
 
-
+router.post("/userDetails", userDetails);
 router.post('/getUserRole', getUserInfo);
 router.post('/createUser', createUser);
 router.post("/verifyToken", verifyToken);
@@ -20,7 +20,6 @@ router.post("/registerEntry", registerEntry);
 router.post("/registerLeave", registerLeave);
 router.post("/calendar", getUserRecords);
 router.post("/byEntity", getUsersByEntity);
-router.post("/userDetails", userDetails);
 router.post("/checkEntry", checkEntry);
 router.post("/checkLeave", checkLeave);
 router.post("/update-time", updateUserTime);

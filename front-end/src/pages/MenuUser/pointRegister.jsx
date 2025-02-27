@@ -1,4 +1,10 @@
 import { useState, useEffect } from "react";
+import { calcularHoras, formatarMinutos } from "./calcHours";
+
+
+const feriadosPorto = [
+  "01-01", "25-04", "01-05", "10-06", "15-08", "05-10", "01-11", "01-12", "08-12", "25-12"
+];
 
 const TableHours = ({ username, month }) => {
   const [dados, setDados] = useState([]);
@@ -35,6 +41,8 @@ const TableHours = ({ username, month }) => {
           novosDados = novosDados.map((item, index) => {
             const registro = registros.find((r) => new Date(r.timestamp).getDate() === index + 1);
             const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
+            const diaSemana = dataAtual.getDay();
+            const feriado = feriadosPorto.includes(`${String(index + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`);
 
             if (registro) {
               const { total, extra, minutos, minutosExtras, minutosFalta } = calcularHoras(registro.horaEntrada, registro.horaSaida);
@@ -48,7 +56,8 @@ const TableHours = ({ username, month }) => {
                 total,
                 extra,
               };
-            } else if (dataAtual < hoje) {
+            } else if (dataAtual < hoje && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
+              totalMinutosFaltas += 480;
               return { ...item, total: "0h 0m" };
             }
             return item;
@@ -68,40 +77,9 @@ const TableHours = ({ username, month }) => {
     };
 
     fetchData();
+    const interval = setInterval(fetchData, 1000);
+    return () => clearInterval(interval);
   }, [username, month]);
-
-  const calcularHoras = (entrada, saida) => {
-    if (!entrada || !saida) return { total: "-", extra: "-", minutos: 0, minutosExtras: 0, minutosFalta: 480 };
-
-    const [hEntrada, mEntrada] = entrada.split(":").map(Number);
-    const [hSaida, mSaida] = saida.split(":").map(Number);
-
-    if (isNaN(hEntrada) || isNaN(mEntrada) || isNaN(hSaida) || isNaN(mSaida)) {
-      return { total: "-", extra: "-", minutos: 0, minutosExtras: 0, minutosFalta: 480 };
-    }
-
-    let minutosTrabalhados = (hSaida * 60 + mSaida) - (hEntrada * 60 + mEntrada);
-    if (minutosTrabalhados > 300){
-      minutosTrabalhados = minutosTrabalhados - 60;
-    }
-    let minutosNormais = Math.min(minutosTrabalhados, 480);
-    let minutosExtras = Math.max(0, minutosTrabalhados - 480);
-    let minutosFalta = Math.max(0, 480 - minutosTrabalhados);
-
-    return {
-      total: formatarMinutos(minutosTrabalhados),
-      extra: minutosExtras > 0 ? formatarMinutos(minutosExtras) : "-",
-      minutos: minutosNormais,
-      minutosExtras,
-      minutosFalta
-    };
-  };
-
-  const formatarMinutos = (minutos) => {
-    const horas = Math.floor(minutos / 60);
-    const minutosRestantes = minutos % 60;
-    return `${horas}h ${minutosRestantes}m`;
-  };
 
   return (
     <div className="table-container">
