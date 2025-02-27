@@ -385,14 +385,87 @@ const getUserRecords = async (req, res) => {
       };
     });
 
-    console.log(`Registros encontrados (${registros.length}):`, registros);
     return res.status(200).json(registros);
   } catch (error) {
     console.error("Erro ao buscar registros de usuário:", error);
     return res.status(500).json({ error: error.message });
   }
 };
+const updateUserTime = async (req, res) => {
+  try {
+    console.log("Recebendo requisição para atualizar horário do usuário...");
+    console.log("Corpo da requisição:", req.body);
 
+    const { username, date, campo, valor } = req.body;
+
+    if (!username || !date || !campo || !valor) {
+      console.log("Erro: Parâmetros insuficientes.");
+      return res.status(400).json({ error: "Todos os campos são obrigatórios" });
+    }
+
+    // Gerando o userId corretamente
+    let userId = `user_${username.replace(/\s+/g, "-").toLowerCase()}`;
+    console.log(`Usuário formatado: ${userId}`);
+
+    // Validando e convertendo a data
+    const dateParts = date.split("-");
+    if (dateParts.length !== 2) {
+      console.log("Erro: Formato de data inválido.", date);
+      return res.status(400).json({ error: "Formato de data inválido. Use DD-MM" });
+    }
+
+    const [day, month] = dateParts.map(Number);
+    const year = new Date().getFullYear(); // Assume o ano atual
+    
+    if (isNaN(day) || isNaN(month)) {
+      console.log("Erro: Data contém valores inválidos.", date);
+      return res.status(400).json({ error: "Data inválida fornecida" });
+    }
+
+    // Criar timestamp com a hora fornecida
+    let [hour, minute] = valor.split(":").map(Number);
+    if (isNaN(hour) || isNaN(minute)) {
+      console.log("Erro: Horário inválido.", valor);
+      return res.status(400).json({ error: "Horário inválido fornecido" });
+    }
+
+    const dataRegistro = new Date(year, month - 1, day, hour, minute);
+    if (isNaN(dataRegistro.getTime())) {
+      console.log("Erro: Data gerada inválida.", dataRegistro);
+      return res.status(400).json({ error: "Data inválida gerada" });
+    }
+
+    console.log("Data processada com horário:", dataRegistro.toISOString());
+
+    // Criando um ID baseado na data no formato correto
+    const registroId = `registro_${String(day).padStart(2, '0')}${String(month).padStart(2, '0')}${year}`;
+    console.log("ID do registro:", registroId);
+
+    // Referência ao documento no Firestore
+    const registroRef = db
+      .collection("registro-ponto")
+      .doc(userId)
+      .collection("Registros")
+      .doc(registroId);
+
+    // Verificar se o documento já existe
+    const docSnapshot = await registroRef.get();
+    if (!docSnapshot.exists) {
+      console.log("Registro não encontrado. Criando novo documento...");
+    }
+
+    // Atualizar ou criar o documento
+    const updateData = { timestamp: dataRegistro };
+    updateData[campo] = valor;
+    await registroRef.set(updateData, { merge: true });
+
+    console.log("Horário atualizado com sucesso!");
+    return res.status(200).json({ message: "Horário atualizado com sucesso" });
+  } catch (error) {
+    console.error("Erro ao atualizar horário do usuário:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
 const getUsersByEntity = async (req, res) => {
   try {
 
@@ -488,7 +561,9 @@ const userDetails = async (req, res) => {
   }
 };
 
-module.exports = { getUserInfo, verifyToken, createUser, registerEntry, registerLeave, getUserRecords, getUsersByEntity, userDetails, checkEntry, checkLeave };
+module.exports = { getUserInfo, verifyToken, createUser, registerEntry, 
+                  registerLeave, getUserRecords, getUsersByEntity, userDetails, 
+                  checkEntry, checkLeave, updateUserTime };
   
 
 

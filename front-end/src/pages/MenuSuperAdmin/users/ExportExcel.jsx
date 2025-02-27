@@ -1,6 +1,14 @@
 import ExcelJS from "exceljs";
 
-const ExportExcel = ({ dados }) => {
+const ExportExcel = ({ dados, username, month }) => {
+  const getMonthName = (monthNumber) => {
+    const months = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+    return months[monthNumber - 1] || "Mês_Inválido"; // Ajustando para índices baseados em 1
+  };
+
   const exportToExcel = async () => {
     const wb = new ExcelJS.Workbook();
     const ws = wb.addWorksheet("Registro de Ponto");
@@ -68,17 +76,18 @@ const ExportExcel = ({ dados }) => {
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
 
+    // Converter número do mês para nome
+    const monthName = getMonthName(month);
+    const fileName = `Registro_${monthName}_${username}.xlsx`;
+
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "Registro_de_Ponto.xlsx";
+    link.download = fileName;
     link.click();
   };
 
   return (
-    <button
-      onClick={exportToExcel}
-     class="ex"
-    >
+    <button onClick={exportToExcel} className="ex">
       Exportar para Excel
     </button>
   );

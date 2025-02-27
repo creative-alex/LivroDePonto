@@ -10,6 +10,8 @@ const { getUsersByEntity } = require('../controllers/usersController');
 const { userDetails } = require('../controllers/usersController');
 const { checkEntry } = require('../controllers/usersController');
 const { checkLeave } = require('../controllers/usersController');
+const { updateUserTime } = require('../controllers/usersController');
+
 
 router.post('/getUserRole', getUserInfo);
 router.post('/createUser', createUser);
@@ -21,6 +23,7 @@ router.post("/byEntity", getUsersByEntity);
 router.post("/userDetails", userDetails);
 router.post("/checkEntry", checkEntry);
 router.post("/checkLeave", checkLeave);
+router.post("/update-time", updateUserTime);
 
 module.exports = router;
 
