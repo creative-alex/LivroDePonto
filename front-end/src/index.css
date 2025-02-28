@@ -478,3 +478,8 @@ thead th {
   background-color: #003f7f; /* Azul ainda mais escuro */
   transform: scale(0.95)
 }
+
+.cap{
+  text-transform: capitalize;
+
+}

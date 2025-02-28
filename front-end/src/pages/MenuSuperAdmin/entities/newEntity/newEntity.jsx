@@ -76,16 +76,6 @@ const NovaEntidade = () => {
           required
         />
       </div>
-      <div className="form-group-unique form-group-entidade">
-        <label htmlFor="nColaboradores">Número de Colaboradores:</label>
-        <input
-          type="number"
-          id="nColaboradores"
-          value={nColaboradores}
-          onChange={(e) => setNColaboradores(e.target.value)}
-          required
-        />
-      </div>
       <button type="submit">Criar Entidade</button>
     </form>
   </div>

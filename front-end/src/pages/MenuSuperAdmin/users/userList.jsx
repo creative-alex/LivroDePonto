@@ -28,6 +28,8 @@ const UserList = ({ entityName }) => {
   useEffect(() => {
     if (entityName) {
       fetchEmployees();
+      const interval = setInterval(fetchEmployees, 1000); 
+      return () => clearInterval(interval);
     }
   }, [entityName]);
 

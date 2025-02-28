@@ -5,7 +5,7 @@ const path = require("path");
 
 const createEntity = async (req, res) => {
   try {
-    const { nome, morada, nif, nColaboradores } = req.body;
+    const { nome, morada, nif } = req.body;
 
     if (!nome || !morada || !nif || nColaboradores === undefined) {
       return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
@@ -25,7 +25,6 @@ const createEntity = async (req, res) => {
       nome,
       morada,
       nif,
-      nColaboradores,
       createdAt: new Date(),
     };
 

@@ -51,19 +51,22 @@ const Login = ({ onLoginSuccess }) => {
       });
   
       if (!response.ok) throw new Error("Erro ao autenticar");
+      console.log("Email antes da requisição:", email);
+
   
       // Obtém o papel e nome do usuário
       const roleResponse = await fetch("http://localhost:4005/users/getUserRole", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token })
+        body: JSON.stringify({ email: user.email }),
       });
-  
+      
       const roleData = await roleResponse.json();
-      if (!roleResponse.ok) throw new Error(roleData.message || "Erro ao obter papel do user");
-    
-      // Passa o papel e nome do usuário para o App
-      onLoginSuccess(roleData.role, roleData.nome);
+      if (!roleResponse.ok) throw new Error(roleData.message || "Erro ao obter informações do usuário");
+      
+      // Passa o papel, nome e isFirstLogin para o App
+      onLoginSuccess(roleData.role, roleData.nome, roleData.isFirstLogin, user.email);
+      
       
       // Atualiza o contexto
       setUserName(roleData.nome);

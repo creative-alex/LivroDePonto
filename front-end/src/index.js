@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import Login from './components/Login/login';
+import FirstLoginComponent from './components/Login/firstLogin';
 import Logout from './components/LogoutButton/logoutButton';
 import NovaEntidade from './pages/MenuSuperAdmin/entities/newEntity/newEntity';
 import CreateEntityButton from './pages/MenuSuperAdmin/buttons/createEntityButton';
@@ -14,41 +15,54 @@ import RegisterLeave from './pages/MenuUser/buttons/exitRegisterButton';
 import TableHours from './pages/MenuUser/pointRegister';
 import ShowRegister from './pages/MenuUser/buttons/showRegisterButton';
 import reportWebVitals from './reportWebVitals';
-import { UserProvider, UserContext } from './context/UserContext'; 
+import { UserProvider, UserContext } from './context/UserContext';
 
 const App = () => {
-  const { setUsername, username } = useContext(UserContext);
+  const { setUsername, username, setUserEmail, userEmail } = useContext(UserContext);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [activePage, setActivePage] = useState(null);
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1); // Obtém o mês atual (1-12)
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+  const [isFirstLogin, setIsFirstLogin] = useState(false);
 
+  // Verificar se há usuário salvo no localStorage ao carregar a página
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      const { nome, role } = JSON.parse(storedUser);
+      const { nome, role, email, firstLogin } = JSON.parse(storedUser);
       setUsername(nome);
+      setUserEmail(email);
       setIsLoggedIn(true);
       setIsAdmin(role === "SuperAdmin");
+      setIsFirstLogin(firstLogin && role !== "SuperAdmin");
     }
-  }, [setUsername]);
+  }, [setUsername, setUserEmail]);
 
-  const handleLoginSuccess = (role, nome) => {
+  // Atualizar localStorage ao logar
+  const handleLoginSuccess = (role, nome, firstLogin, email) => {
+    const userData = { nome, role, email, firstLogin };
+    localStorage.setItem('user', JSON.stringify(userData)); // Salva no localStorage
     setUsername(nome);
+    setUserEmail(email);
     setIsLoggedIn(true);
     setIsAdmin(role === "SuperAdmin");
+    setIsFirstLogin(firstLogin && role !== "SuperAdmin");
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('user'); // Remover usuário do localStorage
     setIsLoggedIn(false);
     setIsAdmin(false);
     setActivePage(null);
     setUsername(null);
-    localStorage.removeItem('user'); 
+    setUserEmail(null);
+    setIsFirstLogin(false);
   };
 
   return isLoggedIn ? (
-    isAdmin ? (
+    isFirstLogin && !isAdmin ? (
+      <FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />
+    ) : isAdmin ? (
       <>
         <div className="button-container">
           <ShowAllEntitiesButton onClick={() => setActivePage('allEntities')} />
@@ -63,14 +77,14 @@ const App = () => {
     ) : (
       <>
         <div className="button-container">
-          <RegisterEntry username={username}/>
+          <RegisterEntry username={username} />
           <RegisterLeave username={username} isSuperAdmin="SuperAdmin" />
           <ShowRegister onClick={() => {
-            setCurrentMonth(new Date().getMonth() + 1); // Atualiza o mês ao clicar
+            setCurrentMonth(new Date().getMonth() + 1);
             setActivePage('allregister');
           }} />
         </div>
-        {activePage === 'allregister' && <TableHours username={username} month={currentMonth}  />}
+        {activePage === 'allregister' && <TableHours username={username} month={currentMonth} />}
         <Logout onClick={handleLogout} />
       </>
     )
@@ -78,7 +92,6 @@ const App = () => {
     <Login onLoginSuccess={handleLoginSuccess} />
   );
 };
-
 
 // Renderização
 const root = ReactDOM.createRoot(document.getElementById('root'));
