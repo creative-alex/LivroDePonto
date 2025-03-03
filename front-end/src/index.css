@@ -483,3 +483,103 @@ thead th {
   text-transform: capitalize;
 
 }
+
+/* Container principal */
+.user-details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.user-details-heading {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Estilo dos grupos de entrada */
+.input-group {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+/* Estilo do rótulo */
+.input-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Estilo dos campos de entrada */
+.input-field {
+  width: 90%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: border-color 0.3s;
+}
+
+.input-field:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Estilização específica para o select dentro do entidade-container */
+.entidade-container select {
+  width: 95%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: border-color 0.3s;
+}
+
+.entidade-container select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Botões */
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.submit-button, .cancel-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f;
+}

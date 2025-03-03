@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import ExportExcel from "./ExportExcel";
-import { calcularHoras, formatarMinutos } from "./calcHours";
+import { calcularHoras, formatarMinutos } from "../../../components/Hours/calcHours";
 
 const feriadosPorto = [
   "01-01", "25-04", "01-05", "10-06", "15-08", "05-10", "01-11", "01-12", "08-12", "25-12"
@@ -58,10 +58,11 @@ const TableHours = ({ username, month }) => {
                 total,
                 extra,
               };
-            } else if (dataAtual < hoje && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
+            } else if (dataAtual < hoje && dataAtual.toDateString() !== hoje.toDateString() && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
               totalMinutosFaltas += 480;
               return { ...item, total: "0h 0m" };
             }
+            
             return item;
           });
         }
@@ -79,7 +80,7 @@ const TableHours = ({ username, month }) => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 1000);
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, [username, month]);
 
@@ -161,10 +162,19 @@ const TableHours = ({ username, month }) => {
                 <td>{item.extra}</td>
               </tr>
             ))}
+            <tr>
+              <td colSpan="3"><strong>Totais</strong></td>
+              <td><strong>{totais.totalHoras}</strong></td>
+              <td><strong>{totais.totalExtras}</strong></td>
+            </tr>
+            <tr>
+              <td colSpan="3"><strong>Horas Faltadas</strong></td>
+              <td colSpan="2"><strong>{totais.totalFaltas}</strong></td>
+            </tr>
           </tbody>
         </table>
       </div>
-      <ExportExcel month={month} username={username} dados={dados} />
+      <ExportExcel month={month} username={username} dados={dados} totais={totais} />
     </>
   );
 };

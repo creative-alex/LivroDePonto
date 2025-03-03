@@ -7,12 +7,12 @@ const createEntity = async (req, res) => {
   try {
     const { nome, morada, nif } = req.body;
 
-    if (!nome || !morada || !nif || nColaboradores === undefined) {
+    if (!nome || !morada || !nif) {
       return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
     }
 
     // Validando os dados da entidade
-    const validationError = validateEntity({ nome, morada, nif, nColaboradores });
+    const validationError = validateEntity({ nome, morada, nif});
 
     if (validationError.length > 0) {
       return res.status(400).json({ error: validationError });
@@ -164,4 +164,5 @@ const entityDetails = async (req, res) => {
 
 
 
-module.exports = { createEntity, updateEntity, showEntity, entityDetails};
+module.exports = { createEntity, updateEntity, showEntity, 
+                   entityDetails};

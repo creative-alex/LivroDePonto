@@ -1,21 +1,21 @@
 import ExcelJS from "exceljs";
 
-const ExportExcel = ({ dados, username, month }) => {
+const ExportExcel = ({ dados, totais, username, month }) => {
   const getMonthName = (monthNumber) => {
     const months = [
       "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
       "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
     ];
-    return months[monthNumber - 1] || "Mês_Inválido"; // Ajustando para índices baseados em 1
+    return months[monthNumber - 1] || "Mês_Inválido";
   };
 
   const exportToExcel = async () => {
     const wb = new ExcelJS.Workbook();
     const ws = wb.addWorksheet("Registro de Ponto");
 
-    // Definir estilos para cabeçalhos
+    // Estilizando cabeçalhos
     const headerRow = ws.addRow([
-      "Dia", "Hora Entrada", "Hora Saída", "Total Horas", "Horas Extra", "Assinatura Funcionário"
+      "Dia", "Hora Entrada", "Hora Saída", "Total Horas", "Horas Extra", "Justificação de Atraso/Falta", "Assinatura Funcionário"
     ]);
     headerRow.eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
@@ -41,9 +41,73 @@ const ExportExcel = ({ dados, username, month }) => {
         rowData.saida || "",
         rowData.total || "",
         rowData.extra || "",
+        "",
         ""
       ]);
-      row.eachCell((cell) => {
+      row.eachCell((cell, colNumber) => {
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+        
+        // Adicionando borda para a coluna Assinatura Funcionário
+        if (colNumber === 7) {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+        }
+      });
+    });
+
+    // Linha vazia
+    ws.addRow([]);
+
+    // Assinatura RH antes da tabela de totais (5 linhas acima)
+    ws.addRow(["", "", "", "", "Assinatura RH:", "____________________"]);
+    const assinaturaRow = ws.lastRow;
+    assinaturaRow.eachCell((cell, colNumber) => {
+      if (colNumber === 5) {
+        cell.font = { bold: true };
+      }
+    });
+    
+    // Linha vazia
+    ws.addRow([]);
+
+    // Criando tabela de totais estilizada
+    const totalHeaders = ["Descrição", "Total"];
+    const totalValues = [["Hora Entrada", dados.horaEntrada]
+      ["Total de Horas", totais.totalHoras],
+      ["Horas Extras", totais.totalExtras],
+      ["Horas Faltadas", totais.totalFaltas],
+    ];
+    
+    const totalHeaderRow = ws.addRow(totalHeaders);
+    totalHeaderRow.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF0070C0" },
+      };
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+      cell.border = {
+        top: { style: "thin" },
+        left: { style: "thin" },
+        bottom: { style: "thin" },
+        right: { style: "thin" },
+      };
+    });
+
+    totalValues.forEach((row) => {
+      const dataRow = ws.addRow(row);
+      dataRow.eachCell((cell) => {
         cell.alignment = { horizontal: "center", vertical: "middle" };
         cell.border = {
           top: { style: "thin" },
@@ -54,15 +118,6 @@ const ExportExcel = ({ dados, username, month }) => {
       });
     });
 
-    // Linha vazia + Assinatura RH
-    ws.addRow([]);
-    const assinaturaRow = ws.addRow(["", "", "", "", "Assinatura RH:", "____________________"]);
-    assinaturaRow.eachCell((cell, colNumber) => {
-      if (colNumber === 5) {
-        cell.font = { bold: true };
-      }
-    });
-
     // Ajustando larguras das colunas
     ws.columns = [
       { width: 15 }, // Dia
@@ -70,7 +125,8 @@ const ExportExcel = ({ dados, username, month }) => {
       { width: 20 }, // Hora Saída
       { width: 15 }, // Total Horas
       { width: 15 }, // Horas Extra
-      { width: 30 }, // Assinatura
+      { width: 30 }, // Justificativa
+      { width: 25 }, // Assinatura Funcionário
     ];
 
     const buffer = await wb.xlsx.writeBuffer();

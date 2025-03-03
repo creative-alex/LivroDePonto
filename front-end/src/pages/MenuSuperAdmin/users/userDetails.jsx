@@ -14,33 +14,35 @@ const UserDetails = ({ userName }) => {
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [showDetails, setShowDetails] = useState(true);
 
-
   useEffect(() => {
     if (!userName) {
       console.log("❌ Nenhum userName fornecido, abortando requisição!");
       return;
     }
-
+  
     const fetchUserDetails = async () => {
       setLoading(true);
       setError(null);
-
+  
       try {
         const response = await fetch(`http://localhost:4005/users/userDetails`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userName }),
         });
-
+  
         if (!response.ok) {
           const errorMessage = await response.text();
           console.log("❌ Erro na resposta:", errorMessage);
           throw new Error(errorMessage || "Erro ao buscar dados do usuário");
         }
-
+  
         const data = await response.json();
+        
+        // Adicionando `oldNome` para manter o nome antigo
         setUserDetails(data);
-        setEditedData(data);
+        setEditedData({ ...data, oldNome: data.nome });
+        
       } catch (err) {
         console.log("🚨 Erro capturado:", err.message);
         setError(err);
@@ -48,7 +50,7 @@ const UserDetails = ({ userName }) => {
         setLoading(false);
       }
     };
-
+  
     fetchUserDetails();
   }, [userName]);
 
@@ -84,7 +86,7 @@ const UserDetails = ({ userName }) => {
       const response = await fetch("http://localhost:4005/users/updateUserDetails", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editedData),
+        body: JSON.stringify(editedData), 
       });
   
       if (!response.ok) throw new Error("Erro ao atualizar usuário");
@@ -109,32 +111,63 @@ const UserDetails = ({ userName }) => {
 
   return (
     <div className='flex'>
-      <h2>User Details</h2>
-      {isEditing ? (
-        <div>
-          <p>
-            <strong>Email:</strong> 
-            <input type="text" name="email" value={editedData?.email || ""} onChange={handleInputChange} />
-          </p>
-          <p>
-            <strong>Entidade:</strong> 
-            <EntidadeSelect selectedEntity={editedData?.entidade || ""} onChange={handleEntidadeChange} />
-          </p>
-          <p>
-            <strong>Nome:</strong> 
-            <input type="text" name="nome" value={editedData?.nome || ""} onChange={handleInputChange} />
-          </p>
-          <p>
-            <strong>Role:</strong> 
-            <input type="text" name="role" value={editedData?.role || ""} onChange={handleInputChange} />
-          </p>
-          <p>
-            <strong>Nova Password Temporária:</strong> 
-            <input type="password" name="newPassword" minLength="6" value={editedData?.newPassword || ""} onChange={handleInputChange} />
-          </p>
-          <button onClick={handleSubmitClick}>Submeter</button>
-          <button onClick={handleCancelClick}>Cancelar</button>
-        </div>
+       <h2 className="user-details-heading">User Details</h2>
+  {isEditing ? (
+    <div className="entidade-container">
+      <p className="input-group">
+        <strong className="input-label">Email:</strong>
+        <input 
+          className="input-field" 
+          type="text" 
+          name="email" 
+          value={editedData?.email || ""} 
+          onChange={handleInputChange} 
+        />
+      </p>
+      <p className="input-group">
+        <strong className="input-label">Entidade:</strong> 
+        </p>
+        <EntidadeSelect 
+          className="input-field"
+          selectedEntity={editedData?.entidade || ""} 
+          onChange={handleEntidadeChange} 
+        />
+      <p className="input-group">
+        <strong className="input-label">Nome:</strong>
+        <input 
+          className="input-field" 
+          type="text" 
+          name="nome" 
+          value={editedData?.nome || ""} 
+          onChange={handleInputChange} 
+        />
+      </p>
+      <p className="input-group">
+        <strong className="input-label">Role:</strong>
+        <input 
+          className="input-field" 
+          type="text" 
+          name="role" 
+          value={editedData?.role || ""} 
+          onChange={handleInputChange} 
+        />
+      </p>
+      <p className="input-group">
+        <strong className="input-label">Nova Password Temporária:</strong>
+        <input 
+          className="input-field" 
+          type="password" 
+          name="newPassword" 
+          minLength="6" 
+          value={editedData?.newPassword || ""} 
+          onChange={handleInputChange} 
+        />
+      </p>
+      <div className="button-group">
+        <button className="submit-button" onClick={handleSubmitClick}>Submeter</button>
+        <button className="cancel-button" onClick={handleCancelClick}>Cancelar</button>
+      </div>
+    </div>
       ) : (
         <div>
           <ul>

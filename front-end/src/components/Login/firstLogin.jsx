@@ -6,7 +6,6 @@ const FirstLoginComponent = ({ onComplete }) => {
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const { userEmail } = useContext(UserContext);
-  console.log("Email recebido do index" ,{userEmail});
 
   const handlePasswordChange = async () => {
     try {

@@ -13,7 +13,6 @@ const NovaEntidade = () => {
       nome,
       morada,
       nif: Number(nif),
-      nColaboradores: Number(nColaboradores),
     };
 
     try {
@@ -36,7 +35,6 @@ const NovaEntidade = () => {
       setNome('');
       setMorada('');
       setNif('');
-      setNColaboradores('');
     } catch (error) {
       console.error('Erro ao enviar requisição:', error);
     }

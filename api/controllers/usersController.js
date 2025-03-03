@@ -575,22 +575,23 @@ const getUsersByEntity = async (req, res) => {
   }
 };
 const updateUserDetails = async (req, res) => {
+  console.log(req.body);
   try {
     console.log("🔹 Iniciando updateUserDetails...");
     console.log("📩 Dados recebidos:", req.body);
 
-    const { email, entidade, nome, role, newPassword } = req.body;
+    const { email, oldNome, nome, entidade, role, newPassword } = req.body;
 
-    if (!email) {
-      console.log("❌ Erro: Campo 'email' é obrigatório");
-      return res.status(400).json({ error: "O campo 'email' é obrigatório." });
+    if (!email || !oldNome || !nome || !entidade || !role) {
+      console.log("❌ Erro: Campos obrigatórios ausentes");
+      return res.status(400).json({ error: "Todos os campos são obrigatórios." });
     }
 
     // Gerar entidadeId no formato correto
     let entidadeId = entidade
       .toLowerCase()
       .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "") // Remove acentos
+      .replace(/[\u0300-\u036f]/g, "") // Remove acentos
       .replace(/\s+/g, "-"); // Substitui espaços por hífen
 
     const entidadeRef = `entidades/${entidadeId}`;
@@ -606,26 +607,79 @@ const updateUserDetails = async (req, res) => {
 
     const userDoc = querySnapshot.docs[0];
     const userId = userDoc.id;
+    const userData = userDoc.data();
+
     console.log("✅ Usuário encontrado! ID:", userId);
 
-    const updatedData = { entidade: entidadeRef, nome, role };
-    console.log("✏ Dados atualizados antes da modificação:", updatedData);
+    if (oldNome !== nome) {
+      console.log("🆕 Nome alterado, criando novo usuário...");
 
-    if (newPassword) {
-      updatedData.isFirstLogin = true; // Marca que o usuário deve redefinir a senha no primeiro login
-      console.log("🔑 Nova senha detectada, isFirstLogin definido para true");
+      // Criar novo usuário
+      const newUserRef = usersRef.doc();
+      const newUserId = newUserRef.id;
+
+      const newUserData = {
+        ...userData,
+        nome,
+        entidade: entidadeRef,
+        role,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      if (newPassword) {
+        newUserData.isFirstLogin = true;
+      }
+
+      await newUserRef.set(newUserData);
+      console.log("✅ Novo usuário criado com sucesso! ID:", newUserId);
+
+      // Transferir registros de ponto para o novo usuário
+      const oldRegistrosRef = db.collection(`registro-ponto/${userId}/Registros`);
+      const newRegistrosRef = db.collection(`registro-ponto/${newUserId}/Registros`);
+
+      const registrosSnapshot = await oldRegistrosRef.get();
+
+      if (!registrosSnapshot.empty) {
+        console.log("🔄 Transferindo registros de ponto...");
+
+        const batch = db.batch();
+        registrosSnapshot.forEach((doc) => {
+          const newDocRef = newRegistrosRef.doc(doc.id);
+          batch.set(newDocRef, doc.data());
+        });
+
+        await batch.commit();
+        console.log("✅ Registros de ponto transferidos!");
+      } else {
+        console.log("⚠ Nenhum registro de ponto para transferir.");
+      }
+
+      // Remover usuário antigo
+      await usersRef.doc(userId).delete();
+      console.log("🗑 Usuário antigo removido!");
+
+      return res.status(200).json({ message: "Usuário atualizado com novo ID com sucesso." });
+    } else {
+      console.log("✏ Nome não mudou, atualizando usuário existente...");
+
+      const updatedData = { entidade: entidadeRef, nome, role, updatedAt: new Date() };
+
+      if (newPassword) {
+        updatedData.isFirstLogin = true;
+      }
+
+      await usersRef.doc(userId).update(updatedData);
+      console.log("✅ Usuário atualizado com sucesso!");
+
+      return res.status(200).json({ message: "Usuário atualizado com sucesso." });
     }
-
-    console.log("🚀 Atualizando usuário no Firestore...");
-    await usersRef.doc(userId).update(updatedData);
-    console.log("✅ Usuário atualizado com sucesso!");
-
-    res.status(200).json({ message: "Usuário atualizado com sucesso." });
   } catch (error) {
     console.error("🚨 Erro ao atualizar usuário:", error);
     res.status(500).json({ error: "Erro interno do servidor." });
   }
 };
+
 
 
 

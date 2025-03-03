@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { calcularHoras, formatarMinutos } from "./calcHours";
+import { calcularHoras, formatarMinutos } from "../../components/Hours/calcHours";
 
 
 const feriadosPorto = [
@@ -77,7 +77,7 @@ const TableHours = ({ username, month }) => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 1000);
+    const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, [username, month]);
 

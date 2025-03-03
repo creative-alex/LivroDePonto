@@ -16,9 +16,9 @@ const validateEntity = (entityData) => {
     errors.nif = 'NIF é obrigatório, deve ser um numero e deve ter 9 caracteres';
   }
 
-  if (!entityData.nColaboradores || typeof entityData.nColaboradores !== 'number' || entityData.nColaboradores < 0) {
+  /* if (!entityData.nColaboradores || typeof entityData.nColaboradores !== 'number' || entityData.nColaboradores < 0) {
     errors.nColaboradores = 'Número de colaboradores é obrigatório, deve ser um número e não pode ser negativo';
-  }
+  } */
 
   return errors;
 };
