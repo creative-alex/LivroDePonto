@@ -288,7 +288,6 @@ const checkEntry = async (req, res) => {
     const registroDoc = await userDocRef.collection("Registros").doc(registroId).get();
 
     if (registroDoc.exists) {
-      console.log("Entrada já registrada para hoje.");
       return res.status(200).json({ hasEntry: true });
     }
 
@@ -398,7 +397,6 @@ const checkLeave = async (req, res) => {
       return res.status(200).json({ hasLeave: false });
     }
     
-    console.log("Saída já registrada para hoje.");
     return res.status(200).json({ hasLeave: true });
   } catch (error) {
     console.error("Erro ao verificar saída:", error);
@@ -444,7 +442,6 @@ const getUserRecords = async (req, res) => {
       .get();
 
     if (snapshot.empty) {
-      console.log("Nenhum registro encontrado para o usuário neste mês.");
       return res.status(404).json({ error: "Nenhum registro encontrado para o mês informado" });
     }
 
@@ -591,8 +588,8 @@ const updateUserDetails = async (req, res) => {
     let entidadeId = entidade
       .toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // Remove acentos
-      .replace(/\s+/g, "-"); // Substitui espaços por hífen
+      .replace(/[\u0300-\u036f]/g, "") 
+      .replace(/\s+/g, "-"); 
 
     const entidadeRef = `entidades/${entidadeId}`;
 

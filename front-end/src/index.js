@@ -25,7 +25,6 @@ const App = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [isFirstLogin, setIsFirstLogin] = useState(false);
 
-  // Verificar se há usuário salvo no localStorage ao carregar a página
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -38,10 +37,9 @@ const App = () => {
     }
   }, [setUsername, setUserEmail]);
 
-  // Atualizar localStorage ao logar
   const handleLoginSuccess = (role, nome, firstLogin, email) => {
     const userData = { nome, role, email, firstLogin };
-    localStorage.setItem('user', JSON.stringify(userData)); // Salva no localStorage
+    localStorage.setItem('user', JSON.stringify(userData));
     setUsername(nome);
     setUserEmail(email);
     setIsLoggedIn(true);
@@ -50,7 +48,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user'); // Remover usuário do localStorage
+    localStorage.removeItem('user');
     setIsLoggedIn(false);
     setIsAdmin(false);
     setActivePage(null);
@@ -79,10 +77,7 @@ const App = () => {
         <div className="button-container">
           <RegisterEntry username={username} />
           <RegisterLeave username={username} isSuperAdmin="SuperAdmin" />
-          <ShowRegister onClick={() => {
-            setCurrentMonth(new Date().getMonth() + 1);
-            setActivePage('allregister');
-          }} />
+          <ShowRegister onClick={() => setActivePage('allregister')} />
         </div>
         {activePage === 'allregister' && <TableHours username={username} month={currentMonth} />}
         <Logout onClick={handleLogout} />
@@ -93,7 +88,6 @@ const App = () => {
   );
 };
 
-// Renderização
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <UserProvider>
