@@ -405,35 +405,34 @@ const checkLeave = async (req, res) => {
 };
 const getUserRecords = async (req, res) => {
   try {
-
     const { username, month } = req.body;
     if (!username || !month) {
-      console.log("Erro: Nome de usuário e mês são obrigatórios.");
+      console.log("❌ Erro: Nome de usuário e mês são obrigatórios.");
       return res.status(400).json({ error: "O nome de usuário e o mês são obrigatórios" });
     }
 
-    // Gerando o userId no formato correto
+
     let userId = username
       .toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\p{Diacritic}/gu, "")
       .replace(/\s+/g, "-");
+
 
     const admin = require("firebase-admin");
     const db = admin.firestore();
 
-
-    // Definir início e fim do mês
     const now = new Date();
     const year = now.getFullYear();
     const firstDay = new Date(year, month - 1, 1);
-    const lastDay = new Date(year, month, 0, 23, 59, 59);
+    const lastDay = new Date(year, month, 0);
 
-    // Referência à coleção de registros do usuário
+
     const registrosRef = db
       .collection("registro-ponto")
       .doc(`user_${userId}`)
       .collection("Registros");
+
 
     const snapshot = await registrosRef
       .where("timestamp", ">=", firstDay)
@@ -441,23 +440,56 @@ const getUserRecords = async (req, res) => {
       .orderBy("timestamp", "asc")
       .get();
 
-    if (snapshot.empty) {
+
+    // Criar lista de todas as datas possíveis no formato "DD-MM"
+    const listaDeDatas = [];
+    let tempDate = new Date(firstDay);
+    while (tempDate <= lastDay) {
+      let dd = String(tempDate.getDate()).padStart(2, '0');
+      let mm = String(tempDate.getMonth() + 1).padStart(2, '0');
+      listaDeDatas.push(`${dd}-${mm}`);
+      tempDate.setDate(tempDate.getDate() + 1);
+    }
+
+
+    // Verificação de férias com divisão em lotes de 30 valores
+    const feriasRef = db
+      .collection("registro-ponto")
+      .doc(`user_${userId}`)
+      .collection("Ferias");
+
+
+    let feriasDates = [];
+    for (let i = 0; i < listaDeDatas.length; i += 30) {
+      const batch = listaDeDatas.slice(i, i + 30);
+      const feriasSnapshot = await feriasRef.where("date", "in", batch).get();
+      feriasDates.push(...feriasSnapshot.docs.map(doc => doc.data().date));
+    }
+
+
+    if (snapshot.empty && feriasDates.length === 0) {
+      console.log("⚠️ Nenhum registro encontrado para o mês informado");
       return res.status(404).json({ error: "Nenhum registro encontrado para o mês informado" });
     }
 
-    // Montando a resposta
     const registros = snapshot.docs.map(doc => {
       const data = doc.data();
+      const dataFormatada = data.timestamp.toDate().toISOString().split('T')[0];
+      const diaMesFormatado = dataFormatada.split('-').reverse().slice(0, 2).join('-');
+
+      const status = feriasDates.includes(diaMesFormatado) ? "Férias" : "Trabalho";
+
       return {
         timestamp: data.timestamp.toDate().toISOString(),
         horaEntrada: data.horaEntrada || "-",
         horaSaida: data.horaSaida || "-",
+        status
       };
     });
 
-    return res.status(200).json(registros);
+    return res.status(200).json({ registros, ferias: feriasDates });
   } catch (error) {
-    console.error("Erro ao buscar registros de usuário:", error);
+    console.error("❌ Erro ao buscar registros de usuário:", error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -676,11 +708,46 @@ const updateUserDetails = async (req, res) => {
     res.status(500).json({ error: "Erro interno do servidor." });
   }
 };
+const createVacation = async (req, res) => {
+  try {
+    const { username, date } = req.body;
+    
+    if (!username || !date) {
+      console.log("Erro: Campos obrigatórios ausentes.");
+      return res.status(400).json({ error: "Faltam campos obrigatórios: username e/ou date" });
+    }
 
+    // Gerando o userId no formato correto
+    let userId = username
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "-");
 
+    console.log("Registrando férias para o usuário:", userId);
+
+    // Referência ao documento do usuário dentro da coleção "registro-ponto"
+    const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
+    
+    // Criando um ID único para o registro baseado na data
+    const registroId = `registro_${date.replace(/-/g, "")}`;
+
+    // Criando um novo documento dentro da subcoleção "Ferias"
+    await userDocRef.collection("Ferias").doc(registroId).set({
+      date,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log("Férias registradas com sucesso no Firestore.");
+    return res.status(201).json({ message: "Férias registradas com sucesso", registroId });
+  } catch (error) {
+    console.error("Erro ao registrar férias:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
 
 
 module.exports = { getUserInfo, verifyToken, createUser, registerEntry, 
                   registerLeave, getUserRecords, getUsersByEntity, userDetails, 
                   checkEntry, checkLeave, updateUserTime, updateFirstLogin,
-                  updateUserDetails };
+                  updateUserDetails, createVacation };
