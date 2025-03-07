@@ -745,9 +745,71 @@ const createVacation = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+const deleteRegister = async (req, res) => {
+  try {
+    console.log("🔹 Recebendo requisição para deletar registro...");
+    const { username, date } = req.body;
+
+    if (!username || !date) {
+      console.log("❌ Erro: Nome de usuário e data são obrigatórios.");
+      return res.status(400).json({ error: "O nome de usuário e a data são obrigatórios" });
+    }
+
+    let userId = username
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "-");
+
+    console.log("🗑️ Apagando registros para usuário:", userId, "na data:", date);
+
+    const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
+    console.log("📌 Referência ao documento do usuário obtida:", userDocRef.path);
+    
+    const registrosRef = userDocRef.collection("Registros");
+    const feriasRef = userDocRef.collection("Ferias");
+
+    console.log("📌 Buscando registros na coleção 'Registros'...");
+    const snapshotRegistros = await registrosRef
+      .where("timestamp", ">=", new Date(date))
+      .where("timestamp", "<", new Date(new Date(date).setDate(new Date(date).getDate() + 1)))
+      .get();
+
+    console.log("📌 Buscando registros na coleção 'Ferias'...");
+    const snapshotFerias = await feriasRef
+      .where("date", "==", date)
+      .get();
+
+    console.log("📌 Registros encontrados:", snapshotRegistros.size, "| Férias encontradas:", snapshotFerias.size);
+
+    if (snapshotRegistros.empty && snapshotFerias.empty) {
+      console.log("⚠️ Nenhum registro encontrado para a data informada");
+      return res.status(404).json({ error: "Nenhum registro encontrado para a data informada" });
+    }
+
+    const batch = db.batch();
+    snapshotRegistros.forEach((doc) => {
+      console.log("🗑️ Deletando registro:", doc.id);
+      batch.delete(doc.ref);
+    });
+    snapshotFerias.forEach((doc) => {
+      console.log("🗑️ Deletando registro de férias:", doc.id);
+      batch.delete(doc.ref);
+    });
+
+    console.log("🔄 Executando batch delete...");
+    await batch.commit();
+
+    console.log("✅ Registros apagados com sucesso.");
+    return res.status(200).json({ message: "Registros apagados com sucesso" });
+  } catch (error) {
+    console.error("❌ Erro ao apagar registros:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
 
 
 module.exports = { getUserInfo, verifyToken, createUser, registerEntry, 
                   registerLeave, getUserRecords, getUsersByEntity, userDetails, 
                   checkEntry, checkLeave, updateUserTime, updateFirstLogin,
-                  updateUserDetails, createVacation };
+                  updateUserDetails, createVacation, deleteRegister };

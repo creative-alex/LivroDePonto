@@ -371,6 +371,7 @@ th {
 tbody tr {
   border-bottom: 1px solid #ddd;
   transition: background 0.3s ease;
+  cursor: pointer;
 }
 
 tbody tr:hover {
@@ -576,4 +577,13 @@ thead th {
 
 .cancel-button:hover {
   background-color: #d32f2f;
+}
+
+.context-menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 }

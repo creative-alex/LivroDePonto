@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import ExportExcel from "./ExportExcel";
 import { calcularHoras, formatarMinutos } from "../../../components/Hours/calcHours";
+import RegisterVacation from "../buttons/registerVacationButton";
+import DeleteRegister from "../buttons/deleteRegisterButton";
 
 const feriadosPorto = [
   "01-01", "25-04", "01-05", "10-06", "15-08", "05-10", "01-11", "01-12", "08-12", "25-12"
@@ -11,15 +13,14 @@ const TableHours = ({ username, month }) => {
   const [totais, setTotais] = useState({ totalHoras: "0h 0m", totalExtras: "0h 0m", totalFaltas: "0h 0m" });
   const [editando, setEditando] = useState(null);
   const [novoValor, setNovoValor] = useState("");
-  const [ferias, setFerias] = useState([]);
   const [contextMenu, setContextMenu] = useState(null);
+  
 
   useEffect(() => {
     if (!username || !month) return;
 
     const fetchData = async () => {
       try {
-        console.log("🔄 Buscando dados para", username, "no mês", month);
 
         const response = await fetch("http://localhost:4005/users/calendar", {
           method: "POST",
@@ -27,12 +28,18 @@ const TableHours = ({ username, month }) => {
           body: JSON.stringify({ username, month }),
         });
 
-        console.log("📩 Resposta recebida:", response);
 
         const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
         let totalMinutos = 0;
         let totalMinutosExtras = 0;
         let totalMinutosFaltas = 0;
+
+        setTotais({
+          totalHoras:  "0h 0m",
+          totalExtras:  "0h 0m",
+          totalFaltas: "0h 0m",
+        });
+        
 
         let novosDados = Array.from({ length: diasNoMes }, (_, i) => ({
           dia: `${String(i + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`,
@@ -45,7 +52,6 @@ const TableHours = ({ username, month }) => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("✅ Dados recebidos:", data);
           const registros = Array.isArray(data.registros) ? data.registros : [];
           const ferias = Array.isArray(data.ferias) ? data.ferias : [];
 
@@ -77,7 +83,7 @@ const TableHours = ({ username, month }) => {
               };
             } else if (!estaDeFerias && dataAtual < hoje && dataAtual.toDateString() !== hoje.toDateString() && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
               totalMinutosFaltas += 480;
-              return { ...item, total: "0h 0m" };
+              return { ...item, horaEntrada: "-", horaSaida: "-", total: "0h 0m", extra: "0h 0m" };
             }
           
             return item;
@@ -86,19 +92,12 @@ const TableHours = ({ username, month }) => {
           
         }
 
-        console.log("📊 Totais calculados:", {
-          totalHoras: totalMinutos,
-          totalExtras: totalMinutosExtras,
-          totalFaltas: totalMinutosFaltas
-        });
-
         setTotais({
           totalHoras: formatarMinutos(totalMinutos),
           totalExtras: formatarMinutos(totalMinutosExtras),
           totalFaltas: formatarMinutos(totalMinutosFaltas)
         });
 
-        console.log("📌 Dados finais para renderização:", novosDados);
         setDados(novosDados);
       } catch (error) {
         console.error("❌ Erro ao buscar horários:", error);
@@ -111,7 +110,6 @@ const TableHours = ({ username, month }) => {
   }, [username, month]);
 
   const ativarEdicao = (index, campo, valorAtual) => {
-    console.log("✏️ Editando:", { index, campo, valorAtual });
     setEditando({ index, campo });
     setNovoValor(valorAtual === "-" ? "" : valorAtual);
   };
@@ -144,39 +142,40 @@ const TableHours = ({ username, month }) => {
     setEditando(null);
   };
 
-  const marcarFerias = async (index) => {
-    const dia = dados[index].dia;
-    if (!ferias.includes(dia)) {
-      console.log("🌴 Marcando férias para o dia:", dia);
-      try {
-        const response = await fetch("http://localhost:4005/users/vacation", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, date: dia }),
-        });
-
-        console.log("📩 Resposta do servidor para férias:", response);
-        setFerias([...ferias, dia]);
-        setDados((prevDados) => prevDados.map((item, i) => i === index ? { ...item, isFerias: true, total: "-" } : item));
-
-        setTotais((prev) => ({
-          ...prev,
-          totalFaltas: formatarMinutos(Math.max(0, Number(prev.totalFaltas.replace("h", "").replace("m", "").trim()) - 480))
-        }));
-      } catch (error) {
-        console.error("❌ Erro ao marcar férias:", error);
-      }
-    }
-    setEditando(null);
+  const abrirContextMenu = (event, index) => {
+    event.preventDefault();
+    setContextMenu({
+      x: event.pageX, // Usa pageX para considerar o scroll
+      y: event.pageY, // Usa pageY para evitar deslocamento
+      index,
+      dia: dados[index].dia,
+      isFerias: dados[index].isFerias
+    });
   };
   
+    
   return (
     <>
-      {contextMenu && (
-        <div className="context-menu" style={{ top: contextMenu.y, left: contextMenu.x }}>
-          <button onClick={() => { marcarFerias(contextMenu.index); setContextMenu(null); }}>Marcar como Férias</button>
-        </div>
-      )}
+     {contextMenu && (
+  <div
+    style={{
+      position: "absolute",
+      top: contextMenu.y,
+      left: contextMenu.x,
+      background: "#fff",
+      border: "1px solid #ccc",
+      padding: "8px",
+      boxShadow: "0px 0px 10px rgba(0,0,0,0.2)",
+      zIndex: 1000
+    }}
+    onClick={() => setContextMenu(null)} // Fecha ao clicar dentro
+  >
+    <RegisterVacation username={username} date={contextMenu.dia} />
+    <DeleteRegister username={username} date={contextMenu.dia} />
+    <button>Cancelar</button>
+  </div>
+)}
+
       <div className="table-container">
         <table>
           <thead>
@@ -190,12 +189,8 @@ const TableHours = ({ username, month }) => {
           </thead>
           <tbody>
             {dados.map((item, index) => (
-              <tr key={index} onContextMenu={(e) => {
-                e.preventDefault();
-                if (item.total === "0h 0m") {
-                  setContextMenu({ x: e.pageX, y: e.pageY, index });
-                }
-              }}>
+             <tr key={index} onContextMenu={(e) => abrirContextMenu(e, index)}
+              >
                 <td>{item.dia}</td>
                 <td onClick={() => ativarEdicao(index, "horaEntrada", item.horaEntrada)}>
                   {editando?.index === index && editando?.campo === "horaEntrada" ? (
