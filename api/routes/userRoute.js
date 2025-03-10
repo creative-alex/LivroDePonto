@@ -30,7 +30,7 @@ router.post("/update-time", updateUserTime);
 router.post("/updateFirstLogin", updateFirstLogin);
 router.post("/updateUserDetails", updateUserDetails);
 router.post("/vacation", createVacation);
-router.post("/deleteRegister", deleteRegister);
+router.delete("/deleteRegister", deleteRegister);
 
 module.exports = router;
 

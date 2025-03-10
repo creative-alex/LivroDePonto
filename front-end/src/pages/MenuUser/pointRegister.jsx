@@ -77,7 +77,7 @@ const TableHours = ({ username, month }) => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 5000);
+    const interval = setInterval(fetchData, 60000);
     return () => clearInterval(interval);
   }, [username, month]);
 

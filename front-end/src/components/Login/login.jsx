@@ -26,7 +26,7 @@ const Login = ({ onLoginSuccess }) => {
     };
 
     // Verifica mudanças no localStorage a cada 500ms
-    const interval = setInterval(checkLocalStorage, 5000);
+    const interval = setInterval(checkLocalStorage, 60000);
 
     return () => clearInterval(interval);
   }, [userName]);

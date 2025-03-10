@@ -4,7 +4,6 @@ const NovaEntidade = () => {
   const [nome, setNome] = useState('');
   const [morada, setMorada] = useState('');
   const [nif, setNif] = useState('');
-  const [nColaboradores, setNColaboradores] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

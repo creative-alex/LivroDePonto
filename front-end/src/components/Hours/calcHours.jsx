@@ -10,7 +10,7 @@ export const calcularHoras = (entrada, saida) => {
   
     let minutosTrabalhados = (hSaida * 60 + mSaida) - (hEntrada * 60 + mEntrada);
     if (minutosTrabalhados > 300) {
-      minutosTrabalhados -= 60;
+      minutosTrabalhados -= 30;
     }
   
     let minutosNormais = Math.min(minutosTrabalhados, 480);

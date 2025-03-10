@@ -231,9 +231,6 @@ const registerEntry = async (req, res) => {
     const dd = String(today.getDate()).padStart(2, "0");
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const yyyy = today.getFullYear();
-    const hh = String(today.getHours()).padStart(2, "0");
-    const min = String(today.getMinutes()).padStart(2, "0");
-    const ss = String(today.getSeconds()).padStart(2, "0");
 
     // Criando um ID único para o registro baseado na data e hora
     const registroId = `registro_${dd}${mm}${yyyy}`;
@@ -769,29 +766,34 @@ const deleteRegister = async (req, res) => {
     const registrosRef = userDocRef.collection("Registros");
     const feriasRef = userDocRef.collection("Ferias");
 
-    console.log("📌 Buscando registros na coleção 'Registros'...");
-    const snapshotRegistros = await registrosRef
-      .where("timestamp", ">=", new Date(date))
-      .where("timestamp", "<", new Date(new Date(date).setDate(new Date(date).getDate() + 1)))
-      .get();
+    // Converter data do formato "01-01" para "DDMMYYYY"
+    const formatDateForRegister = (date) => {
+      const [day, month] = date.split("-");
+      const year = new Date().getFullYear();
+      return `${day}${month}${year}`;
+    };
+
+    const formattedDate = formatDateForRegister(date);
+    const registroId = `registro_${formattedDate}`;
+
+    console.log("📌 Buscando registro com ID:", registroId);
+    const registroDoc = await registrosRef.doc(registroId).get();
 
     console.log("📌 Buscando registros na coleção 'Ferias'...");
-    const snapshotFerias = await feriasRef
-      .where("date", "==", date)
-      .get();
+    const snapshotFerias = await feriasRef.where("date", "==", date).get();
 
-    console.log("📌 Registros encontrados:", snapshotRegistros.size, "| Férias encontradas:", snapshotFerias.size);
+    console.log("📌 Registros encontrados:", registroDoc.exists ? 1 : 0, "| Férias encontradas:", snapshotFerias.size);
 
-    if (snapshotRegistros.empty && snapshotFerias.empty) {
+    if (!registroDoc.exists && snapshotFerias.empty) {
       console.log("⚠️ Nenhum registro encontrado para a data informada");
       return res.status(404).json({ error: "Nenhum registro encontrado para a data informada" });
     }
 
     const batch = db.batch();
-    snapshotRegistros.forEach((doc) => {
-      console.log("🗑️ Deletando registro:", doc.id);
-      batch.delete(doc.ref);
-    });
+    if (registroDoc.exists) {
+      console.log("🗑️ Deletando registro:", registroId);
+      batch.delete(registroDoc.ref);
+    }
     snapshotFerias.forEach((doc) => {
       console.log("🗑️ Deletando registro de férias:", doc.id);
       batch.delete(doc.ref);
@@ -807,7 +809,6 @@ const deleteRegister = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
 
 module.exports = { getUserInfo, verifyToken, createUser, registerEntry, 
                   registerLeave, getUserRecords, getUsersByEntity, userDetails, 
