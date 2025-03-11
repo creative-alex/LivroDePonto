@@ -3,6 +3,7 @@ import EditButton from '../buttons/editEntityButton';
 import ShowTimeLine from '../buttons/showTimelineButton';
 import TimeLine from './timeline';
 import EntidadeSelect from '../combobox/allEntitiesSelect';
+import DeleteUser from '../buttons/deleteUser';
 
 const UserDetails = ({ userName }) => {
   const [userDetails, setUserDetails] = useState(null);
@@ -34,7 +35,7 @@ const UserDetails = ({ userName }) => {
         if (!response.ok) {
           const errorMessage = await response.text();
           console.log("❌ Erro na resposta:", errorMessage);
-          throw new Error(errorMessage || "Erro ao buscar dados do usuário");
+          throw new Error(errorMessage || "Erro ao buscar dados do user");
         }
   
         const data = await response.json();
@@ -56,6 +57,24 @@ const UserDetails = ({ userName }) => {
 
   const handleShowTimeLine = () => {
     setShowMonths(true);
+  };
+
+  const handleDeleteClick = async () =>{
+    try {
+      const response = await fetch(`http://localhost:4005/users/deleteUser`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ userName }),
+      });
+
+      if (!response.ok){
+        const errorMessage = await response.text();
+        console.log("Erro na resposta:", errorMessage);
+        throw new Error(errorMessage || "Erro ao apagar user");
+      }
+    } catch (err) {
+      console.log("Erro ao eliminar user")
+    }
   };
 
   const handleSelectMonth = (month) => {
@@ -180,6 +199,8 @@ const UserDetails = ({ userName }) => {
             <EditButton onClick={handleEditClick} />
             <ShowTimeLine onClick={handleShowTimeLine} />
           </div>
+          <DeleteUser onClick={handleDeleteClick} />            
+
   
           {showMonths && (
             <div>

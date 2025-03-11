@@ -228,7 +228,7 @@ const TableHours = ({ username, month }) => {
           </tbody>
         </table>
       </div>
-      <ExportExcel month={month} username={username} dados={data} totais={totais} />
+      <ExportExcel month={month} username={username} dados={dados} totais={totais} />
     </>
   );
 };

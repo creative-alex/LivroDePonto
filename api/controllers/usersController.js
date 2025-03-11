@@ -748,7 +748,7 @@ const deleteRegister = async (req, res) => {
     const { username, date } = req.body;
 
     if (!username || !date) {
-      console.log("❌ Erro: Nome de usuário e data são obrigatórios.");
+      console.log("❌ Erro: UserName e data são obrigatórios.");
       return res.status(400).json({ error: "O nome de usuário e a data são obrigatórios" });
     }
 
@@ -809,8 +809,73 @@ const deleteRegister = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+const deleteUser = async (req, res) => {
+  const { userName } = req.body;
+  console.log(req.body);
+
+  if (!userName) {
+    console.log("Erro: UserName obrigatório.");
+    return res.status(400).json({ error: "O UserName é obrigatório" });
+  }
+
+  let userId = userName
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/\s+/g, "-");
+
+  console.log("A apagar user", userId, "e os seus dados");
+
+  try {
+    const userDocRef = db.collection("users").doc(userId);
+    const userDoc = await userDocRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    const userEmail = userDoc.data().email;
+
+    if (!userEmail) {
+      return res.status(404).json({ error: "Email do usuário não encontrado." });
+    }
+
+    const registroPontoRef = db.collection("registro-ponto").doc(userId);
+    const userRegRef = registroPontoRef.collection("Registro");
+    const userFerRef = registroPontoRef.collection("Férias");
+
+    // Deleta os subdocumentos de Registro
+    const registroSnapshot = await userRegRef.get();
+    const deleteRegistros = registroSnapshot.docs.map((doc) => doc.ref.delete());
+    await Promise.all(deleteRegistros);
+
+    // Deleta os subdocumentos de Férias
+    const feriasSnapshot = await userFerRef.get();
+    const deleteFerias = feriasSnapshot.docs.map((doc) => doc.ref.delete());
+    await Promise.all(deleteFerias);
+
+    // Deleta os documentos principais
+    await registroPontoRef.delete();
+    await userDocRef.delete();
+
+    // Deleta o usuário do Authentication
+    await admin.auth().getUserByEmail(userEmail).then(async (userRecord) => {
+      await admin.auth().deleteUser(userRecord.uid);
+    });
+
+    console.log("Utilizador", userId, "apagado com sucesso.");
+    return res.status(200).json({ message: "Utilizador apagado com sucesso." });
+  } catch (error) {
+    console.error("Erro ao apagar utilizador:", error);
+    return res.status(500).json({ error: "Erro ao apagar utilizador." });
+  }
+};
+
+
+
 
 module.exports = { getUserInfo, verifyToken, createUser, registerEntry, 
                   registerLeave, getUserRecords, getUsersByEntity, userDetails, 
                   checkEntry, checkLeave, updateUserTime, updateFirstLogin,
-                  updateUserDetails, createVacation, deleteRegister };
+                  updateUserDetails, createVacation, deleteRegister,
+                  deleteUser };

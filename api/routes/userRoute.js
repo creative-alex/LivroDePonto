@@ -15,6 +15,7 @@ const { updateFirstLogin } = require('../controllers/usersController');
 const { updateUserDetails } = require('../controllers/usersController');
 const { createVacation } = require('../controllers/usersController');
 const { deleteRegister } = require('../controllers/usersController');
+const { deleteUser } = require('../controllers/usersController');
 
 router.post("/userDetails", userDetails);
 router.post('/getUserRole', getUserInfo);
@@ -31,6 +32,7 @@ router.post("/updateFirstLogin", updateFirstLogin);
 router.post("/updateUserDetails", updateUserDetails);
 router.post("/vacation", createVacation);
 router.delete("/deleteRegister", deleteRegister);
+router.post("/deleteUser", deleteUser);
 
 module.exports = router;
 
