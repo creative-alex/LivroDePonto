@@ -1,7 +1,6 @@
 import ExcelJS from "exceljs";
 
 const ExportExcel = ({ dados, totais, username, month }) => {
-
   const getMonthName = (monthNumber) => {
     const months = [
       "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
@@ -14,132 +13,101 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     const wb = new ExcelJS.Workbook();
     const ws = wb.addWorksheet("Registro de Ponto");
 
-    // Estilizando cabeçalhos
+    // Cabeçalhos
     const headerRow = ws.addRow([
-      "Dia/Mês", "Hora Entrada", "Pausa", "Hora Saída", "Total Horas Normais", "Total Horas Extra", "Justificação de Atraso/Falta", "Assinatura Colaborador/a"
+      "Dia/Mês", "Hora Entrada", "Pausa", "Hora Saída", "Total Horas Normais", 
+      "Total Horas Extra", "Justificação de Atraso/Falta", "Assinatura Colaborador/a"
     ]);
+
     headerRow.eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FF0070C0" },
-      };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0070C0" } };
       cell.alignment = { horizontal: "center", vertical: "middle" };
-      cell.border = {
-        top: { style: "thin" },
-        left: { style: "thin" },
-        bottom: { style: "thin" },
-        right: { style: "thin" },
-      };
+      cell.border = { top: { style: "thin" }, left: { style: "thin" }, bottom: { style: "thin" }, right: { style: "thin" } };
     });
 
-    // Adicionando os dados
+    // Dados
     dados.forEach((rowData) => {
-      console.log(dados);
+      console.log("Processando dia:", rowData.dia);
+      console.log("Entrada:", rowData.horaEntrada, "Saída:", rowData.horaSaida);
+    
       let totalHoras = rowData.total || "";
       let horasExtra = rowData.extra || "";
       let justificativa = "";
-
+    
       if (totalHoras === "Férias" || horasExtra === "Férias") {
         totalHoras = "0h 0m";
         horasExtra = "0h 0m";
         justificativa = "Férias";
       }
-
+    
+      if (dados.horaEntrada && dados.horaSaida) { 
+        console.log("Definindo pausa para 30 min.");
+        rowData.pausa = "30 min.";
+      } else {
+        console.log("Sem entrada e saída registradas, não definindo pausa.");
+      }
+    
       const row = ws.addRow([
         rowData.dia || "",
-        rowData.entrada || "",
-        rowData.pausa || "",  
-        rowData.saida || "",
+        rowData.horaEntrada || "",
+        rowData.pausa || "",  // Aqui deveria aparecer "30 min."
+        rowData.horaSaida || "",
         totalHoras,
         horasExtra,
         justificativa,
         ""
       ]);
-      
-
-      row.eachCell((cell, colNumber) => {
+    
+      row.eachCell((cell) => {
         cell.alignment = { horizontal: "center", vertical: "middle" };
-        cell.border = {
-          top: { style: "thin" },
-          left: { style: "thin" },
-          bottom: { style: "thin" },
-          right: { style: "thin" },
+        cell.border = { 
+          top: { style: "thin" }, 
+          left: { style: "thin" }, 
+          bottom: { style: "thin" }, 
+          right: { style: "thin" } 
         };
       });
     });
+    
+    
+    
 
-    // Linha vazia
+    // Espaço e Assinatura RH
+    ws.addRow([]);
+    ws.addRow([]);
+    ws.addRow([]);
+    ws.addRow(["", "", "", "", "Assinatura RH:", "_____________________________________________________________________"]);
     ws.addRow([]);
 
-    // Assinatura RH antes da tabela de totais
-    ws.addRow(["", "", "", "", "Assinatura RH:", "____________________________________"]);
-    const assinaturaRow = ws.lastRow;
-    assinaturaRow.eachCell((cell, colNumber) => {
-      if (colNumber === 5) {
-        cell.font = { bold: true };
-      }
+    // Totais
+    ws.addRow(["Descrição", "Total"]).eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0070C0" } };
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+      cell.border = { top: { style: "thin" }, left: { style: "thin" }, bottom: { style: "thin" }, right: { style: "thin" } };
     });
 
-    // Linha vazia
-    ws.addRow([]);
-
-    // Criando tabela de totais estilizada
-    const totalHeaders = ["Descrição", "Total"];
-    const totalValues = [
+    [
       ["Total de Horas", totais.totalHoras],
       ["Horas Extras", totais.totalExtras],
-      ["Horas Faltadas", totais.totalFaltas],
-    ];
-    
-    const totalHeaderRow = ws.addRow(totalHeaders);
-    totalHeaderRow.eachCell((cell) => {
-      cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FF0070C0" },
-      };
-      cell.alignment = { horizontal: "center", vertical: "middle" };
-      cell.border = {
-        top: { style: "thin" },
-        left: { style: "thin" },
-        bottom: { style: "thin" },
-        right: { style: "thin" },
-      };
-    });
-
-    totalValues.forEach((row) => {
-      const dataRow = ws.addRow(row);
-      dataRow.eachCell((cell) => {
+      ["Dias de Falta", totais.diasDeFalta],
+      ["Dias de Férias", totais.diasDeFerias]
+    ].forEach((row) => {
+      ws.addRow(row).eachCell((cell) => {
         cell.alignment = { horizontal: "center", vertical: "middle" };
-        cell.border = {
-          top: { style: "thin" },
-          left: { style: "thin" },
-          bottom: { style: "thin" },
-          right: { style: "thin" },
-        };
+        cell.border = { top: { style: "thin" }, left: { style: "thin" }, bottom: { style: "thin" }, right: { style: "thin" } };
       });
     });
 
-    // Ajustando larguras das colunas
+    // Ajustando colunas
     ws.columns = [
-      { width: 15 }, // Dia/Mês
-      { width: 15 }, // Hora Entrada
-      { width: 10 }, // Pausa
-      { width: 15 }, // Hora Saída
-      { width: 20 }, // Total Horas Normais
-      { width: 15 }, // Total Horas Extra
-      { width: 30 }, // Justificação de Atraso/Falta
-      { width: 25 }, // Assinatura Colaborador/a
+      { width: 15 }, { width: 15 }, { width: 10 }, { width: 15 }, 
+      { width: 20 }, { width: 15 }, { width: 30 }, { width: 25 }
     ];
     
-
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-
-    // Converter número do mês para nome
     const monthName = getMonthName(month);
     const fileName = `Registro_${monthName}_${username}.xlsx`;
 

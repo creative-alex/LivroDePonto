@@ -10,12 +10,11 @@ const feriadosPorto = [
 
 const TableHours = ({ username, month }) => {
   const [dados, setDados] = useState([]);
-  const [totais, setTotais] = useState({ totalHoras: "0h 0m", totalExtras: "0h 0m", totalFaltas: "0h 0m" });
+  const [totais, setTotais] = useState({totalHoras: "0h 0m", totalExtras: "0h 0m", diasFalta: 0, diasFerias: 0});  
   const [editando, setEditando] = useState(null);
   const [novoValor, setNovoValor] = useState("");
   const [contextMenu, setContextMenu] = useState(null);
   
-
   useEffect(() => {
     if (!username || !month) return;
   
@@ -78,11 +77,16 @@ const TableHours = ({ username, month }) => {
           return item;
         });
   
+        const diasFalta = novosDados.filter(d => d.total === "0h 0m" && !d.isFerias).length;
+        const diasFerias = novosDados.filter(d => d.isFerias).length;
+
         setTotais({
           totalHoras: formatarMinutos(totalMinutos),
           totalExtras: formatarMinutos(totalMinutosExtras),
-          totalFaltas: formatarMinutos(totalMinutosFaltas),
+          diasFalta,
+          diasFerias
         });
+
   
         setDados(novosDados);
       } catch (error) {
@@ -98,14 +102,11 @@ const TableHours = ({ username, month }) => {
     fetchData();
     const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
-  }, [username, month]);
-  
-
+  }, [username, month]); 
   const ativarEdicao = (index, campo, valorAtual) => {
     setEditando({ index, campo });
     setNovoValor(valorAtual === "-" ? "" : valorAtual);
   };
-
   const salvarEdicao = async (index) => {
     if (!novoValor) return;
     console.log("💾 Salvando edição para:", { index, campo: editando.campo, novoValor });
@@ -133,7 +134,6 @@ const TableHours = ({ username, month }) => {
 
     setEditando(null);
   };
-
   const abrirContextMenu = (event, index) => {
     event.preventDefault();
     setContextMenu({
@@ -143,22 +143,16 @@ const TableHours = ({ username, month }) => {
       dia: dados[index].dia,
       isFerias: dados[index].isFerias
     });
-  };
-  
+  };  
+  console.log("📂 Dados recebidos pelo botão de exportação:", { month, username, dados, totais });  
     
   return (
     <>
      {contextMenu && (
   <div className="context-menu"
     style={{
-      position: "absolute",
       top: contextMenu.y,
       left: contextMenu.x,
-      background: "#fff",
-      border: "1px solid #ccc",
-      padding: "8px",
-      boxShadow: "0px 0px 10px rgba(0,0,0,0.2)",
-      zIndex: 1000
     }}
     onClick={() => setContextMenu(null)} 
   >
@@ -222,8 +216,12 @@ const TableHours = ({ username, month }) => {
               <td><strong>{totais.totalExtras}</strong></td>
             </tr>
             <tr>
-              <td colSpan="3"><strong>Horas Faltadas</strong></td>
-              <td colSpan="2"><strong>{totais.totalFaltas}</strong></td>
+              <td colSpan="3"><strong>Dias de Falta</strong></td>
+              <td colSpan="2"><strong>{totais.diasFalta}</strong></td>
+            </tr>
+            <tr>
+              <td colSpan="3"><strong>Dias de Férias</strong></td>
+              <td colSpan="2"><strong>{totais.diasFerias}</strong></td>
             </tr>
           </tbody>
         </table>

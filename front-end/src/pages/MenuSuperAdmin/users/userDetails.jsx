@@ -21,6 +21,10 @@ const UserDetails = ({ userName }) => {
       return;
     }
   
+    // 🔴 Resetando os estados ao mudar de utilizador
+    setShowMonths(false);
+    setSelectedMonth(null);
+  
     const fetchUserDetails = async () => {
       setLoading(true);
       setError(null);
@@ -40,10 +44,9 @@ const UserDetails = ({ userName }) => {
   
         const data = await response.json();
         
-        // Adicionando `oldNome` para manter o nome antigo
         setUserDetails(data);
         setEditedData({ ...data, oldNome: data.nome });
-        
+  
       } catch (err) {
         console.log("🚨 Erro capturado:", err.message);
         setError(err);
@@ -53,7 +56,8 @@ const UserDetails = ({ userName }) => {
     };
   
     fetchUserDetails();
-  }, [userName]);
+  }, [userName ]); 
+  
 
   const handleShowTimeLine = () => {
     setShowMonths(true);
