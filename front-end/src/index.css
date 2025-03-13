@@ -613,3 +613,26 @@ thead th {
 .context-menu button:hover {
   background: #f0f0f0;
 }
+
+
+.del {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #e63946;
+  background: none;
+  color: #e63946;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-radius: 5px;
+}
+
+.del:hover {
+  background: #e63946;
+  color: #fff;
+}
+
+.del:focus {
+  outline: none;
+}

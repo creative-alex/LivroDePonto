@@ -11,7 +11,7 @@ const ExportExcel = ({ dados, totais, username, month }) => {
 
   const exportToExcel = async () => {
     const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet("Registro de Ponto");
+    const ws = wb.addWorksheet("registo de Ponto");
 
     // Cabeçalhos
     const headerRow = ws.addRow([
@@ -28,37 +28,38 @@ const ExportExcel = ({ dados, totais, username, month }) => {
 
     // Dados
     dados.forEach((rowData) => {
-      console.log("Processando dia:", rowData.dia);
-      console.log("Entrada:", rowData.horaEntrada, "Saída:", rowData.horaSaida);
     
       let totalHoras = rowData.total || "";
       let horasExtra = rowData.extra || "";
       let justificativa = "";
     
       if (totalHoras === "Férias" || horasExtra === "Férias") {
-        totalHoras = "0h 0m";
-        horasExtra = "0h 0m";
+        totalHoras = "-";
+        horasExtra = "-";
         justificativa = "Férias";
-      }
-    
-      if (dados.horaEntrada && dados.horaSaida) { 
-        console.log("Definindo pausa para 30 min.");
+      } 
+      if ((rowData.horaEntrada && rowData.horaSaida) === "Férias") {
+        rowData.horaEntrada = "-";
+        rowData.horaSaida = "-"
+     }    
+      if ((rowData.horaEntrada && rowData.horaSaida) !== "-" ){ 
         rowData.pausa = "30 min.";
-      } else {
-        console.log("Sem entrada e saída registradas, não definindo pausa.");
-      }
+    } 
+    else {
+      rowData.pausa = "-";
+    } 
     
-      const row = ws.addRow([
+    const row = ws.addRow([
         rowData.dia || "",
         rowData.horaEntrada || "",
-        rowData.pausa || "",  // Aqui deveria aparecer "30 min."
+        rowData.pausa || "",  
         rowData.horaSaida || "",
         totalHoras,
         horasExtra,
         justificativa,
         ""
-      ]);
-    
+    ]);   
+      
       row.eachCell((cell) => {
         cell.alignment = { horizontal: "center", vertical: "middle" };
         cell.border = { 
@@ -68,11 +69,8 @@ const ExportExcel = ({ dados, totais, username, month }) => {
           right: { style: "thin" } 
         };
       });
-    });
-    
-    
-    
-
+      console.log("--------------")
+    });    
     // Espaço e Assinatura RH
     ws.addRow([]);
     ws.addRow([]);
@@ -109,7 +107,7 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const monthName = getMonthName(month);
-    const fileName = `Registro_${monthName}_${username}.xlsx`;
+    const fileName = `registo_${monthName}_${username}.xlsx`;
 
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);

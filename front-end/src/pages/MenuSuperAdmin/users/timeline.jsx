@@ -40,14 +40,14 @@ const TableHours = ({ username, month }) => {
           isFerias: false,
         }));
   
-        const data = response.ok ? await response.json() : { registros: [], ferias: [] };
-        const registros = Array.isArray(data.registros) ? data.registros : [];
+        const data = response.ok ? await response.json() : { registos: [], ferias: [] };
+        const registos = Array.isArray(data.registos) ? data.registos : [];
         const ferias = Array.isArray(data.ferias) ? data.ferias : [];
   
         const hoje = new Date();
   
         novosDados = novosDados.map((item, index) => {
-          const registro = registros.find((r) => new Date(r.timestamp).getDate() === index + 1);
+          const registo = registos.find((r) => new Date(r.timestamp).getDate() === index + 1);
           const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
           const diaSemana = dataAtual.getDay();
           const feriado = feriadosPorto.includes(`${String(index + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`);
@@ -57,15 +57,15 @@ const TableHours = ({ username, month }) => {
             return { ...item, horaEntrada: "Férias", horaSaida: "Férias", total: "Férias", extra: "Férias", isFerias: true };
           }
   
-          if (registro) {
-            const { total, extra, minutos, minutosExtras, minutosFalta } = calcularHoras(registro.horaEntrada, registro.horaSaida);
+          if (registo) {
+            const { total, extra, minutos, minutosExtras, minutosFalta } = calcularHoras(registo.horaEntrada, registo.horaSaida);
             totalMinutos += minutos;
             totalMinutosExtras += minutosExtras;
             totalMinutosFaltas += minutosFalta;
             return {
               ...item,
-              horaEntrada: registro.horaEntrada || "-",
-              horaSaida: registro.horaSaida || "-",
+              horaEntrada: registo.horaEntrada || "-",
+              horaSaida: registo.horaSaida || "-",
               total,
               extra,
             };
@@ -100,7 +100,7 @@ const TableHours = ({ username, month }) => {
     };
   
     fetchData();
-    const interval = setInterval(fetchData, 5000);
+    const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, [username, month]); 
   const ativarEdicao = (index, campo, valorAtual) => {
@@ -144,7 +144,6 @@ const TableHours = ({ username, month }) => {
       isFerias: dados[index].isFerias
     });
   };  
-  console.log("📂 Dados recebidos pelo botão de exportação:", { month, username, dados, totais });  
     
   return (
     <>
