@@ -1,32 +1,40 @@
-import React, { useState, useEffect, useContext } from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import Login from './components/Login/login';
-import FirstLoginComponent from './components/Login/firstLogin';
-import Logout from './components/LogoutButton/logoutButton';
-import NovaEntidade from './pages/MenuSuperAdmin/entities/newEntity/newEntity';
-import CreateEntityButton from './pages/MenuSuperAdmin/buttons/createEntityButton';
-import ShowAllEntitiesButton from './pages/MenuSuperAdmin/buttons/showEntitiesButton';
-import AllEntities from './pages/MenuSuperAdmin/entities/allEntities/allEntities';
-import NewUserButton from './pages/MenuSuperAdmin/buttons/newUserButton';
-import NewUser from './pages/MenuSuperAdmin/users/newUser';
-import RegisterEntry from './pages/MenuUser/buttons/entryRegisterButton';
-import RegisterLeave from './pages/MenuUser/buttons/exitRegisterButton';
-import TableHours from './pages/MenuUser/pointRegister';
-import ShowRegister from './pages/MenuUser/buttons/showRegisterButton';
-import reportWebVitals from './reportWebVitals';
-import { UserProvider, UserContext } from './context/UserContext';
+import React, { useState, useEffect, useContext } from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import "./index.css";
+import Login from "./components/Login/login";
+import FirstLoginComponent from "./components/Login/firstLogin";
+import Logout from "./components/LogoutButton/logoutButton";
+import NovaEntidade from "./pages/MenuSuperAdmin/entities/newEntity/newEntity";
+import AllEntities from "./pages/MenuSuperAdmin/entities/allEntities/allEntities";
+import NewUser from "./pages/MenuSuperAdmin/users/newUser";
+import RegisterEntry from "./pages/MenuUser/buttons/entryRegisterButton";
+import RegisterLeave from "./pages/MenuUser/buttons/exitRegisterButton";
+import TableHours from "./pages/MenuUser/pointRegister";
+import { UserProvider, UserContext } from "./context/UserContext";
+
+const AdminMenu = () => {
+  const navigate = useNavigate();
+  return (
+    <>
+      <div className="button-container">
+        <button className="show-ent" onClick={() => navigate("/entidades")}>Ver Entidades</button>
+        <button className="show-ent" onClick={() => navigate("/nova-entidade")}>Criar Entidade</button>
+        <button className="show-ent" onClick={() => navigate("/novo-usuario")}>Criar Usuário</button>
+      </div>
+      <Logout onClick={() => navigate("/logout")} />
+    </>
+  );
+};
 
 const App = () => {
   const { setUsername, username, setUserEmail, userEmail } = useContext(UserContext);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [activePage, setActivePage] = useState(null);
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [isFirstLogin, setIsFirstLogin] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const { nome, role, email, firstLogin } = JSON.parse(storedUser);
       setUsername(nome);
@@ -39,7 +47,7 @@ const App = () => {
 
   const handleLoginSuccess = (role, nome, firstLogin, email) => {
     const userData = { nome, role, email, firstLogin };
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData));
     setUsername(nome);
     setUserEmail(email);
     setIsLoggedIn(true);
@@ -48,51 +56,49 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
     setIsAdmin(false);
-    setActivePage(null);
     setUsername(null);
     setUserEmail(null);
     setIsFirstLogin(false);
   };
 
-  return isLoggedIn ? (
-    isFirstLogin && !isAdmin ? (
-      <FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />
-    ) : isAdmin ? (
-      <>
-        <div className="button-container">
-          <ShowAllEntitiesButton onClick={() => setActivePage('allEntities')} />
-          <CreateEntityButton onClick={() => setActivePage('newEntity')} />
-          <NewUserButton onClick={() => setActivePage('newUser')} />
-        </div>
-        {activePage === 'allEntities' && <AllEntities />}
-        {activePage === 'newEntity' && <NovaEntidade />}
-        {activePage === 'newUser' && <NewUser />}
-        <Logout onClick={handleLogout} />
-      </>
-    ) : (
-      <>
-        <div className="button-container">
-          <RegisterEntry username={username} />
-          <RegisterLeave username={username} isSuperAdmin="SuperAdmin" />
-          <ShowRegister onClick={() => setActivePage('allregister')} />
-        </div>
-        {activePage === 'allregister' && <TableHours username={username} month={currentMonth} />}
-        <Logout onClick={handleLogout} />
-      </>
-    )
-  ) : (
-    <Login onLoginSuccess={handleLoginSuccess} />
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={isLoggedIn ? <Navigate to={isAdmin ? "/admin" : "/home"} /> : <Login onLoginSuccess={handleLoginSuccess} />} />
+
+        {isLoggedIn && isFirstLogin && !isAdmin && (
+          <Route path="/first-login" element={<FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />} />
+        )}
+
+        {isLoggedIn && isAdmin && (
+          <>
+            <Route path="/admin" element={<AdminMenu />} />
+            <Route path="/entidades" element={<AllEntities />} />
+            <Route path="/nova-entidade" element={<NovaEntidade />} />
+            <Route path="/novo-usuario" element={<NewUser />} />
+          </>
+        )}
+
+        {isLoggedIn && !isAdmin && (
+          <>
+            <Route path="/home" element={<RegisterEntry username={username} />} />
+            <Route path="/registrar-saida" element={<RegisterLeave username={username} />} />
+            <Route path="/horas" element={<TableHours username={username} />} />
+          </>
+        )}
+
+        <Route path="/logout" element={<Logout onClick={handleLogout} />} />
+      </Routes>
+    </Router>
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <UserProvider>
     <App />
   </UserProvider>
 );
-
-reportWebVitals();
