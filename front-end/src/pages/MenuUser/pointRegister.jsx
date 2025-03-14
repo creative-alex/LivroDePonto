@@ -31,8 +31,8 @@ const TableHours = ({ username, month }) => {
 
         if (!response.ok) throw new Error("Erro na resposta da API");
 
-        const { registos = [], ferias = [] } = await response.json();
-        console.log("Registos recebidos:", registos);
+        const { registros = [], ferias = [] } = await response.json();
+        console.log("Registos recebidos:", registros);
 
         const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
         console.log("Número de dias no mês:", diasNoMes);
@@ -58,7 +58,7 @@ const TableHours = ({ username, month }) => {
             const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
             const diaSemana = dataAtual.getDay();
             const feriado = feriadosPorto.includes(item.dia);
-            const registo = registos.find((r) => new Date(r.timestamp).getDate() === index + 1);
+            const registo = registros.find((r) => new Date(r.timestamp).getDate() === index + 1);
 
             console.log(`Processando dia ${index + 1}:`, { dataAtual, diaSemana, feriado, registo });
 

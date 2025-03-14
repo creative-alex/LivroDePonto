@@ -34,20 +34,19 @@ const ExportExcel = ({ dados, totais, username, month }) => {
       let justificativa = "";
     
       if (totalHoras === "Férias" || horasExtra === "Férias") {
-        totalHoras = "-";
-        horasExtra = "-";
+        rowData.pausa = "Férias";
         justificativa = "Férias";
       } 
-      if ((rowData.horaEntrada && rowData.horaSaida) === "Férias") {
-        rowData.horaEntrada = "-";
-        rowData.horaSaida = "-"
-     }    
-      if ((rowData.horaEntrada && rowData.horaSaida) !== "-" ){ 
+         
+      if (rowData.horaEntrada === "Férias" || rowData.horaSaida === "Férias") {
+        rowData.pausa = "Férias";
+    } else if (rowData.horaEntrada !== "-" && rowData.horaSaida !== "-") {
         rowData.pausa = "30 min.";
-    } 
-    else {
-      rowData.pausa = "-";
-    } 
+    } else {
+        rowData.pausa = "-";
+    }
+    
+      
     
     const row = ws.addRow([
         rowData.dia || "",
@@ -89,8 +88,8 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     [
       ["Total de Horas", totais.totalHoras],
       ["Horas Extras", totais.totalExtras],
-      ["Dias de Falta", totais.diasDeFalta],
-      ["Dias de Férias", totais.diasDeFerias]
+      ["Dias de Falta", totais.diasFalta],
+      ["Dias de Férias", totais.diasFerias]
     ].forEach((row) => {
       ws.addRow(row).eachCell((cell) => {
         cell.alignment = { horizontal: "center", vertical: "middle" };

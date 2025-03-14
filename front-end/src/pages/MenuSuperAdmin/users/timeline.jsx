@@ -29,7 +29,6 @@ const TableHours = ({ username, month }) => {
         const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
         let totalMinutos = 0;
         let totalMinutosExtras = 0;
-        let totalMinutosFaltas = 0;
   
         let novosDados = Array.from({ length: diasNoMes }, (_, i) => ({
           dia: `${String(i + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`,
@@ -41,7 +40,7 @@ const TableHours = ({ username, month }) => {
         }));
   
         const data = response.ok ? await response.json() : { registos: [], ferias: [] };
-        const registos = Array.isArray(data.registos) ? data.registos : [];
+        const registos = Array.isArray(data.registros) ? data.registros : [];
         const ferias = Array.isArray(data.ferias) ? data.ferias : [];
   
         const hoje = new Date();
@@ -58,10 +57,9 @@ const TableHours = ({ username, month }) => {
           }
   
           if (registo) {
-            const { total, extra, minutos, minutosExtras, minutosFalta } = calcularHoras(registo.horaEntrada, registo.horaSaida);
+            const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
             totalMinutos += minutos;
             totalMinutosExtras += minutosExtras;
-            totalMinutosFaltas += minutosFalta;
             return {
               ...item,
               horaEntrada: registo.horaEntrada || "-",
@@ -70,7 +68,6 @@ const TableHours = ({ username, month }) => {
               extra,
             };
           } else if (!estaDeFerias && dataAtual < hoje && dataAtual.toDateString() !== hoje.toDateString() && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
-            totalMinutosFaltas += 480;
             return { ...item, horaEntrada: "-", horaSaida: "-", total: "0h 0m", extra: "0h 0m" };
           }
   

@@ -28,9 +28,8 @@ const UserList = ({ entityName }) => {
   useEffect(() => {
     if (entityName) {
       fetchEmployees();
-      const interval = setInterval(fetchEmployees, 120000); 
-      return () => clearInterval(interval);
     }
+    console.log("------")
   }, [entityName]);
 
   if (error) return <p style={{ color: "red" }}>⚠ Erro: {error}</p>;
