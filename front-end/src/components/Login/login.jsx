@@ -54,7 +54,7 @@ const Login = ({ onLoginSuccess }) => {
       console.log("Email antes da requisição:", email);
 
   
-      // Obtém o papel e nome do usuário
+      // Obtém o papel e nome do user
       const roleResponse = await fetch("http://localhost:4005/users/getUserRole", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -62,7 +62,7 @@ const Login = ({ onLoginSuccess }) => {
       });
       
       const roleData = await roleResponse.json();
-      if (!roleResponse.ok) throw new Error(roleData.message || "Erro ao obter informações do usuário");
+      if (!roleResponse.ok) throw new Error(roleData.message || "Erro ao obter informações do user");
       
       // Passa o papel, nome e isFirstLogin para o App
       onLoginSuccess(roleData.role, roleData.nome, roleData.isFirstLogin, user.email);

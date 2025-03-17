@@ -84,7 +84,7 @@ const getUserInfo = async (req, res) => {
     const querySnapshot = await db.collection('users').where('email', '==', email).get();
 
     if (querySnapshot.empty) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
+      return res.status(404).json({ message: 'user não encontrado' });
     }
 
     const userData = querySnapshot.docs[0].data();
@@ -96,8 +96,8 @@ const getUserInfo = async (req, res) => {
       isFirstLogin: isSuperAdmin ? false : (userData.isFirstLogin ?? true), // SuperAdmins nunca veem a tela de primeiro login
     });
   } catch (error) {
-    console.error('Erro ao buscar usuário:', error.message);
-    res.status(500).json({ message: 'Erro ao buscar usuário' });
+    console.error('Erro ao buscar user:', error.message);
+    res.status(500).json({ message: 'Erro ao buscar user' });
   }
 };
 const updateFirstLogin = async (req, res) => {
@@ -112,31 +112,31 @@ const updateFirstLogin = async (req, res) => {
       return res.status(400).json({ message: "Email e nova senha são obrigatórios" });
     }
 
-    // Buscar o usuário no Firebase Authentication
-    console.log("Buscando usuário no Firebase Authentication:", userEmail);
+    // Buscar o user no Firebase Authentication
+    console.log("Buscando user no Firebase Authentication:", userEmail);
     const userRecord = await admin.auth().getUserByEmail(userEmail);
 
     if (!userRecord) {
-      console.log("Usuário não encontrado no Firebase Authentication");
-      return res.status(404).json({ message: "Usuário não encontrado" });
+      console.log("user não encontrado no Firebase Authentication");
+      return res.status(404).json({ message: "user não encontrado" });
     }
 
-    console.log("Usuário encontrado:", userRecord.uid);
+    console.log("user encontrado:", userRecord.uid);
 
     // Atualizar senha no Firebase Authentication
-    console.log("Atualizando senha para o usuário:", userRecord.uid);
+    console.log("Atualizando senha para o user:", userRecord.uid);
     await admin.auth().updateUser(userRecord.uid, {
       password: newPassword,
     });
     console.log("Senha atualizada com sucesso");
 
     // Atualizar isFirstLogin no Firestore
-    console.log("Buscando usuário no Firestore pelo email:", userEmail);
+    console.log("Buscando user no Firestore pelo email:", userEmail);
     const userQuery = await db.collection("users").where("email", "==", userEmail).get();
 
     if (!userQuery.empty) {
       const userId = userQuery.docs[0].id;
-      console.log("Usuário encontrado no Firestore com ID:", userId);
+      console.log("user encontrado no Firestore com ID:", userId);
 
       console.log("Atualizando isFirstLogin para false no Firestore");
       await db.collection("users").doc(userId).update({
@@ -144,7 +144,7 @@ const updateFirstLogin = async (req, res) => {
       });
       console.log("isFirstLogin atualizado com sucesso");
     } else {
-      console.log("Usuário não encontrado no Firestore");
+      console.log("user não encontrado no Firestore");
     }
 
     console.log("Processo concluído com sucesso");
@@ -162,12 +162,12 @@ const userDetails = async (req, res) => {
       return res.status(400).json({ error: "O campo userName é obrigatório." });
     }
 
-    // Buscar usuário no Firestore
+    // Buscar user no Firestore
     const usersRef = db.collection("users");
     const snapshot = await usersRef.where("nome", "==", userName).limit(1).get();
 
     if (snapshot.empty) {
-      return res.status(404).json({ error: "Usuário não encontrado." });
+      return res.status(404).json({ error: "user não encontrado." });
     }
 
     const userDoc = snapshot.docs[0];
@@ -203,8 +203,8 @@ const userDetails = async (req, res) => {
 
     res.json(userDetails);
   } catch (error) {
-    console.error("🚨 Erro ao buscar detalhes do usuário:", error);
-    res.status(500).json({ error: "Erro ao buscar detalhes do usuário." });
+    console.error("🚨 Erro ao buscar detalhes do user:", error);
+    res.status(500).json({ error: "Erro ao buscar detalhes do user." });
   }
 };
 const registerEntry = async (req, res) => {
@@ -236,9 +236,9 @@ const registerEntry = async (req, res) => {
     const registroId = `registro_${dd}${mm}${yyyy}`;
 
 
-    console.log("Registrando entrada para o usuário:", userId);
+    console.log("Registrando entrada para o user:", userId);
 
-    // Referência ao documento do usuário dentro da coleção "registro-ponto"
+    // Referência ao documento do user dentro da coleção "registro-ponto"
     const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
 
     // Criando um novo documento dentro da subcoleção "Registros"
@@ -261,7 +261,7 @@ const checkEntry = async (req, res) => {
     const { username } = req.body;
     
     if (!username) {
-      console.log("Erro: Nome de usuário ausente.");
+      console.log("Erro: Nome de user ausente.");
       return res.status(400).json({ error: "Faltam campos obrigatórios: nome" });
     }
 
@@ -321,7 +321,7 @@ const registerLeave = async (req, res) => {
 
     console.log("Buscando documento de entrada no Firestore...");
 
-    // Referência à subcoleção "Registros" do usuário
+    // Referência à subcoleção "Registros" do user
     const registrosRef = db.collection("registro-ponto").doc(`user_${userId}`).collection("Registros");
 
     // Procurar o registro mais recente do dia atual
@@ -362,7 +362,7 @@ const checkLeave = async (req, res) => {
     const { username } = req.body;
 
     if (!username) {
-      console.log("Erro: Nome de usuário ausente.");
+      console.log("Erro: Nome de user ausente.");
       return res.status(400).json({ error: "Faltam campos obrigatórios: nome" });
     }
 
@@ -404,8 +404,8 @@ const getUserRecords = async (req, res) => {
   try {
     const { username, month } = req.body;
     if (!username || !month) {
-      console.log("❌ Erro: Nome de usuário e mês são obrigatórios.");
-      return res.status(400).json({ error: "O nome de usuário e o mês são obrigatórios" });
+      console.log("❌ Erro: Nome de user e mês são obrigatórios.");
+      return res.status(400).json({ error: "O nome de user e o mês são obrigatórios" });
     }
 
 
@@ -486,7 +486,7 @@ const getUserRecords = async (req, res) => {
 
     return res.status(200).json({ registros, ferias: feriasDates });
   } catch (error) {
-    console.error("❌ Erro ao buscar registros de usuário:", error);
+    console.error("❌ Erro ao buscar registros de user:", error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -555,7 +555,7 @@ const updateUserTime = async (req, res) => {
 
     return res.status(200).json({ message: "Horário atualizado com sucesso" });
   } catch (error) {
-    console.error("Erro ao atualizar horário do usuário:", error);
+    console.error("Erro ao atualizar horário do user:", error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -582,7 +582,7 @@ const getUsersByEntity = async (req, res) => {
 
 
     if (snapshot.empty) {
-      console.log("Nenhum usuário encontrado para essa entidade.");
+      console.log("Nenhum user encontrado para essa entidade.");
       return res.status(200).json([]);
     }
 
@@ -596,8 +596,8 @@ const getUsersByEntity = async (req, res) => {
 
     return res.status(200).json(users);
   } catch (error) {
-    console.error("Erro ao buscar usuários por entidade:", error);
-    return res.status(500).json({ error: "Erro ao buscar usuários." });
+    console.error("Erro ao buscar users por entidade:", error);
+    return res.status(500).json({ error: "Erro ao buscar users." });
   }
 };
 const updateUserDetails = async (req, res) => {
@@ -618,31 +618,40 @@ const updateUserDetails = async (req, res) => {
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "") 
-      .replace(/\s+/g, "-"); 
+      .replace(/\s+/g, "-");
 
     const entidadeRef = `entidades/${entidadeId}`;
 
     const usersRef = db.collection("users");
-    console.log("🔍 Buscando usuário com email:", email);
+    console.log("🔍 Buscando user com email:", email);
     const querySnapshot = await usersRef.where("email", "==", email).get();
 
     if (querySnapshot.empty) {
-      console.log("❌ Usuário não encontrado para o email:", email);
-      return res.status(404).json({ error: "Usuário não encontrado." });
+      console.log("❌ user não encontrado para o email:", email);
+      return res.status(404).json({ error: "user não encontrado." });
     }
 
     const userDoc = querySnapshot.docs[0];
     const userId = userDoc.id;
     const userData = userDoc.data();
 
-    console.log("✅ Usuário encontrado! ID:", userId);
+    console.log("✅ user encontrado! ID:", userId);
+
+    // Criar userId baseado apenas no nome (substituindo espaços por "-")
+    const formatUserId = (name) => {
+      return `user_${name
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+        .replace(/\s+/g, "-")}`; // Substitui espaços por "-"
+    };
+
+    const newUserId = formatUserId(nome);
 
     if (oldNome !== nome) {
-      console.log("🆕 Nome alterado, criando novo usuário...");
+      console.log("🆕 Nome alterado, criando novo user...");
 
-      // Criar novo usuário
-      const newUserRef = usersRef.doc();
-      const newUserId = newUserRef.id;
+      const newUserRef = usersRef.doc(newUserId);
 
       const newUserData = {
         ...userData,
@@ -658,32 +667,54 @@ const updateUserDetails = async (req, res) => {
       }
 
       await newUserRef.set(newUserData);
-      console.log("✅ Novo usuário criado com sucesso! ID:", newUserId);
+      console.log("✅ Novo user criado com sucesso! ID:", newUserId);
 
-      // Transferir registros de ponto para o novo usuário
-      const oldRegistrosRef = db.collection(`registro-ponto/${userId}/Registros`);
-      const newRegistrosRef = db.collection(`registro-ponto/${newUserId}/Registros`);
+      // Referências para os registros de ponto e férias
+      const oldUserRef = db.collection("registro-ponto").doc(userId);
+      const newUserRegistroRef = db.collection("registro-ponto").doc(newUserId);
 
-      const registrosSnapshot = await oldRegistrosRef.get();
+      // Função para copiar subcoleções
+      const copySubcollection = async (subcollectionName) => {
+        const oldSubcollectionRef = oldUserRef.collection(subcollectionName);
+        const newSubcollectionRef = newUserRegistroRef.collection(subcollectionName);
 
-      if (!registrosSnapshot.empty) {
-        console.log("🔄 Transferindo registros de ponto...");
+        const snapshot = await oldSubcollectionRef.get();
 
-        const batch = db.batch();
-        registrosSnapshot.forEach((doc) => {
-          const newDocRef = newRegistrosRef.doc(doc.id);
-          batch.set(newDocRef, doc.data());
-        });
+        if (!snapshot.empty) {
+          console.log(`🔄 Copiando ${subcollectionName}...`);
+          const batch = db.batch();
 
-        await batch.commit();
-        console.log("✅ Registros de ponto transferidos!");
-      } else {
-        console.log("⚠ Nenhum registro de ponto para transferir.");
-      }
+          snapshot.forEach((doc) => {
+            const newDocRef = newSubcollectionRef.doc(doc.id);
+            batch.set(newDocRef, doc.data());
+          });
 
-      // Remover usuário antigo
-      await usersRef.doc(userId).delete();
-      console.log("🗑 Usuário antigo removido!");
+          await batch.commit();
+          console.log(`✅ ${subcollectionName} copiados para o novo usuário!`);
+        } else {
+          console.log(`⚠ Nenhum dado encontrado na subcoleção ${subcollectionName}.`);
+        }
+      };
+
+      // ✅ Copiar registros de ponto e férias
+      await copySubcollection("Registros");
+      await copySubcollection("Ferias");
+
+      // 🗑 Remover usuário antigo e seus registros
+      console.log("🗑 Removendo usuário antigo...");
+      const batchDelete = db.batch();
+
+      const oldRegistrosSnapshot = await oldUserRef.collection("Registros").get();
+      oldRegistrosSnapshot.forEach((doc) => batchDelete.delete(doc.ref));
+
+      const oldFeriasSnapshot = await oldUserRef.collection("Ferias").get();
+      oldFeriasSnapshot.forEach((doc) => batchDelete.delete(doc.ref));
+
+      batchDelete.delete(oldUserRef);
+      batchDelete.delete(usersRef.doc(userId));
+
+      await batchDelete.commit();
+      console.log("✅ Usuário antigo e registros removidos!");
 
       return res.status(200).json({ message: "Usuário atualizado com novo ID com sucesso." });
     } else {
@@ -721,9 +752,9 @@ const createVacation = async (req, res) => {
       .replace(/\p{Diacritic}/gu, "")
       .replace(/\s+/g, "-");
 
-    console.log("Registrando férias para o usuário:", userId);
+    console.log("Registrando férias para o user:", userId);
 
-    // Referência ao documento do usuário dentro da coleção "registro-ponto"
+    // Referência ao documento do user dentro da coleção "registro-ponto"
     const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
     
     // Criando um ID único para o registro baseado na data
@@ -749,7 +780,7 @@ const deleteRegister = async (req, res) => {
 
     if (!username || !date) {
       console.log("❌ Erro: UserName e data são obrigatórios.");
-      return res.status(400).json({ error: "O nome de usuário e a data são obrigatórios" });
+      return res.status(400).json({ error: "O nome de user e a data são obrigatórios" });
     }
 
     let userId = username
@@ -758,10 +789,10 @@ const deleteRegister = async (req, res) => {
       .replace(/\p{Diacritic}/gu, "")
       .replace(/\s+/g, "-");
 
-    console.log("🗑️ Apagando registros para usuário:", userId, "na data:", date);
+    console.log("🗑️ Apagando registros para user:", userId, "na data:", date);
 
     const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
-    console.log("📌 Referência ao documento do usuário obtida:", userDocRef.path);
+    console.log("📌 Referência ao documento do user obtida:", userDocRef.path);
     
     const registrosRef = userDocRef.collection("Registros");
     const feriasRef = userDocRef.collection("Ferias");
@@ -831,13 +862,13 @@ const deleteUser = async (req, res) => {
     const userDoc = await userDocRef.get();
 
     if (!userDoc.exists) {
-      return res.status(404).json({ error: "Usuário não encontrado." });
+      return res.status(404).json({ error: "user não encontrado." });
     }
 
     const userEmail = userDoc.data().email;
 
     if (!userEmail) {
-      return res.status(404).json({ error: "Email do usuário não encontrado." });
+      return res.status(404).json({ error: "Email do user não encontrado." });
     }
 
     const registroPontoRef = db.collection("registro-ponto").doc(userId);
@@ -858,7 +889,7 @@ const deleteUser = async (req, res) => {
     await registroPontoRef.delete();
     await userDocRef.delete();
 
-    // Deleta o usuário do Authentication
+    // Deleta o user do Authentication
     await admin.auth().getUserByEmail(userEmail).then(async (userRecord) => {
       await admin.auth().deleteUser(userRecord.uid);
     });

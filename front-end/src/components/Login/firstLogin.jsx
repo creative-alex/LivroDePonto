@@ -10,7 +10,7 @@ const FirstLoginComponent = ({ onComplete }) => {
   const handlePasswordChange = async () => {
     try {
       if (!userEmail) {
-        throw new Error("Erro: Usuário não encontrado.");
+        throw new Error("Erro: user não encontrado.");
       }
       
       console.log("Email enviado:", userEmail); // 🔍 Verifica o email antes da requisição

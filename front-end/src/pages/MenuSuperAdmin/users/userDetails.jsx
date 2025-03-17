@@ -112,7 +112,7 @@ const UserDetails = ({ userName }) => {
         body: JSON.stringify(editedData), 
       });
   
-      if (!response.ok) throw new Error("Erro ao atualizar usuário");
+      if (!response.ok) throw new Error("Erro ao atualizar user");
   
       const updatedData = await response.json();
       setIsEditing(false);

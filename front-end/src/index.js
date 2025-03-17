@@ -20,7 +20,7 @@ const AdminMenu = () => {
       <div className="button-container">
         <button className="show-ent" onClick={() => navigate("/entidades")}>Ver Entidades</button>
         <button className="show-ent" onClick={() => navigate("/nova-entidade")}>Criar Entidade</button>
-        <button className="show-ent" onClick={() => navigate("/novo-usuario")}>Criar Usuário</button>
+        <button className="show-ent" onClick={() => navigate("/novo-user")}>Criar User</button>
       </div>
       <Logout onClick={() => navigate("/logout")} />
     </>

@@ -101,7 +101,7 @@ const Calendario = ({userName}) => {
         <div>
           <h3>Registro de Ponto</h3>
           <p>Data: {selectedDate}</p>
-          <p>Usuário: {userName}</p>
+          <p>user: {userName}</p>
 
           {modalType === "entry" && (
             <div>

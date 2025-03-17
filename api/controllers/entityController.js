@@ -40,9 +40,11 @@ const createEntity = async (req, res) => {
 };
 const updateEntity = async (req, res) => {
   try {
-    const { oldName, nome, morada, nif, nColaboradores } = req.body;
+    const { oldName, nome, morada, nif } = req.body;
 
-    if (!oldName || !nome || !morada || !nif || nColaboradores === undefined) {
+    console.log("kkkkkk")
+
+    if (!oldName || !nome || !morada || !nif ) {
       return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
     }
 
@@ -64,7 +66,6 @@ const updateEntity = async (req, res) => {
       nome,
       morada,
       nif,
-      nColaboradores,
       updatedAt: new Date(),
     };
 
@@ -72,29 +73,29 @@ const updateEntity = async (req, res) => {
       console.log('Nome não mudou, atualizando entidade...');
       await entityRef.update(data);
     } else {
-      console.log('Criando nova entidade e atualizando usuários...');
+      console.log('Criando nova entidade e atualizando users...');
 
       // Criar nova entidade com o novo ID
       await db.doc(newEntityId).set(data);
 
-      // Atualizar usuários que possuem referência à entidade antiga
+      // Atualizar users que possuem referência à entidade antiga
       const usersRef = db.collection('users');
       const usersSnapshot = await usersRef.where('entidade', '==', oldEntityId).get();
 
 
       if (usersSnapshot.empty) {
-        console.log('Nenhum usuário encontrado para atualizar!');
+        console.log('Nenhum user encontrado para atualizar!');
       }
 
       const batch = db.batch();
       usersSnapshot.forEach((doc) => {
         const userRef = usersRef.doc(doc.id);
-        console.log(`Atualizando usuário ${doc.id} para nova entidade: ${newEntityId}`);
+        console.log(`Atualizando user ${doc.id} para nova entidade: ${newEntityId}`);
         batch.update(userRef, { entidade: newEntityId });
       });
 
       await batch.commit();
-      console.log('Usuários atualizados com sucesso!');
+      console.log('users atualizados com sucesso!');
 
       // Deletar entidade antiga
       await entityRef.delete();
@@ -138,16 +139,16 @@ const entityDetails = async (req, res) => {
 
     // Gera o ID padronizado
     const entityId = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
-
+    
     // Busca a entidade na coleção "entidades"
     const entityRef = db.collection("entidades").doc(entityId);
     const entitySnapshot = await entityRef.get();
 
     if (!entitySnapshot.exists) {
       return res.status(404).json({ error: "Entidade não encontrada." });
-    }
+    } 
 
-    // Contar usuários que fazem referência à entidade
+    // Contar users que fazem referência à entidade
     const usersRef = db.collection('users');
     const usersSnapshot = await usersRef.where('entidade', '==', `entidades/${entityId}`).get();
     const userCount = usersSnapshot.size;

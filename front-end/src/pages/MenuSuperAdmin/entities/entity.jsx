@@ -19,6 +19,7 @@ const Entity = ({ entityName }) => {
         body: JSON.stringify({ name: entityName }),
       });
 
+      console.log(response)
       if (!response.ok) throw new Error("Erro ao buscar detalhes da entidade");
 
       const data = await response.json();
@@ -51,6 +52,7 @@ const Entity = ({ entityName }) => {
   };
 
   const handleSubmitClick = async () => {
+    window.location.href = window.location.href;
     try {
       const response = await fetch("http://localhost:4005/entity/updateEntity", {
         method: "POST",

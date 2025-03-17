@@ -16,9 +16,11 @@ const fetchEntities = async (setEntities, setEntityCount, setError) => {
 
     const data = await response.json();
 
+    console.log(data, "entities")
+
     // Se for um objeto, converte para array
     if (typeof data === "object" && !Array.isArray(data)) {
-      setEntities(Object.values(data.entityNames)); // Extrai os valores do objeto
+      setEntities(Object.values(data.entityNames)); 
       setEntityCount(data.entityCount);
     } else if (Array.isArray(data)) {
       setEntities(data);
