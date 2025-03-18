@@ -6,12 +6,13 @@ import Login from "./components/Login/login";
 import FirstLoginComponent from "./components/Login/firstLogin";
 import Logout from "./components/LogoutButton/logoutButton";
 import NovaEntidade from "./pages/MenuSuperAdmin/entities/newEntity/newEntity";
-import AllEntities from "./pages/MenuSuperAdmin/entities/allEntities/allEntities";
+import { AllEntities, EntityDetail } from "./pages/MenuSuperAdmin/entities/allEntities/allEntities";
 import NewUser from "./pages/MenuSuperAdmin/users/newUser";
 import RegisterEntry from "./pages/MenuUser/buttons/entryRegisterButton";
 import RegisterLeave from "./pages/MenuUser/buttons/exitRegisterButton";
 import TableHours from "./pages/MenuUser/pointRegister";
 import { UserProvider, UserContext } from "./context/UserContext";
+import UserList from "./pages/MenuSuperAdmin/users/userList";
 
 const AdminMenu = () => {
   const navigate = useNavigate();
@@ -68,20 +69,19 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={isLoggedIn ? <Navigate to={isAdmin ? "/admin" : "/home"} /> : <Login onLoginSuccess={handleLoginSuccess} />} />
-
         {isLoggedIn && isFirstLogin && !isAdmin && (
           <Route path="/first-login" element={<FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />} />
         )}
-
         {isLoggedIn && isAdmin && (
           <>
             <Route path="/admin" element={<AdminMenu />} />
             <Route path="/entidades" element={<AllEntities />} />
+            <Route path="/entidades/:entityName" element={<EntityDetail />} />
+            <Route path="/entidades/:entityName/users" element={<UserList />} />
             <Route path="/nova-entidade" element={<NovaEntidade />} />
-            <Route path="/novo-usuario" element={<NewUser />} />
+            <Route path="/novo-user" element={<NewUser />} />
           </>
         )}
-
         {isLoggedIn && !isAdmin && (
           <>
             <Route path="/home" element={<RegisterEntry username={username} />} />
@@ -89,7 +89,6 @@ const App = () => {
             <Route path="/horas" element={<TableHours username={username} />} />
           </>
         )}
-
         <Route path="/logout" element={<Logout onClick={handleLogout} />} />
       </Routes>
     </Router>

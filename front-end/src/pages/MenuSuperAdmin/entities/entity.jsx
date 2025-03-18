@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import EditButton from "../buttons/editEntityButton";
 import ShowEmployeesButton from "../buttons/ShowEmployeesButton";
-import UserDetails from "../users/userList";
 
 const Entity = ({ entityName }) => {
   const [entityData, setEntityData] = useState(null);
@@ -9,7 +9,8 @@ const Entity = ({ entityName }) => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState(null);
-  const [showEmployees, setShowEmployees] = useState(false);
+
+  const navigate = useNavigate(); // Hook para navegação
 
   const fetchEntityData = async () => {
     try {
@@ -19,7 +20,6 @@ const Entity = ({ entityName }) => {
         body: JSON.stringify({ name: entityName }),
       });
 
-      console.log(response)
       if (!response.ok) throw new Error("Erro ao buscar detalhes da entidade");
 
       const data = await response.json();
@@ -27,21 +27,17 @@ const Entity = ({ entityName }) => {
       setEditedData(data);
       setOldName(data.nome);
     } catch (err) {
-      console.error("Error fetching entity data:", err.message);
+      console.error("Erro ao buscar dados da entidade:", err.message);
       setError(err.message);
     }
   };
 
   useEffect(() => {
     if (!entityName) return;
-    setShowEmployees(false);
     fetchEntityData();
   }, [entityName]);
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
+  const handleEditClick = () => setIsEditing(true);
   const handleCancelClick = () => {
     setIsEditing(false);
     setEditedData(entityData);
@@ -52,7 +48,6 @@ const Entity = ({ entityName }) => {
   };
 
   const handleSubmitClick = async () => {
-    window.location.href = window.location.href;
     try {
       const response = await fetch("http://localhost:4005/entity/updateEntity", {
         method: "POST",
@@ -65,19 +60,19 @@ const Entity = ({ entityName }) => {
       const updatedData = await response.json();
       setIsEditing(false);
       setOldName(updatedData.nome);
-      await fetchEntityData(); // Recarrega os dados da entidade após a atualização
+      await fetchEntityData(); // Atualiza os dados da entidade após a edição
     } catch (err) {
-      console.error("Error updating entity data:", err.message);
+      console.error("Erro ao atualizar entidade:", err.message);
       setError(err.message);
     }
   };
 
   const handleShowEmployeesClick = () => {
-    setShowEmployees(true);
+    navigate(`/entidades/${entityName}/users`);
   };
 
   if (error) return <p style={{ color: "red" }}>⚠ Erro: {error}</p>;
-  if (!entityData) return <p></p>;
+  if (!entityData) return <p>Carregando...</p>;
 
   return (
     <div className="entidade-container">
@@ -104,8 +99,6 @@ const Entity = ({ entityName }) => {
           </div>
         </div>
       )}
-
-         {showEmployees && <UserDetails entityName={entityData.nome} userCount={entityData.userCount} />}
     </div>
   );
 };

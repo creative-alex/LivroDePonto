@@ -1,42 +1,39 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import UserDetails from "./userDetails";
 
-const UserList = ({ entityName }) => {
+const UserList = () => {
+  const { entityName } = useParams();
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
   const [selectedUserName, setSelectedUserName] = useState(null);
 
-  const fetchEmployees = async () => {
-    console.log("Botão clicado! Fazendo requisição...");
-    try {
-      const response = await fetch("http://localhost:4005/users/byEntity", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entidadeNome: entityName }),
-      });
-
-      if (!response.ok) throw new Error("Erro ao buscar colaboradores");
-
-      const data = await response.json();
-      setEmployees(data);
-    } catch (err) {
-      console.error("Error fetching employees:", err.message);
-      setError(err.message);
-    }
-  };
-
   useEffect(() => {
-    if (entityName) {
-      fetchEmployees();
-    }
-    console.log("------")
+    const fetchEmployees = async () => {
+      try {
+        const response = await fetch("http://localhost:4005/users/byEntity", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ entidadeNome: entityName }),
+        });
+
+        if (!response.ok) throw new Error("Erro ao buscar colaboradores");
+
+        const data = await response.json();
+        setEmployees(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    if (entityName) fetchEmployees();
   }, [entityName]);
 
   if (error) return <p style={{ color: "red" }}>⚠ Erro: {error}</p>;
 
   return (
     <div className="employees-list">
-      <h2>Colaboradores </h2>
+      <h2>Colaboradores de {entityName}</h2>
       {employees.length > 0 ? (
         <ul>
           {employees.map((employee) => (
