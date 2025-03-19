@@ -5,7 +5,7 @@ const ShowRegister = ({ onClick }) => {
 
   return (
     <>
-      <button class="show-reg" onClick={onClick}>Mostrar Registos</button>
+      <button className="show-reg" onClick={onClick}>Mostrar Registos</button>
     </>
   );
 };

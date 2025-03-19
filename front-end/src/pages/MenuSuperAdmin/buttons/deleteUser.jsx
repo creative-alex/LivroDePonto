@@ -2,7 +2,7 @@ import React from 'react';
 
 const DeleteButton = ({ onClick }) => {
   return (
-    <button class="del" onClick={onClick}>
+    <button className="del" onClick={onClick}>
       Eliminar
     </button>
   );

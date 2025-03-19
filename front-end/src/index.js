@@ -13,15 +13,16 @@ import RegisterLeave from "./pages/MenuUser/buttons/exitRegisterButton";
 import TableHours from "./pages/MenuUser/pointRegister";
 import { UserProvider, UserContext } from "./context/UserContext";
 import UserList from "./pages/MenuSuperAdmin/users/userList";
+import UserDetails from "./pages/MenuSuperAdmin/users/userDetails";
 
 const AdminMenu = () => {
   const navigate = useNavigate();
   return (
     <>
-      <div className="button-container">
-        <button className="show-ent" onClick={() => navigate("/entidades")}>Ver Entidades</button>
-        <button className="show-ent" onClick={() => navigate("/nova-entidade")}>Criar Entidade</button>
-        <button className="show-ent" onClick={() => navigate("/novo-user")}>Criar User</button>
+      <div className="flex-center button-container">
+        <button className="gradient-border" onClick={() => navigate("/entidades")}>Ver Entidades</button>
+        <button className="gradient-border" onClick={() => navigate("/nova-entidade")}>Criar Entidade</button>
+        <button className="gradient-border" onClick={() => navigate("/novo-user")}>Criar User</button>
       </div>
       <Logout onClick={() => navigate("/logout")} />
     </>
@@ -78,6 +79,7 @@ const App = () => {
             <Route path="/entidades" element={<AllEntities />} />
             <Route path="/entidades/:entityName" element={<EntityDetail />} />
             <Route path="/entidades/:entityName/users" element={<UserList />} />
+            <Route path="/entidades/:entityName/users/:userName" element={<UserDetails userName={username}  />} />
             <Route path="/nova-entidade" element={<NovaEntidade />} />
             <Route path="/novo-user" element={<NewUser />} />
           </>

@@ -75,7 +75,7 @@ const Entity = ({ entityName }) => {
   if (!entityData) return <p>Carregando...</p>;
 
   return (
-    <div className="entidade-container">
+    <div className="form-container gradient-border">
       <h2>Entidade Selecionada</h2>
       {isEditing ? (
         <div className="entidade-info">

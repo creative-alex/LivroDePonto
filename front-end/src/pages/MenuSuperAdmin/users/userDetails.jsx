@@ -15,6 +15,8 @@ const UserDetails = ({ userName }) => {
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [showDetails, setShowDetails] = useState(true);
 
+  console.log(userName)
+
   useEffect(() => {
     if (!userName) {
       console.log("❌ Nenhum userName fornecido, abortando requisição!");
@@ -43,6 +45,8 @@ const UserDetails = ({ userName }) => {
         }
   
         const data = await response.json();
+
+        console.log(response)
         
         setUserDetails(data);
         setEditedData({ ...data, oldNome: data.nome });
@@ -136,7 +140,7 @@ const UserDetails = ({ userName }) => {
     <div className='flex'>
        <h2 className="user-details-heading">User Details</h2>
   {isEditing ? (
-    <div className="entidade-container">
+    <div className="table-container">
       <p className="input-group">
         <strong className="input-label">Email:</strong>
         <input 
@@ -192,7 +196,7 @@ const UserDetails = ({ userName }) => {
       </div>
     </div>
       ) : (
-        <div>
+        <div className="list-container">
           <ul>
             <li><strong>Email:</strong> {userDetails.email || "N/A"}</li>
             <li><strong>Entidade:</strong> {userDetails.entidade || "N/A"}</li>

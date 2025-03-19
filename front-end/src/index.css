@@ -1,565 +1,182 @@
-/* Container do formulário */
-.login-container-unique {
+:root {
+  --primary-color: #2496ff;
+  --secondary-color: #4f90ff;
+  --success-color: #a6ff98;
+  --danger-color: #ec0402;
+  --border-gradient: linear-gradient(to bottom, var(--primary-color), var(--success-color));
+  --text-color: #333;
+  --input-border: #6fc1ff;
+  --transition: all 0.3s ease;
+}
+
+/* Classes utilitárias comuns */
+.gradient-border {
+  border: 1px solid;
+  border-image: var(--border-gradient);
+  border-image-slice: 1;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+/* Containers genéricos */
+.form-container {
   width: 100%;
   max-width: 400px;
-  margin: 50px auto;
+  margin: 25px auto;
   padding: 40px;
-  border: 1px solid;
-  border-image: linear-gradient(to bottom, #2496ff, #a6ff98);
-  border-image-slice: 1;
   border-radius: 5px;
   background: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-/* Título do formulário */
-.login-container-unique h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #2496ff;
-}
-/* Estilo dos grupos de formulário */
-.login-container-unique .form-group-unique {
+
+/* Elementos de formulário */
+.form-group {
   margin-bottom: 15px;
 }
-/* Rótulo dos inputs */
-.login-container-unique .form-group-unique label {
+
+.form-label {
   display: block;
   margin-bottom: 5px;
   font-size: 14px;
-  color: #4f90ff;
+  color: var(--secondary-color);
 }
-/* Estilo dos inputs */
-.login-container-unique .form-group-unique input {
-  width: 94%;
-  padding: 10px;
-  border: 1px solid #6fc1ff;
-  border-radius: 3px;
-  font-size: 16px;
-}
-/* Botão de login */
-.login-container-unique button[type="submit"] {
+
+.form-input{
   width: 100%;
   padding: 10px;
-  background-color: #2496ff;
-  color: #fff;
-  border: 2px solid transparent;
-  border-image-slice: 1;
+  border: 1px solid var(--input-border);
+  border-radius: 3px;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(36, 150, 255, 0.5);
+  outline: none;
+}
+
+.form-select {
+  width: 105%;
+  padding: 10px;
+  border: 1px solid var(--input-border);
+  border-radius: 3px;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  appearance: none; 
+  cursor: pointer;
+}
+
+.form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(36, 150, 255, 0.5);
+  outline: none;
+}
+
+.form-select {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 30px;
+}
+
+/* Botões */
+.btn {
+  padding: 10px 20px;
   border-radius: 3px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: var(--transition);
 }
-.login-container-unique button[type="submit"]:hover {
-  background-color: #4f90ff;
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: 2px solid transparent;
 }
-/* Container dos botões */
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  color: #fff;
+}
+
+/* Componentes específicos */
+.login-header {
+  text-align: left;
+  margin-bottom: 20px;
+  font-size: 2vw;
+  color: var(--primary-color);
+}
+
 .button-container {
   display: flex;
-  justify-self: center; 
-  gap: 10px; 
+  gap: 10px;
   margin-top: 20px;
 }
-/* Estilização base dos botões */
-.button-container button {
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #4f90ff;
-  background-color: transparent;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  height: 150px;
-  width: 150px;
-}
-/* Cores específicas para cada botão */
-.show-ent  {
-  border: 1px solid;
-  border-image: linear-gradient(to bottom, #2496ff, #a6ff98);
-  border-image-slice: 1;
-}
-/* Efeito hover */
-.button-container button:hover, #logout:hover {
-  opacity: 0.8;
-  transform: scale(1.05);
-}
-/* Responsivo */
-@media (max-width: 600px) {
 
-  .button-container{
-    width: 100%;
-    max-width: 475px;
-    height: 100px;
-    gap:5px;
-
-  }
-  
-  .button-container button {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    font-size: 12px;
-  }
-}
-
-.entity-list, .entidade-container {
-  border: 1px solid;
-  border-image: linear-gradient(to bottom, #2496ff, #a6ff98);
-  border-image-slice: 1;
-  width: 30vw;
-  display: flex;
-  justify-self: center;
-  flex-direction: column;
+.entity-card {
+  width: 40vw;
+  max-width: 350px;
   padding: 20px;
+  background: #fff;
 }
 
-.entity-list h2 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  font-weight: 100;
-  color: #2496ff ;
-  text-align: left;
-}
-
-.entity-list ul, .employees-list ul {
-  list-style: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-.entity-list li, .employees-list li {
-  font-size: 1.2rem;
+.list-item {
+  list-style-type: none;
   padding: 8px 12px;
   margin: 5px 0;
   background: #fff;
   border-radius: 5px;
   transition: transform 0.2s ease, background 0.3s ease;
+  cursor: pointer;
+  font-size: 1.5vw;
 }
 
-.entity-list li:hover, .employees-list li:hover {
+.list-item:hover {
   background: #e3e3e3;
   transform: translateX(5px);
 }
 
-/* Container do formulário */
-.nova-entidade-container-unique {
-  width: 100%;
-  max-width: 390px;
-  margin: 25px auto;
-  padding: 40px;
-  border: 1px solid;
-  border-image: linear-gradient(to bottom, #a6ff98, #ec0402);
-  border-image-slice: 1;
-  border-radius: 5px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Título do formulário */
-.nova-entidade-container-unique h2 {
-  text-align: left;
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #2496ff;
-}
-
-/* Estilo dos grupos de formulário */
-.nova-entidade-container-entidade .form-group-unique {
-  margin-bottom: 15px;
-}
-
-/* Rótulo dos inputs */
-.nova-entidade-container-entidade .form-group-unique label {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 14px;
-  color: #4f90ff;
-}
-
-/* Estilo dos inputs */
-.form-group-entidade input {
-  width: 94%;
-  padding: 10px;
-  border: 1px solid #6fc1ff;
-  border-radius: 3px;
-  font-size: 16px;
-  background-color: #f8f9fa;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.nova-entidade-container-unique .form-group-entidade input:focus {
-  border-color: #2496ff;
-  box-shadow: 0 0 5px rgba(36, 150, 255, 0.5);
-  outline: none;
-}
-
-/* Mensagem de erro */
-.nova-entidade-container-unique .error-unique {
-  color: #d8000c;
-  font-size: 14px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-/* Botão de criação */
-.nova-entidade-container-unique button[type="submit"] {
-  width: 100%;
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #2496ff;
-  color: #fff;
-  border: 2px solid transparent;
-  border-image-slice: 1;
-  border-radius: 3px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.nova-entidade-container-unique button[type="submit"]:hover {
-  background-color: #4f90ff;
-}
-
-/* Estilo do select */
-#entidade  {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #6fc1ff;
-  border-radius: 3px;
-  font-size: 16px;
-  background-color: #f8f9fa;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-
-/* Container nova entidade */
-.entidade-container {
-  
-  border-image-slice: 1;
-  background: #fff;
-}
-
-/* Título */
-.entidade-container h2 {
-  text-align: left;
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #2496ff;
-}
-
-/* Estilização dos parágrafos */
-.entidade-info p {
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-/* Inputs */
-.entidade-info input {
-  width: 90%;
-  padding: 8px;
-  margin-left: 10px;
-  border: 1px solid #6fc1ff;
-  border-radius: 3px;
-  font-size: 16px;
-  background-color: #f8f9fa;
-}
-
-.entidade-info input:focus {
-  border-color: #2496ff;
-  box-shadow: 0 0 5px rgba(36, 150, 255, 0.5);
-  outline: none;
-}
-
-/* Botões */
-.entidade-botoes, .details-buttons {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.entidade-botoes button,.edit, .show-cron {
-  flex: 1;
-  padding: 10px;
-  background-color: #2496ff;
-  color: #fff;
-  border: 2px solid transparent;
-  border-radius: 3px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.entidade-botoes button:hover {
-  background-color: #4f90ff;
-}
-
-.entidade-botoes .cancelar {
-  background-color: #d8000c;
-}
-
-.entidade-botoes .cancelar:hover {
-  background-color: #ff4c4c;
-}
-
-
-.table-container {
-  width: 100%;
-  max-width: 470px;
-  background: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 15px auto;
-  border: 1px solid;
-  border-image: linear-gradient(to bottom, #a6ff98, #ec0402);
-  border-image-slice: 1;
-  border-radius: 5px;
-}
-
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  
-}
-
-thead {
-  background: transparent;
-  color: #2496ff;
-}
-
-th, td {
-  padding: 15px;
-  text-align: center;
-  text-transform: capitalize;
-}
-
-th {
-  font-size: 16px;
-  letter-spacing: 1px;
-}
-
-tbody tr {
-  border-bottom: 1px solid #ddd;
-  transition: background 0.3s ease;
-  cursor: pointer;
-}
-
-tbody tr:hover {
-  background: #f0f8ff;
-}
-
-tbody tr:last-child {
-  border-bottom: none;
-}
-
-td {
-  font-size: 14px;
-  color: #333;
-  white-space: nowrap;
-}
-
+/* Responsividade */
 @media (max-width: 600px) {
-  th, td {
-      padding: 10px;
-      font-size: 12px;
+  .form-container {
+    padding: 20px;
+    margin: 20px auto;
+  }
+
+  .button-container {
+    flex-direction: column;
+  }
+
+  .entity-card {
+    width: 90vw;
   }
 }
 
+/* Modificadores específicos */
+.danger-border {
+  border-image: linear-gradient(to bottom, var(--success-color), var(--danger-color));
+}
 
-#logout {
-  display: flex;
-  justify-self: center;
-  align-items: center; 
-  justify-content: center;
-  margin: 25px;
-  background-color: transparent;
-  border: 1px solid;
-  border-image: linear-gradient(to bottom, #ec0402, #690000);
-  border-image-slice: 1;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #690000;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  height: 100px;
+.table-container {
   width: 100%;
-  max-width: 475px;
-}
-
-
-thead th {
-  position: sticky;
-  top: 0;
-  background: white; /* Para evitar sobreposição de fundo */
-  z-index: 10; /* Para garantir que fique sobre outros elementos */
-}
-
-.months-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
-}
-
-.months-container button {
-  background-color: #007bff;
-  color: white;
-  border: none;
   padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.months-container button:hover {
-  background-color: #0056b3;
-}
-
-.ex {
-  display: flex;
-  justify-self: center;
-  background-color: transparent; 
-  color: #ec0402;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 10px 20px;
-  border: solid 1px #ec0402;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.ex:hover {
-  background-color: #a6ff98; /* Azul mais escuro */
-  transform: scale(1.05); /* Efeito de leve aumento ao passar o mouse */
-}
-
-.ex:active {
-  background-color: #003f7f; /* Azul ainda mais escuro */
-  transform: scale(0.95)
-}
-
-.cap{
-  text-transform: capitalize;
-
-}
-
-/* Container principal */
-.user-details-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Título */
-.user-details-heading {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-/* Estilo dos grupos de entrada */
-.input-group {
-  margin-bottom: 15px;
-  width: 100%;
-}
-
-/* Estilo do rótulo */
-.input-label {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 5px;
-  display: block;
-}
-
-/* Estilo dos campos de entrada */
-.input-field {
-  width: 90%;
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
-  transition: border-color 0.3s;
-}
-
-.input-field:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-/* Estilização específica para o select dentro do entidade-container */
-.entidade-container select {
-  width: 95%;
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
-  transition: border-color 0.3s;
-}
-
-.entidade-container select:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-/* Botões */
-.button-group {
-  display: flex;
-  gap: 10px;
-}
-
-.submit-button, .cancel-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.submit-button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-}
-
-.submit-button:hover {
-  background-color: #0056b3;
-}
-
-.cancel-button {
-  background-color: #f44336;
-  color: #fff;
-  border: none;
-}
-
-.cancel-button:hover {
-  background-color: #d32f2f;
-}
-
-.context-menu {
-  position: absolute;
-  background: white;
-  border: 1px solid #ccc;
-  padding: 5px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .context-menu {
@@ -567,46 +184,7 @@ thead th {
   background: #fff;
   border: 1px solid #ccc;
   padding: 8px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   border-radius: 6px;
-}
-
-.context-menu button {
-  display: block;
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 8px 12px;
-  text-align: left;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s ease-in-out;
-}
-
-.context-menu button:hover {
-  background: #f0f0f0;
-}
-
-
-.del {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid #e63946;
-  background: none;
-  color: #e63946;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border-radius: 5px;
-}
-
-.del:hover {
-  background: #e63946;
-  color: #fff;
-}
-
-.del:focus {
-  outline: none;
 }

@@ -61,66 +61,77 @@ const NewUser = () => {
   };
 
   return (
-    <div className="nova-entidade-container-unique">
-  <h2>Criação de Novo user</h2>
-  {message && <p className="error-unique">{message}</p>}
-  <form onSubmit={handleSubmit} className="nova-entidade-container-entidade">
-    <div className="form-group-unique form-group-entidade">
-      <label htmlFor="nome">Nome:</label>
-      <input
-        type="text"
-        id="nome"
-        value={nome}
-        onChange={(e) => setNome(e.target.value)}
-        required
-      />
+    <div className="form-container gradient-border">
+      <h2>Criação de Novo User</h2>
+      {message && <p className="error-unique">{message}</p>}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="nome">Nome:</label>
+          <input
+            id="nome"
+            type="text"
+            className="form-input"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            required
+          />
+        </div>
+  
+        <div className="form-group">
+          <label htmlFor="email">Email:</label>
+          <input
+            id="email"
+            type="email"
+            className="form-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+  
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            id="password"
+            type="password"
+            className="form-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+  
+        <div className="form-group">
+          <label htmlFor="role">Função:</label>
+          <input
+            id="role"
+            type="text"
+            className="form-input"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            required
+          />
+        </div>
+  
+        <div className="form-group">
+          <label htmlFor="entidade">Entidade:</label>
+          <EntidadeSelect
+            id="entidade"
+            className="form-select"
+            value={entidade}
+            onChange={(e) => setEntidade(e.target.value)}
+            required
+          />
+        </div>
+  
+        <button className="btn btn-primary" type="submit">
+          Criar User
+        </button>
+      </form>
     </div>
-    <div className="form-group-unique form-group-entidade">
-      <label htmlFor="email">Email:</label>
-      <input
-        type="email"
-        id="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-    </div>
-    <div className="form-group-unique form-group-entidade">
-      <label htmlFor="password">Password:</label>
-      <input
-        type="password"
-        id="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-    </div>
-    <div className="form-group-unique form-group-entidade">
-      <label htmlFor="role">Função:</label>
-      <input
-        type="text"
-        id="role"
-        value={role}
-        onChange={(e) => setRole(e.target.value)}
-        required
-      />
-    </div>
-    <div className="form-group-unique form-group-entidade">
-      <label htmlFor="entidade">Entidade:</label>
-      <EntidadeSelect
-        id="entidade"
-        value={entidade}
-        onChange={(e) => {
-          console.log("Entidade selecionada:", e.target.value);
-          setEntidade(e.target.value);
-        }}
-        required
-      />
-    </div>
-    <button type="submit">Criar user</button>
-  </form>
-</div>
   );
+  
+  
 };
 
 export default NewUser;

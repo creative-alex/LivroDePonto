@@ -4,7 +4,7 @@ const RegisterVacation = ({ onClick }) => {
 
   return (
     <>
-      <button class="show-reg" onClick={onClick}>Marcar Ferias</button>
+      <button className="show-reg" onClick={onClick}>Marcar Ferias</button>
     </>
   );
 };

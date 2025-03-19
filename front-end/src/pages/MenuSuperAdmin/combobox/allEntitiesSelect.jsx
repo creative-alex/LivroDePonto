@@ -20,7 +20,7 @@ const fetchEntities = async (setEntities, setError) => {
   }
 };
 
-const ComboboxAllEntities = ({ id, value, onChange, required }) => {
+const ComboboxAllEntities = ({ className, value, onChange, required }) => {
   const [entities, setEntities] = useState([]);
   const [error, setError] = useState(null);
 
@@ -32,7 +32,7 @@ const ComboboxAllEntities = ({ id, value, onChange, required }) => {
   if (entities.length === 0) return <p>Nenhuma entidade encontrada.</p>;
 
   return (
-    <select id={id} value={value} onChange={onChange} required={required}>
+    <select className={className} value={value} onChange={onChange} required={required}>
       <option value="">Selecione uma entidade</option>
       {entities.map((name, index) => (
         <option key={index} value={name}>{name}</option>

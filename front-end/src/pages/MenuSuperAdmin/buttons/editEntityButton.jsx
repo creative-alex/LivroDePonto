@@ -2,7 +2,7 @@ import React from 'react';
 
 const EditButton = ({ onClick }) => {
   return (
-    <button class="edit" onClick={onClick}>
+    <button className="edit" onClick={onClick}>
       Editar
     </button>
   );

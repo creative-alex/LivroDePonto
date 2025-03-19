@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // Agora o useParams está importado corretamente
 import Entity from "../entity";
 
+// Resto do código...
+
+
+// Função para buscar as entidades
 const fetchEntities = async (setEntities, setEntityCount, setError) => {
   try {
     const response = await fetch("http://localhost:4005/entity/showEntities", {
@@ -28,8 +32,9 @@ const fetchEntities = async (setEntities, setEntityCount, setError) => {
   }
 };
 
+// Componente de detalhe da entidade
 const EntityDetail = () => {
-  const { entityName } = useParams();
+  const { entityName } = useParams(); 
   return <Entity entityName={entityName} />;
 };
 
@@ -37,25 +42,34 @@ const AllEntities = () => {
   const [entities, setEntities] = useState([]);
   const [entityCount, setEntityCount] = useState(0);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     fetchEntities(setEntities, setEntityCount, setError);
   }, []);
 
+  const handleItemClick = (entity) => {
+    setEntityCount(entityCount + 1); // Incrementa o contador ao clicar no item da lista
+    navigate(`/entidades/${entity.replace(/\s+/g, "-")}`); // Navegação programática
+  };
+
   if (error) return <p>Erro: {error}</p>;
   if (entities.length === 0) return <p>Nenhuma entidade encontrada.</p>;
 
   return (
-    <div className="entity-list">
-      <h2>Lista de Entidades - {entityCount}</h2>
-      <ul>
-       {entities.map((entity, index) => (
-         <li key={index}>
-           <Link to={`/entidades/${entity.replace(/\s+/g, "-")}`}>{entity}</Link>
-         </li>
-       ))} 
+    <div className="form-container gradient-border">
+      <h2 className="login-header">Lista de Entidades - {entityCount}</h2>
+      <ul className="entity-card">
+        {entities.map((entity, index) => (
+          <li
+            key={index}
+            className="list-item"
+            onClick={() => handleItemClick(entity)} // Chama a função ao clicar no <li>
+          >
+            {entity}
+          </li>
+        ))}
       </ul>
-
     </div>
   );
 };

@@ -152,7 +152,7 @@ const TableHours = ({ username, month }) => {
     }}
     onClick={() => setContextMenu(null)} 
   >
-    <RegisterVacation username={username} date={contextMenu.dia} />
+    <RegisterVacation  username={username} date={contextMenu.dia} />
     <DeleteRegister username={username} date={contextMenu.dia} />
     <button>Cancelar</button>
   </div>
