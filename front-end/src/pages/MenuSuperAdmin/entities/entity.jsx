@@ -1,52 +1,58 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EditButton from "../buttons/editEntityButton";
 import ShowEmployeesButton from "../buttons/ShowEmployeesButton";
 
-const Entity = ({ entityName }) => {
+const normalizeName = (name) => {
+  return name
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9-]/g, "");
+};
+
+const Entity = () => {
+  const { entityName } = useParams();
+  const formattedEntityName = decodeURIComponent(entityName);
+  const navigate = useNavigate();
+
+  const [currentEntityName, setCurrentEntityName] = useState(formattedEntityName);
   const [entityData, setEntityData] = useState(null);
   const [oldName, setOldName] = useState("");
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState(null);
 
-  const navigate = useNavigate(); // Hook para navegação
-
-  const fetchEntityData = async () => {
-    try {
-      const response = await fetch("http://localhost:4005/entity/entityDetails", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: entityName }),
-      });
-
-      if (!response.ok) throw new Error("Erro ao buscar detalhes da entidade");
-
-      const data = await response.json();
-      setEntityData(data);
-      setEditedData(data);
-      setOldName(data.nome);
-    } catch (err) {
-      console.error("Erro ao buscar dados da entidade:", err.message);
-      setError(err.message);
-    }
-  };
-
   useEffect(() => {
-    if (!entityName) return;
-    fetchEntityData();
-  }, [entityName]);
+    const fetchEntityData = async () => {
+      try {
+        const response = await fetch("http://localhost:4005/entity/entityDetails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: normalizeName(currentEntityName) }),
+        });
+
+        if (!response.ok) throw new Error("Erro ao buscar detalhes da entidade");
+
+        const data = await response.json();
+        setEntityData(data);
+        setEditedData(data);
+        setOldName(data.nome);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    if (currentEntityName) fetchEntityData();
+  }, [currentEntityName]);
 
   const handleEditClick = () => setIsEditing(true);
   const handleCancelClick = () => {
     setIsEditing(false);
     setEditedData(entityData);
   };
+  const handleInputChange = (e) => setEditedData({ ...editedData, [e.target.name]: e.target.value });
 
-  const handleInputChange = (e) => {
-    setEditedData({ ...editedData, [e.target.name]: e.target.value });
-  };
-
+  // Modifique o handleSubmitClick para navegar para a nova URL:
   const handleSubmitClick = async () => {
     try {
       const response = await fetch("http://localhost:4005/entity/updateEntity", {
@@ -54,22 +60,24 @@ const Entity = ({ entityName }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ oldName, ...editedData }),
       });
-
+  
       if (!response.ok) throw new Error("Erro ao atualizar a entidade");
-
-      const updatedData = await response.json();
+      
       setIsEditing(false);
-      setOldName(updatedData.nome);
-      await fetchEntityData(); // Atualiza os dados da entidade após a edição
+      navigate(-1); // <--- APENAS VOLTA NA HISTÓRICO
     } catch (err) {
-      console.error("Erro ao atualizar entidade:", err.message);
       setError(err.message);
     }
   };
+  
+  // REMOVA ESTE USEEFFECT POR COMPLETO (É O CAUSA PRINCIPAL DO PROBLEMA)
+  // useEffect(() => {
+  //   if (currentEntityName !== formattedEntityName) {
+  //     navigate(-1);
+  //   }
+  // }, [currentEntityName, formattedEntityName, navigate]);
 
-  const handleShowEmployeesClick = () => {
-    navigate(`/entidades/${entityName}/users`);
-  };
+  const handleShowEmployeesClick = () => navigate(`/entidades/${normalizeName(currentEntityName)}/users`);
 
   if (error) return <p style={{ color: "red" }}>⚠ Erro: {error}</p>;
   if (!entityData) return <p>Carregando...</p>;
@@ -92,7 +100,7 @@ const Entity = ({ entityName }) => {
           <p><strong>Nome:</strong> {entityData.nome}</p>
           <p><strong>NIF:</strong> {entityData.nif}</p>
           <p><strong>Morada:</strong> {entityData.morada}</p>
-          <p><strong>Numero de Colaboradores:</strong> {entityData.userCount}</p>
+          <p><strong>Número de Colaboradores:</strong> {entityData.userCount}</p>
           <div className="entidade-botoes">
             <EditButton onClick={handleEditClick} />
             <ShowEmployeesButton onClick={handleShowEmployeesClick} />
