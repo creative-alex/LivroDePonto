@@ -49,7 +49,6 @@ const AllEntities = () => {
   }, []);
 
   const handleItemClick = (entity) => {
-    setEntityCount(entityCount + 1); // Incrementa o contador ao clicar no item da lista
     navigate(`/entidades/${entity.replace(/\s+/g, "-")}`); // Navegação programática
   };
 
