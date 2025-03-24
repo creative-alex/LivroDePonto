@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from "r
 import "./index.css";
 import Login from "./components/Login/login";
 import FirstLoginComponent from "./components/Login/firstLogin";
-import Logout from "./components/LogoutButton/logoutButton";
 import NovaEntidade from "./pages/MenuSuperAdmin/entities/newEntity/newEntity";
 import { AllEntities, EntityDetail } from "./pages/MenuSuperAdmin/entities/allEntities/allEntities";
 import NewUser from "./pages/MenuSuperAdmin/users/newUser";
@@ -14,26 +13,15 @@ import TableHours from "./pages/MenuUser/pointRegister";
 import { UserProvider, UserContext } from "./context/UserContext";
 import UserList from "./pages/MenuSuperAdmin/users/userList";
 import UserDetails from "./pages/MenuSuperAdmin/users/userDetails";
-
-const AdminMenu = () => {
-  const navigate = useNavigate();
-  return (
-    <>
-      <div className="flex-center button-container">
-        <button className="gradient-border" onClick={() => navigate("/entidades")}>Ver Entidades</button>
-        <button className="gradient-border" onClick={() => navigate("/nova-entidade")}>Criar Entidade</button>
-        <button className="gradient-border" onClick={() => navigate("/novo-user")}>Criar User</button>
-      </div>
-      <Logout onClick={() => navigate("/logout")} />
-    </>
-  );
-};
+import LogoutButton from './components/LogoutButton/logoutButton';
 
 const App = () => {
   const { setUsername, username, setUserEmail, userEmail } = useContext(UserContext);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isFirstLogin, setIsFirstLogin] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null); 
+  console.log(selectedUser, "aquii");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -61,29 +49,44 @@ const App = () => {
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     setIsAdmin(false);
-    setUsername(null);
-    setUserEmail(null);
     setIsFirstLogin(false);
+  };
+
+  const AdminMenu = () => {
+    const navigate = useNavigate();
+    return (
+      <div>
+        <div className="flex-center button-container">
+          <button className="gradient-border" onClick={() => navigate("/entidades")}>Ver Entidades</button>
+          <button className="gradient-border" onClick={() => navigate("/nova-entidade")}>Criar Entidade</button>
+          <button className="gradient-border" onClick={() => navigate("/novo-user")}>Criar User</button>
+        </div>
+        <LogoutButton onLogout={handleLogout} />
+      </div>
+    );
   };
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={isLoggedIn ? <Navigate to={isAdmin ? "/admin" : "/home"} /> : <Login onLoginSuccess={handleLoginSuccess} />} />
+        <Route path="/" element={isLoggedIn ? (isFirstLogin ? <Navigate to="/first-login" /> : <Navigate to={isAdmin ? "/admin" : "/home"} />) : <Login onLoginSuccess={handleLoginSuccess} />} />
+        
         {isLoggedIn && isFirstLogin && !isAdmin && (
           <Route path="/first-login" element={<FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />} />
         )}
+
         {isLoggedIn && isAdmin && (
           <>
             <Route path="/admin" element={<AdminMenu />} />
             <Route path="/entidades" element={<AllEntities />} />
             <Route path="/entidades/:entityName" element={<EntityDetail />} />
-            <Route path="/entidades/:entityName/users" element={<UserList />} />
-            <Route path="/entidades/:entityName/users/:userName" element={<UserDetails userName={username}  />} />
+            <Route path="/entidades/:entityName/users" element={<UserList setSelectedUser={setSelectedUser} />} />
+            <Route path="/entidades/:entityName/users/:userName" element={<UserDetails selectedUser={selectedUser} />} />
             <Route path="/nova-entidade" element={<NovaEntidade />} />
             <Route path="/novo-user" element={<NewUser />} />
           </>
         )}
+
         {isLoggedIn && !isAdmin && (
           <>
             <Route path="/home" element={<RegisterEntry username={username} />} />
@@ -91,7 +94,6 @@ const App = () => {
             <Route path="/horas" element={<TableHours username={username} />} />
           </>
         )}
-        <Route path="/logout" element={<Logout onClick={handleLogout} />} />
       </Routes>
     </Router>
   );

@@ -37,11 +37,10 @@ const Calendario = ({userName}) => {
 
       const registros = data.map((registro) => ({
         title: `Entrada: ${registro.horaEntrada} ${registro.horaSaida ? `- Saída: ${registro.horaSaida}` : ""}`,
-        start: registro.date, // O backend já retorna o formato YYYY-MM-DD
+        start: registro.date, 
         allDay: true,
       }));
 
-      console.log(registros)
 
       setEvents(registros);
     } catch (error) {

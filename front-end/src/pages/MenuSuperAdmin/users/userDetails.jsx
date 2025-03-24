@@ -5,7 +5,8 @@ import TimeLine from './timeline';
 import EntidadeSelect from '../combobox/allEntitiesSelect';
 import DeleteUser from '../buttons/deleteUser';
 
-const UserDetails = ({ userName }) => {
+
+const UserDetails = ({ selectedUser: { uid } }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [editedData, setEditedData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ const UserDetails = ({ userName }) => {
   const [showMonths, setShowMonths] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [showDetails, setShowDetails] = useState(true);
-
+  const userName = uid;  
   console.log(userName)
 
   useEffect(() => {

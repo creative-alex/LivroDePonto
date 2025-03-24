@@ -64,18 +64,13 @@ const Entity = () => {
       if (!response.ok) throw new Error("Erro ao atualizar a entidade");
       
       setIsEditing(false);
-      navigate(-1); // <--- APENAS VOLTA NA HISTÓRICO
+      navigate(-1);
     } catch (err) {
       setError(err.message);
     }
   };
   
-  // REMOVA ESTE USEEFFECT POR COMPLETO (É O CAUSA PRINCIPAL DO PROBLEMA)
-  // useEffect(() => {
-  //   if (currentEntityName !== formattedEntityName) {
-  //     navigate(-1);
-  //   }
-  // }, [currentEntityName, formattedEntityName, navigate]);
+  
 
   const handleShowEmployeesClick = () => navigate(`/entidades/${normalizeName(currentEntityName)}/users`);
 

@@ -13,7 +13,6 @@ const FirstLoginComponent = ({ onComplete }) => {
         throw new Error("Erro: user não encontrado.");
       }
       
-      console.log("Email enviado:", userEmail); // 🔍 Verifica o email antes da requisição
   
       const response = await fetch("http://localhost:4005/users/updateFirstLogin", {
         method: "POST",

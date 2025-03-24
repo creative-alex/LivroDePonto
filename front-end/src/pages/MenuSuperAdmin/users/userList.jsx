@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const UserList = () => {
+const UserList = ({ setSelectedUser }) => {
   const { entityName } = useParams();
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
@@ -28,8 +28,8 @@ const UserList = () => {
     if (entityName) fetchEmployees();
   }, [entityName]);
 
-
   const handleItemClick = (employee) => {
+    setSelectedUser(employee);
     navigate(`/entidades/${entityName}/users/${encodeURIComponent(employee.nome)}`);
   };
 

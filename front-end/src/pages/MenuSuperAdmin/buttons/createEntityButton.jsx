@@ -2,7 +2,7 @@ import React from 'react';
 
 const CreateButton = ({ onClick }) => {
   return (
-    <button className="create-entity" onClick={onClick}>
+    <button  onClick={onClick}>
       Criar Nova Entidade
     </button>
   );

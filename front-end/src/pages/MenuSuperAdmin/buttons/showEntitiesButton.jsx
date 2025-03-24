@@ -2,7 +2,7 @@ import React from 'react';
 
 const ShowEntites = ({ onClick }) => {
   return (
-    <button className="show-ent" onClick={onClick}>
+    <button onClick={onClick}>
       Mostrar Entidades & Users
     </button>
   );

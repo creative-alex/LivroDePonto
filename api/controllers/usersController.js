@@ -157,38 +157,46 @@ const updateFirstLogin = async (req, res) => {
 const userDetails = async (req, res) => {
   try {
     const { userName } = req.body;
+    console.log("Recebido userID:", userName); // Log do ID recebido
 
     if (!userName) {
-      return res.status(400).json({ error: "O campo userName é obrigatório." });
+      console.warn("⚠️ userID não encontrado no corpo da requisição.");
+      return res.status(400).json({ error: "O campo userID é obrigatório." });
     }
 
-    // Buscar user no Firestore
-    const usersRef = db.collection("users");
-    const snapshot = await usersRef.where("nome", "==", userName).limit(1).get();
+    // Buscar user no Firestore pelo ID
+    console.log("Buscando usuário no Firestore pelo ID:", userName);
+    const userDoc = await db.collection("users").doc(userName).get();
 
-    if (snapshot.empty) {
-      return res.status(404).json({ error: "user não encontrado." });
+    if (!userDoc.exists) {
+      console.warn("⚠️ User não encontrado no Firestore.");
+      return res.status(404).json({ error: "User não encontrado." });
     }
 
-    const userDoc = snapshot.docs[0];
     const userData = userDoc.data();
+    console.log("Dados do user encontrados:", userData);
 
     // Buscar entidade relacionada
     let entidadeNome = "Desconhecida";
+    console.log("Verificando entidade para o user:", userData.entidade);
 
     if (userData.entidade && typeof userData.entidade === "string") {
-      const entidadeParts = userData.entidade.split("/"); // ['entidades', 'coorperativa-comenius']
+      const entidadeParts = userData.entidade.split("/");
 
       if (entidadeParts.length === 2 && entidadeParts[0] === "entidades") {
-        const entidadeId = entidadeParts[1]; // 'coorperativa-comenius'
+        const entidadeId = entidadeParts[1];
+        console.log("Buscando entidade com ID:", entidadeId);
 
         try {
           const entidadeRef = await db.collection("entidades").doc(entidadeId).get();
           if (entidadeRef.exists) {
             entidadeNome = entidadeRef.data().nome || "Desconhecida";
+            console.log("Entidade encontrada:", entidadeNome);
+          } else {
+            console.warn("⚠️ Entidade não encontrada.");
           }
         } catch (err) {
-          console.warn("⚠️ Erro ao buscar entidade:", err);
+          console.error("⚠️ Erro ao buscar entidade:", err);
         }
       }
     }
@@ -201,6 +209,7 @@ const userDetails = async (req, res) => {
       role: userData.role || "N/A",
     };
 
+    console.log("Detalhes do usuário montados:", userDetails);
     res.json(userDetails);
   } catch (error) {
     console.error("🚨 Erro ao buscar detalhes do user:", error);
@@ -902,11 +911,8 @@ const deleteUser = async (req, res) => {
   }
 };
 
-
-
-
 module.exports = { getUserInfo, verifyToken, createUser, registerEntry, 
                   registerLeave, getUserRecords, getUsersByEntity, userDetails, 
                   checkEntry, checkLeave, updateUserTime, updateFirstLogin,
                   updateUserDetails, createVacation, deleteRegister,
-                  deleteUser };
+                  deleteUser, };
