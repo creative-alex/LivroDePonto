@@ -5,14 +5,14 @@ const feriadosPorto = [
   "01-01", "25-04", "01-05", "10-06", "15-08", "05-10", "01-11", "01-12", "08-12", "25-12"
 ];
 
-const TableHours = ({ username, month }) => {
+const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
   const [dados, setDados] = useState([]);
   const [totais, setTotais] = useState({ totalHoras: "0h 0m", totalExtras: "0h 0m", diasFalta: 0, diasFerias: 0 });
 
   useEffect(() => {
-    if (!username || !month) {
-        console.log("Parâmetros inválidos:", { username, month });
-        return;
+    if (!username) {
+      console.log("Parâmetros inválidos:", { username, month });
+      return;
     }
 
     console.log("Iniciando fetchData...");
@@ -55,34 +55,34 @@ const TableHours = ({ username, month }) => {
         const hoje = new Date();
 
         novosDados = novosDados.map((item, index) => {
-            const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
-            const diaSemana = dataAtual.getDay();
-            const feriado = feriadosPorto.includes(item.dia);
-            const registo = registros.find((r) => new Date(r.timestamp).getDate() === index + 1);
+          const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
+          const diaSemana = dataAtual.getDay();
+          const feriado = feriadosPorto.includes(item.dia);
+          const registo = registros.find((r) => new Date(r.timestamp).getDate() === index + 1);
 
-            console.log(`Processando dia ${index + 1}:`, { dataAtual, diaSemana, feriado, registo });
+          console.log(`Processando dia ${index + 1}:`, { dataAtual, diaSemana, feriado, registo });
 
-            if (registo) {
-              console.log("Registo encontrado:", registo);
-              const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
-              console.log("Horas calculadas:", { total, extra, minutos, minutosExtras });
+          if (registo) {
+            console.log("Registo encontrado:", registo);
+            const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
+            console.log("Horas calculadas:", { total, extra, minutos, minutosExtras });
 
-              totalMinutos += minutos;
-              totalMinutosExtras += minutosExtras;
+            totalMinutos += minutos;
+            totalMinutosExtras += minutosExtras;
 
-              return {
-                ...item,
-                horaEntrada: registo.horaEntrada || "-",
-                horaSaida: registo.horaSaida || "-",
-                total,
-                extra,
-              };
-            } else if (dataAtual < hoje && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
-              console.log(`Dia ${index + 1} sem registo. Contabilizando como falta.`);
-              diasFalta++;
-              return { ...item, total: "0h 0m" };
-            }
-            return item;
+            return {
+              ...item,
+              horaEntrada: registo.horaEntrada || "-",
+              horaSaida: registo.horaSaida || "-",
+              total,
+              extra,
+            };
+          } else if (dataAtual < hoje && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
+            console.log(`Dia ${index + 1} sem registo. Contabilizando como falta.`);
+            diasFalta++;
+            return { ...item, total: "0h 0m" };
+          }
+          return item;
         });
 
         console.log("Novos dados após processamento:", novosDados);

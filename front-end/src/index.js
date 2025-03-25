@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, Link } from "react-router-dom";
 import "./index.css";
 import Login from "./components/Login/login";
 import FirstLoginComponent from "./components/Login/firstLogin";
@@ -9,6 +9,7 @@ import { AllEntities, EntityDetail } from "./pages/MenuSuperAdmin/entities/allEn
 import NewUser from "./pages/MenuSuperAdmin/users/newUser";
 import RegisterEntry from "./pages/MenuUser/buttons/entryRegisterButton";
 import RegisterLeave from "./pages/MenuUser/buttons/exitRegisterButton";
+import ShowRegister from './pages/MenuUser/buttons/showRegisterButton';
 import TableHours from "./pages/MenuUser/pointRegister";
 import { UserProvider, UserContext } from "./context/UserContext";
 import UserList from "./pages/MenuSuperAdmin/users/userList";
@@ -20,8 +21,9 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isFirstLogin, setIsFirstLogin] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null); 
-  console.log(selectedUser, "aquii");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showHours, setShowHours] = useState(false);
+
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -36,8 +38,7 @@ const App = () => {
   }, [setUsername, setUserEmail]);
 
   const handleLoginSuccess = (role, nome, firstLogin, email) => {
-    const userData = { nome, role, email, firstLogin };
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify({ nome, role, email, firstLogin }));
     setUsername(nome);
     setUserEmail(email);
     setIsLoggedIn(true);
@@ -52,29 +53,43 @@ const App = () => {
     setIsFirstLogin(false);
   };
 
-  const AdminMenu = () => {
-    const navigate = useNavigate();
-    return (
-      <div>
-        <div className="flex-center button-container">
-          <button className="gradient-border" onClick={() => navigate("/entidades")}>Ver Entidades</button>
-          <button className="gradient-border" onClick={() => navigate("/nova-entidade")}>Criar Entidade</button>
-          <button className="gradient-border" onClick={() => navigate("/novo-user")}>Criar User</button>
-        </div>
-        <LogoutButton onLogout={handleLogout} />
+  const AdminMenu = () => (
+    <div>
+      <div className="flex-center button-container">
+        <Link to="/entidades">
+        <button>Mostrar Entidades & Users</button>        
+        </Link>
+        <Link to="/nova-entidade">
+          <button>Criar Entidade</button>
+        </Link>
+        <Link to="/novo-user">
+          <button>Criar User</button>
+        </Link>
       </div>
-    );
-  };
+      <LogoutButton onLogout={handleLogout} />
+    </div>
+  );
+  
+
+  const UserMenu = () => (
+    <div>
+      <div className="flex-center button-container">
+        <RegisterEntry username={username} />
+        <RegisterLeave username={username} />
+        <ShowRegister onClick={() => setShowHours(true)} />
+      </div>
+      {showHours && <TableHours username={username} />}
+      <LogoutButton onLogout={handleLogout} />
+    </div>
+  );
+
+  console.log(username);
 
   return (
     <Router>
       <Routes>
         <Route path="/" element={isLoggedIn ? (isFirstLogin ? <Navigate to="/first-login" /> : <Navigate to={isAdmin ? "/admin" : "/home"} />) : <Login onLoginSuccess={handleLoginSuccess} />} />
-        
-        {isLoggedIn && isFirstLogin && !isAdmin && (
-          <Route path="/first-login" element={<FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />} />
-        )}
-
+        {isLoggedIn && isFirstLogin && !isAdmin && <Route path="/first-login" element={<FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />} />}
         {isLoggedIn && isAdmin && (
           <>
             <Route path="/admin" element={<AdminMenu />} />
@@ -86,13 +101,8 @@ const App = () => {
             <Route path="/novo-user" element={<NewUser />} />
           </>
         )}
-
         {isLoggedIn && !isAdmin && (
-          <>
-            <Route path="/home" element={<RegisterEntry username={username} />} />
-            <Route path="/registrar-saida" element={<RegisterLeave username={username} />} />
-            <Route path="/horas" element={<TableHours username={username} />} />
-          </>
+          <Route path="/home" element={<UserMenu />} />
         )}
       </Routes>
     </Router>

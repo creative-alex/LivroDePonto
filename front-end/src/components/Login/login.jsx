@@ -78,31 +78,33 @@ const Login = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="login-container-unique">
+  <div className="form-container gradient-border">
     <h2>Login</h2>
     <form onSubmit={handleSubmit}>
-      <div className="form-group-unique">
+      <div className="form-group">
         <label htmlFor="email">Email:</label>
         <input
           type="email"
           id="email"
+          className="form-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
       </div>
-      <div className="form-group-unique">
+      <div className="form-group">
         <label htmlFor="password">Password:</label>
         <input
           type="password"
           id="password"
+          className="form-input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
       </div>
       {error && <p className="error-unique">{error}</p>}
-      <button type="submit">Login</button>
+      <button className="btn" type="submit">Login</button>
     </form>
   </div>
   
