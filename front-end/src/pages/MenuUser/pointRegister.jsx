@@ -6,7 +6,17 @@ const feriadosPorto = [
 ];
 
 const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
-  const [dados, setDados] = useState([]);
+  const [dados, setDados] = useState(() => {
+    const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
+    return Array.from({ length: diasNoMes }, (_, i) => ({
+      dia: `${String(i + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`,
+      horaEntrada: "-",
+      horaSaida: "-",
+      total: "-",
+      extra: "-",
+    }));
+  });
+  
   const [totais, setTotais] = useState({ totalHoras: "0h 0m", totalExtras: "0h 0m", diasFalta: 0, diasFerias: 0 });
 
   useEffect(() => {
@@ -109,8 +119,7 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 5000);
-    console.log("Intervalo configurado para 5 segundos.");
+    const interval = setInterval(fetchData, 10000);
 
     return () => {
       console.log("Limpando intervalo.");
@@ -118,10 +127,11 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
     };
   }, [username, month]);
 
+  console.log("Estado final de dados:", dados);
 
 
   return (
-    <div className="table-container">
+    <div className="table-container flex-center">
       <table>
         <thead>
           <tr>

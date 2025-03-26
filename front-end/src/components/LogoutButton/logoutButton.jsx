@@ -10,7 +10,7 @@ const LogoutButton = ({ onLogout }) => {
   };
 
   return (
-    <button id="logout" onClick={handleClick}>
+    <button className="flex-center button-container logout" onClick={handleClick}>
       Logout
     </button>
   );

@@ -212,12 +212,12 @@ const UserDetails = ({ selectedUser: { uid } }) => {
 
   
           {showMonths && (
-            <div>
+            <div className="button-container flex-center">
               <h3>Selecione um mês:</h3>
-              <div className="months-container">
+              <div className="button-container flex-center" >
                 {["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
                   .map((month, index) => (
-                    <button key={index} onClick={() => handleSelectMonth(index + 1)}>
+                    <button className="btn" key={index} onClick={() => handleSelectMonth(index + 1)}>
                       {month}
                     </button>
                   ))}

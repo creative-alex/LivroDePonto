@@ -57,13 +57,13 @@ const App = () => {
     <div>
       <div className="flex-center button-container">
         <Link to="/entidades">
-        <button>Mostrar Entidades & Users</button>        
+        <button className="btn-menu">Mostrar Entidades & Users</button>        
         </Link>
         <Link to="/nova-entidade">
-          <button>Criar Entidade</button>
+          <button className="btn-menu">Criar Entidade</button>
         </Link>
         <Link to="/novo-user">
-          <button>Criar User</button>
+          <button className="btn-menu">Criar User</button>
         </Link>
       </div>
       <LogoutButton onLogout={handleLogout} />
@@ -79,7 +79,7 @@ const App = () => {
         <ShowRegister onClick={() => setShowHours(true)} />
       </div>
       {showHours && <TableHours username={username} />}
-      <LogoutButton onLogout={handleLogout} />
+      <LogoutButton className="flex-center button-container" onLogout={handleLogout} />
     </div>
   );
 

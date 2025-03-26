@@ -174,7 +174,8 @@
 }
 
 .table-container {
-  width: 100%;
+  width: 22vw;
+  justify-self: center;
   padding: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
@@ -187,4 +188,53 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   border-radius: 6px;
+}
+
+.btn-menu{
+  width: 7vw;
+  height: 7vw;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.logout{
+  justify-self: center;
+  width: 22vw;
+  height: 7vw;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #e3f2fd;
+}
+
+.total-row {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+
+.horas-extra {
+  color: #d32f2f;
+  font-weight: bold;
 }

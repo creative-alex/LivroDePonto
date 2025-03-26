@@ -51,7 +51,7 @@ const EntryButton = ({ username }) => {
   };
 
   return (
-    <button className="entry" onClick={handleClick} disabled={isDisabled}>
+    <button className="btn-menu" onClick={handleClick} disabled={isDisabled}>
       {isDisabled ? 'Entrada Já Registrada' : 'Registrar Entrada'}
     </button>
   );
