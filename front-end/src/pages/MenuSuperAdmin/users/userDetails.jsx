@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import EditButton from '../buttons/editEntityButton';
 import ShowTimeLine from '../buttons/showTimelineButton';
 import TimeLine from './timeline';
@@ -6,7 +7,7 @@ import EntidadeSelect from '../combobox/allEntitiesSelect';
 import DeleteUser from '../buttons/deleteUser';
 
 
-const UserDetails = ({ selectedUser: { uid } }) => {
+const UserDetails = ({ selectedUser }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [editedData, setEditedData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,8 +16,19 @@ const UserDetails = ({ selectedUser: { uid } }) => {
   const [showMonths, setShowMonths] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [showDetails, setShowDetails] = useState(true);
-  const userName = uid;  
-  console.log(userName)
+  const navigate = useNavigate(); // Obtém a função navigate
+
+
+  // Pega o uid do selectedUser, se não existir, pega do localStorage
+  const userName = selectedUser?.uid || localStorage.getItem("selectedUserUID");
+
+  // Guarda o uid no localStorage quando selectedUser mudar
+  useEffect(() => {
+    if (selectedUser?.uid) {
+      localStorage.setItem("selectedUserUID", selectedUser.uid);
+    }
+  }, [selectedUser]);
+
 
   useEffect(() => {
     if (!userName) {
@@ -68,21 +80,24 @@ const UserDetails = ({ selectedUser: { uid } }) => {
     setShowMonths(true);
   };
 
-  const handleDeleteClick = async () =>{
+  const handleDeleteClick = async () => {
+  
     try {
       const response = await fetch(`http://localhost:4005/users/deleteUser`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userName }),
       });
-
-      if (!response.ok){
+  
+      if (!response.ok) {
         const errorMessage = await response.text();
         console.log("Erro na resposta:", errorMessage);
         throw new Error(errorMessage || "Erro ao apagar user");
       }
+  
+      navigate(-1); // Volta para a página anterior após eliminar o user
     } catch (err) {
-      console.log("Erro ao eliminar user")
+      console.log("Erro ao eliminar user", err);
     }
   };
 
@@ -139,94 +154,97 @@ const UserDetails = ({ selectedUser: { uid } }) => {
 
   return (
     <div className='flex'>
-       <h2 className="user-details-heading">User Details</h2>
-  {isEditing ? (
-    <div className="table-container">
-      <p className="input-group">
-        <strong className="input-label">Email:</strong>
-        <input 
-          className="input-field" 
-          type="text" 
-          name="email" 
-          value={editedData?.email || ""} 
-          onChange={handleInputChange} 
-        />
-      </p>
-      <p className="input-group">
-        <strong className="input-label">Entidade:</strong> 
-        </p>
-        <EntidadeSelect 
-          className="input-field"
-          selectedEntity={editedData?.entidade || ""} 
-          onChange={handleEntidadeChange} 
-        />
-      <p className="input-group">
-        <strong className="input-label">Nome:</strong>
-        <input 
-          className="input-field" 
-          type="text" 
-          name="nome" 
-          value={editedData?.nome || ""} 
-          onChange={handleInputChange} 
-        />
-      </p>
-      <p className="input-group">
-        <strong className="input-label">Role:</strong>
-        <input 
-          className="input-field" 
-          type="text" 
-          name="role" 
-          value={editedData?.role || ""} 
-          onChange={handleInputChange} 
-        />
-      </p>
-      <p className="input-group">
-        <strong className="input-label">Nova Password Temporária:</strong>
-        <input 
-          className="input-field" 
-          type="password" 
-          name="newPassword" 
-          minLength="6" 
-          value={editedData?.newPassword || ""} 
-          onChange={handleInputChange} 
-        />
-      </p>
-      <div className="button-group">
-        <button className="submit-button" onClick={handleSubmitClick}>Submeter</button>
-        <button className="cancel-button" onClick={handleCancelClick}>Cancelar</button>
-      </div>
+       {isEditing ? (
+  <div className="table-container">
+    <p className="input-group">
+      <strong className="input-label">Nome:</strong>
+      <input 
+        className="input-field" 
+        type="text" 
+        name="nome" 
+        value={editedData?.nome || ""} 
+        onChange={handleInputChange} 
+      />
+    </p>
+    <p className="input-group">
+      <strong className="input-label">Email:</strong>
+      <input 
+        className="input-field" 
+        type="text" 
+        name="email" 
+        value={editedData?.email || ""} 
+        onChange={handleInputChange} 
+      />
+    </p>
+    <p className="input-group">
+      <strong className="input-label">Entidade:</strong> 
+    </p>
+    <EntidadeSelect 
+      className="input-field"
+      selectedEntity={editedData?.entidade || ""} 
+      onChange={handleEntidadeChange} 
+    />
+    <p className="input-group">
+      <strong className="input-label">Função na Empresa:</strong>
+      <input 
+        className="input-field" 
+        type="text" 
+        name="role" 
+        value={editedData?.role || ""} 
+        onChange={handleInputChange} 
+      />
+    </p>
+    <p className="input-group">
+      <strong className="input-label">Nova Password Temporária:</strong>
+      <input 
+        className="input-field" 
+        type="password" 
+        name="newPassword" 
+        minLength="6" 
+        value={editedData?.newPassword || ""} 
+        onChange={handleInputChange} 
+      />
+    </p>
+    <div className="button-group">
+      <button className="submit-button" onClick={handleSubmitClick}>Submeter</button>
+      <button className="cancel-button" onClick={handleCancelClick}>Cancelar</button>
     </div>
-      ) : (
-        <div className="list-container">
-          <ul>
-            <li><strong>Email:</strong> {userDetails.email || "N/A"}</li>
-            <li><strong>Entidade:</strong> {userDetails.entidade || "N/A"}</li>
-            <li className="cap"><strong>Nome:</strong> {userDetails.nome || "N/A"}</li>
-            <li className="cap"><strong>Role:</strong> {userDetails.role}</li>
-          </ul>
-          <div className="details-buttons">
-            <EditButton onClick={handleEditClick} />
-            <ShowTimeLine onClick={handleShowTimeLine} />
-          </div>
-          <DeleteUser onClick={handleDeleteClick} />            
+  </div>
+) : (
+  <div className="table-container">
+    <ul>
+      <li className='list-item'><strong>Nome:</strong> {userDetails.nome || "N/A"}</li>
+      <li className='list-item'><strong>Email:</strong> {userDetails.email || "N/A"}</li>
+      <li className='list-item'><strong>Entidade:</strong> {userDetails.entidade || "N/A"}</li>
+      <li className='list-item'><strong>Função na Empresa:</strong> {userDetails.role}</li>
+    </ul>
+    <div className="details-buttons">
+      <EditButton onClick={handleEditClick} />
+      <ShowTimeLine onClick={handleShowTimeLine} />
+      <DeleteUser onClick={handleDeleteClick} />   
+    </div>
+            
 
-  
-          {showMonths && (
-            <div className="button-container flex-center">
-              <h3>Selecione um mês:</h3>
-              <div className="button-container flex-center" >
-                {["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
-                  .map((month, index) => (
-                    <button className="btn" key={index} onClick={() => handleSelectMonth(index + 1)}>
-                      {month}
-                    </button>
-                  ))}
-              </div>
-            </div>
-          )}
-          {selectedMonth && <TimeLine username={userName} month={selectedMonth} />}
+    {showMonths && (
+      <div className="button-container flex-center">
+        <div className="months-wrapper">
+          <h3>Selecione um mês:</h3>
+          <div className="months-container">
+            {["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+              .map((month, index) => (
+                <button className="btn" key={index} onClick={() => handleSelectMonth(index + 1)}>
+                  {month}
+                </button>
+              ))}
+          </div>
         </div>
-      )}
+      </div>
+    )}
+
+    {selectedMonth && <TimeLine username={userName} month={selectedMonth} />}
+  </div>
+)}
+
     </div>
   );
   

@@ -2,7 +2,7 @@ import React from 'react';
 
 const ShowEmployees = ({ onClick }) => {
   return (
-    <button className="show-user" onClick={onClick}>
+    <button className="btn" onClick={onClick}>
       Colaboradores 
     </button>
   );

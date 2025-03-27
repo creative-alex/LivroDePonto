@@ -174,7 +174,7 @@
 }
 
 .table-container {
-  width: 22vw;
+  width: 30vw;
   justify-self: center;
   padding: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
@@ -238,3 +238,38 @@ tr:hover {
   color: #d32f2f;
   font-weight: bold;
 }
+
+.months-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px; /* Espaço entre o título e os botões */
+}
+
+.months-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 colunas */
+  grid-template-rows: repeat(3, auto); /* 3 linhas */
+  gap: 10px; /* Espaço entre os botões */
+  max-width: 400px; /* Ajusta conforme necessário */
+  width: 100%;
+  justify-content: center;
+}
+
+.btn {
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+

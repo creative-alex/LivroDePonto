@@ -30,7 +30,7 @@ const UserList = ({ setSelectedUser }) => {
 
   const handleItemClick = (employee) => {
     setSelectedUser(employee);
-    navigate(`/entidades/${entityName}/users/${encodeURIComponent(employee.nome)}`);
+    navigate(`/entidades/${entityName}/users/${encodeURIComponent(employee.nome.replace(/\s+/g, "-"))}`);
   };
 
   if (error) return <p style={{ color: "red" }}>⚠ Erro: {error}</p>;
