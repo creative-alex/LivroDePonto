@@ -1,25 +1,22 @@
+import { useNavigate } from "react-router-dom";
 import logo from '../logo.svg';
 import '../App.css';
 
-function App() {
+function Home() {
+  const navigate = useNavigate();
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>Livro de Ponto</h1>
+        <div>
+          <button className="App-button" onClick={() => navigate("/login")}>Área RH</button>
+          <button className="App-button" onClick={() => navigate("/login")}>Área Colaborador</button>
+        </div>
       </header>
     </div>
   );
 }
 
-export default App;
+export default Home;

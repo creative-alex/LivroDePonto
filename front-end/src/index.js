@@ -15,6 +15,7 @@ import { UserProvider, UserContext } from "./context/UserContext";
 import UserList from "./pages/MenuSuperAdmin/users/userList";
 import UserDetails from "./pages/MenuSuperAdmin/users/userDetails";
 import LogoutButton from './components/LogoutButton/logoutButton';
+import Home from "./components/App"
 
 const App = () => {
   const { setUsername, username, setUserEmail, userEmail } = useContext(UserContext);
@@ -57,13 +58,13 @@ const App = () => {
     <div>
       <div className="flex-center button-container">
         <Link to="/entidades">
-        <button className="btn-menu">Mostrar Entidades & Users</button>        
+        <button className="btn-menu gradient-border">Mostrar Entidades & Users</button>        
         </Link>
         <Link to="/nova-entidade">
-          <button className="btn-menu">Criar Entidade</button>
+          <button className="btn-menu gradient-border">Criar Entidade</button>
         </Link>
         <Link to="/novo-user">
-          <button className="btn-menu">Criar User</button>
+          <button className="btn-menu gradient-border">Criar User</button>
         </Link>
       </div>
       <LogoutButton onLogout={handleLogout} />
@@ -88,25 +89,40 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={isLoggedIn ? (isFirstLogin ? <Navigate to="/first-login" /> : <Navigate to={isAdmin ? "/admin" : "/home"} />) : <Login onLoginSuccess={handleLoginSuccess} />} />
-        {isLoggedIn && isFirstLogin && !isAdmin && <Route path="/first-login" element={<FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />} />}
-        {isLoggedIn && isAdmin && (
+        {/* Garante que Home aparece primeiro */}
+        <Route path="/" element={<Home />} />
+  
+        {/* Login separado para ser acessado pelos botões do Home */}
+        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+  
+        {/* Se o utilizador estiver autenticado, redireciona conforme o tipo de utilizador */}
+        {isLoggedIn && (
           <>
-            <Route path="/admin" element={<AdminMenu />} />
-            <Route path="/entidades" element={<AllEntities />} />
-            <Route path="/entidades/:entityName" element={<EntityDetail />} />
-            <Route path="/entidades/:entityName/users" element={<UserList setSelectedUser={setSelectedUser} />} />
-            <Route path="/entidades/:entityName/users/:userName" element={<UserDetails selectedUser={selectedUser} />} />
-            <Route path="/nova-entidade" element={<NovaEntidade />} />
-            <Route path="/novo-user" element={<NewUser />} />
+            {isFirstLogin && !isAdmin ? (
+              <Route path="/first-login" element={<FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />} />
+            ) : (
+              <>
+                {isAdmin ? (
+                  <>
+                    <Route path="/admin" element={<AdminMenu />} />
+                    <Route path="/entidades" element={<AllEntities />} />
+                    <Route path="/entidades/:entityName" element={<EntityDetail />} />
+                    <Route path="/entidades/:entityName/users" element={<UserList setSelectedUser={setSelectedUser} />} />
+                    <Route path="/entidades/:entityName/users/:userName" element={<UserDetails selectedUser={selectedUser} />} />
+                    <Route path="/nova-entidade" element={<NovaEntidade />} />
+                    <Route path="/novo-user" element={<NewUser />} />
+                  </>
+                ) : (
+                  <Route path="/home" element={<UserMenu />} />
+                )}
+              </>
+            )}
           </>
-        )}
-        {isLoggedIn && !isAdmin && (
-          <Route path="/home" element={<UserMenu />} />
         )}
       </Routes>
     </Router>
   );
+  
 };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

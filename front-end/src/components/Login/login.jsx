@@ -16,70 +16,89 @@ const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { userName, setUserName } = useContext(UserContext);
+  const { username, setUsername } = useContext(UserContext);
 
   useEffect(() => {
     const checkLocalStorage = () => {
-      const storedName = localStorage.getItem("userName");
-      if (storedName !== userName) {
+      const storedName = localStorage.getItem("username");
+      console.log("Verificando nome armazenado no localStorage:", storedName);
+      if (storedName !== username) {
+        console.log("Nome armazenado é diferente do nome atual");
+      } else {
+        console.log("Nome armazenado e nome atual são iguais");
       }
     };
 
-    // Verifica mudanças no localStorage a cada 500ms
-    const interval = setInterval(checkLocalStorage, 60000);
+    const interval = setInterval(() => {
+      console.log("Verificando localStorage a cada 60 segundos...");
+      checkLocalStorage();
+    }, 60000);
 
-    return () => clearInterval(interval);
-  }, [userName]);
+    return () => {
+      clearInterval(interval);
+      console.log("Limpeza do intervalo de verificação do localStorage");
+    };
+  }, [username]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError("");  
-  
-    const auth = getAuth(app);
+    console.log("Formulário de login enviado");
+    setError("");
 
-  
+    const auth = getAuth(app);
+    console.log("Autenticando no Firebase...");
+
     try {
+      console.log("Tentando fazer login com email:", email);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Login bem-sucedido:", userCredential);
+      
       const user = userCredential.user;
+      console.log("Usuário autenticado:", user);
+      
       const token = await user.getIdToken();
-  
+      console.log("Token do usuário:", token);
+
       // Verifica token no backend
       const response = await fetch("http://localhost:4005/users/verifyToken", {  
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
-  
-      if (!response.ok) throw new Error("Erro ao autenticar");
-      console.log("Email antes da requisição:", email);
 
-  
+      if (!response.ok) throw new Error("Erro ao autenticar");
+      console.log("Resposta da verificação do token:", response);
+
       // Obtém o papel e nome do user
       const roleResponse = await fetch("http://localhost:4005/users/getUserRole", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: user.email }),
       });
-      
+
+      console.log("Resposta da obtenção do papel do usuário:", roleResponse);
+
       const roleData = await roleResponse.json();
+      console.log("Dados do papel do usuário:", roleData);
+
       if (!roleResponse.ok) throw new Error(roleData.message || "Erro ao obter informações do user");
-      
+
       // Passa o papel, nome e isFirstLogin para o App
       onLoginSuccess(roleData.role, roleData.nome, roleData.isFirstLogin, user.email);
-      
-      
+      console.log("Login bem-sucedido, passando dados para o App:", roleData);
+
       // Atualiza o contexto
-      setUserName(roleData.nome);
+      setUsername(roleData.nome);
+      console.log("Nome do usuário atualizado no contexto:", roleData.nome);
       
     } catch (error) {
       setError(error.message);
       console.error("Erro no login:", error);
     }
   };
-
   return (
-  <div className="form-container gradient-border">
-    <h2>Login</h2>
+  <div className="form-container gradient-border center ">
+    <h2>Bem-Vindo/a</h2>
     <form onSubmit={handleSubmit}>
       <div className="form-group">
         <label htmlFor="email">Email:</label>

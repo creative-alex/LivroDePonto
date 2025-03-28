@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+body{
+  margin: 0;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -35,4 +39,35 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.App-button {
+  background: linear-gradient(135deg, #007BFF, #0056b3);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+  margin: 10px;
+  min-width: 180px;
+}
+
+.App-button:hover {
+  background: linear-gradient(135deg, #0056b3, #003d80);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+.App-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(0, 123, 255, 0.2);
+}
+
+.App-button:focus {
+  outline: 2px solid rgba(0, 123, 255, 0.5);
+  outline-offset: 2px;
 }

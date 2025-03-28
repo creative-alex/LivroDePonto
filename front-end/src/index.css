@@ -4,9 +4,18 @@
   --success-color: #a6ff98;
   --danger-color: #ec0402;
   --border-gradient: linear-gradient(to bottom, var(--primary-color), var(--success-color));
-  --text-color: #333;
+  --text-color: #ede8ec;
   --input-border: #6fc1ff;
   --transition: all 0.3s ease;
+  --bg-color: #282c34
+}
+
+h2{
+  font-size: 3vw;
+}
+
+body{
+  background-color: var(--bg-color);
 }
 
 /* Classes utilitárias comuns */
@@ -22,6 +31,13 @@
   align-items: center;
 }
 
+.center{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .capitalize {
   text-transform: capitalize;
 }
@@ -29,11 +45,10 @@
 /* Containers genéricos */
 .form-container {
   width: 100%;
-  max-width: 400px;
-  margin: 25px auto;
+  max-width: 26vw;
   padding: 40px;
+  color: var(--text-color);
   border-radius: 5px;
-  background: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -193,6 +208,7 @@
 .btn-menu{
   width: 7vw;
   height: 7vw;
+  color: var(--text-color);
   background-color: transparent;
   cursor: pointer;
 }
@@ -201,6 +217,9 @@
   justify-self: center;
   width: 22vw;
   height: 7vw;
+  background-color: transparent;
+  color: var(--text-color);
+  cursor: pointer;
 }
 
 table {
