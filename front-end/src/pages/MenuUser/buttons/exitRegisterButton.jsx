@@ -51,7 +51,7 @@ const LeaveButton = ({ username }) => {
   };
 
   return (
-    <button className="btn-menu" onClick={handleClick} disabled={isDisabled}>
+    <button className="btn-menu gradient-border" onClick={handleClick} disabled={isDisabled}>
       {isDisabled ? 'Saída Já Registrada' : 'Registrar Saída'}
     </button>
   );

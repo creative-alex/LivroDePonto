@@ -56,7 +56,7 @@ const AllEntities = () => {
   if (entities.length === 0) return <p>Nenhuma entidade encontrada.</p>;
 
   return (
-    <div className="form-container gradient-border">
+    <div className="form-container gradient-border center">
       <h2 className="login-header">Lista de Entidades - {entityCount}</h2>
       <ul className="entity-card">
         {entities.map((entity, index) => (

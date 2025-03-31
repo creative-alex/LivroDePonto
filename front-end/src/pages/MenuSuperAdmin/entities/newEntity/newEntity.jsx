@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const NovaEntidade = () => {
   const [nome, setNome] = useState('');
@@ -7,7 +9,7 @@ const NovaEntidade = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     const novaEntidade = {
       nome,
       morada,
@@ -29,18 +31,40 @@ const NovaEntidade = () => {
 
       const data = await response.json();
       console.log('Entidade criada com sucesso:', data);
-      
-      // Limpa os campos ou exibir uma mensagem de sucesso
+
+      // ✅ Notificação de Sucesso
+      toast.success('Entidade criada com sucesso!', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+
+      // Limpa os campos
       setNome('');
       setMorada('');
       setNif('');
     } catch (error) {
       console.error('Erro ao enviar requisição:', error);
+
+      // ❌ Notificação de Erro
+      toast.error(`Erro: ${error.message}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     }
   };
 
   return (
-    <div className="form-container gradient-border">
+    <div className="form-container center gradient-border">
       <h2>Criação de Nova Entidade</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -54,7 +78,7 @@ const NovaEntidade = () => {
             required
           />
         </div>
-  
+
         <div className="form-group">
           <label htmlFor="morada">Morada:</label>
           <input
@@ -66,7 +90,7 @@ const NovaEntidade = () => {
             required
           />
         </div>
-  
+
         <div className="form-group">
           <label htmlFor="nif">NIF:</label>
           <input
@@ -78,13 +102,15 @@ const NovaEntidade = () => {
             required
           />
         </div>
-  
+
         <button className="btn btn-primary" type="submit">
           Criar Entidade
         </button>
       </form>
+
+      <ToastContainer />
     </div>
-  );  
+  );
 };
 
 export default NovaEntidade;

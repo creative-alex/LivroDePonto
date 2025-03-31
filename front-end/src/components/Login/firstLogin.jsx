@@ -33,15 +33,16 @@ const FirstLoginComponent = ({ onComplete }) => {
   };
 
   return (
-    <div>
+    <div className="form-container center gradient-border">
       <h2>Alterar Senha</h2>
       <input
         type="password"
         placeholder="Nova Senha"
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
+        className="form-input"
       />
-      <button onClick={handlePasswordChange}>Confirmar</button>
+      <button className="btn" style={{ marginTop: "10px" }} onClick={handlePasswordChange}>Confirmar</button>
       {error && <p>{error}</p>}
     </div>
   );

@@ -11,7 +11,7 @@
 }
 
 h2{
-  font-size: 3vw;
+  font-size: 2.5vw;
 }
 
 body{
@@ -50,7 +50,10 @@ body{
   color: var(--text-color);
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  margin: 0 auto; /* Centraliza horizontalmente */
 }
+
 
 /* Elementos de formulário */
 .form-group {
@@ -106,14 +109,6 @@ body{
   padding-right: 30px;
 }
 
-/* Botões */
-.btn {
-  padding: 10px 20px;
-  border-radius: 3px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: var(--transition);
-}
 
 .btn-primary {
   background-color: var(--primary-color);
@@ -148,14 +143,12 @@ body{
   width: 40vw;
   max-width: 350px;
   padding: 20px;
-  background: #fff;
 }
 
 .list-item {
   list-style-type: none;
   padding: 8px 12px;
   margin: 5px 0;
-  background: #fff;
   border-radius: 5px;
   transition: transform 0.2s ease, background 0.3s ease;
   cursor: pointer;
@@ -163,7 +156,8 @@ body{
 }
 
 .list-item:hover {
-  background: #e3e3e3;
+  border: 1px solid ;
+  border-image: var(--border-gradient);
   transform: translateX(5px);
 }
 
@@ -190,6 +184,7 @@ body{
 
 .table-container {
   width: 30vw;
+  color: var(--text-color);
   justify-self: center;
   padding: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
@@ -236,17 +231,14 @@ th, td {
 }
 
 th {
-  background-color: #f4f4f4;
+  background-color: #f9f9f99a ;
   font-weight: bold;
 }
 
 tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #f9f9f99a;
 }
 
-tr:hover {
-  background-color: #e3f2fd;
-}
 
 .total-row {
   font-weight: bold;
@@ -263,15 +255,15 @@ tr:hover {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 12px; /* Espaço entre o título e os botões */
+  gap: 12px; 
 }
 
 .months-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 colunas */
-  grid-template-rows: repeat(3, auto); /* 3 linhas */
-  gap: 10px; /* Espaço entre os botões */
-  max-width: 400px; /* Ajusta conforme necessário */
+  grid-template-columns: repeat(4, 1fr); 
+  grid-template-rows: repeat(3, auto); 
+  gap: 10px; 
+  max-width: 400px; 
   width: 100%;
   justify-content: center;
 }
@@ -279,9 +271,9 @@ tr:hover {
 .btn {
   padding: 10px 15px;
   font-size: 1rem;
-  background-color: #007bff;
+  border: 1px solid #2496ff;
   color: white;
-  border: none;
+  background-color: transparent;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -291,4 +283,15 @@ tr:hover {
   background-color: #0056b3;
 }
 
+.excel-btn {
+  display: block;
+  margin: 0 auto;
+  width: 15vw; 
+  border: 1px solid #a6ff98;
+  border-image-slice: 1;
+  background-color: transparent;
+  height: 5vw;
+  color: var(--text-color);
+  cursor: pointer;
+}
 

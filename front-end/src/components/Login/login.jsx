@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { UserContext } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom"; // Importar o hook
 
 // Carregar variáveis de ambiente
 const firebaseConfig = {
@@ -17,6 +18,7 @@ const Login = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { username, setUsername } = useContext(UserContext);
+  const navigate = useNavigate(); // Inicializar o hook
 
   useEffect(() => {
     const checkLocalStorage = () => {
@@ -83,13 +85,22 @@ const Login = ({ onLoginSuccess }) => {
 
       if (!roleResponse.ok) throw new Error(roleData.message || "Erro ao obter informações do user");
 
-      // Passa o papel, nome e isFirstLogin para o App
+      // Passa o papel, nome e isFirstLogin 
       onLoginSuccess(roleData.role, roleData.nome, roleData.isFirstLogin, user.email);
       console.log("Login bem-sucedido, passando dados para o App:", roleData);
 
       // Atualiza o contexto
       setUsername(roleData.nome);
       console.log("Nome do usuário atualizado no contexto:", roleData.nome);
+      
+      // Redireciona o usuário com base no papel
+      if (roleData.role === "SuperAdmin") {
+        navigate("/admin"); // Redireciona para o menu de admin
+      } else if (roleData.isFirstLogin) {
+        navigate("/first-login"); // Redireciona para o primeiro login
+      } else {
+        navigate("/home"); // Redireciona para o menu de usuário
+      }
       
     } catch (error) {
       setError(error.message);

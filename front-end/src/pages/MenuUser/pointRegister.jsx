@@ -6,22 +6,35 @@ const feriadosPorto = [
 ];
 
 const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
+  console.log("Componente TableHours renderizado");
+  console.log("Props recebidas:", { username, month });
+
   const [dados, setDados] = useState(() => {
     const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
-    return Array.from({ length: diasNoMes }, (_, i) => ({
+    console.log("Dias no mês (inicial):", diasNoMes);
+    const estruturaInicial = Array.from({ length: diasNoMes }, (_, i) => ({
       dia: `${String(i + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`,
       horaEntrada: "-",
       horaSaida: "-",
       total: "-",
       extra: "-",
     }));
+    console.log("Estrutura inicial de dados:", estruturaInicial);
+    return estruturaInicial;
   });
-  
-  const [totais, setTotais] = useState({ totalHoras: "0h 0m", totalExtras: "0h 0m", diasFalta: 0, diasFerias: 0 });
+
+  const [totais, setTotais] = useState({
+    totalHoras: "0h 0m",
+    totalExtras: "0h 0m",
+    diasFalta: 0,
+    diasFerias: 0,
+  });
 
   useEffect(() => {
+    console.log("Entrando no useEffect com deps:", { username, month });
+
     if (!username) {
-      console.log("Parâmetros inválidos:", { username, month });
+      console.warn("Parâmetros inválidos:", { username, month });
       return;
     }
 
@@ -29,7 +42,12 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
 
     const fetchData = async () => {
       try {
-        console.log("Enviando requisição para API...");
+        console.log("Enviando requisição para API com:", {
+          url: "http://localhost:4005/users/calendar",
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, month }),
+        });
 
         const response = await fetch("http://localhost:4005/users/calendar", {
           method: "POST",
@@ -37,15 +55,23 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
           body: JSON.stringify({ username, month }),
         });
 
-        console.log("Resposta recebida:", response);
+        console.log("Resposta recebida da API:", response);
 
-        if (!response.ok) throw new Error("Erro na resposta da API");
+        if (!response.ok) {
+          console.error("Erro na resposta da API:", response.status, response.statusText);
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
 
-        const { registros = [], ferias = [] } = await response.json();
-        console.log("Registos recebidos:", registros);
+        const respostaJson = await response.json();
+        console.log("Dados JSON recebidos da API:", respostaJson);
+
+        const { registros = [], ferias = [] } = respostaJson;
+
+        console.log("Registros obtidos:", registros);
+        console.log("Dias de férias obtidos:", ferias);
 
         const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
-        console.log("Número de dias no mês:", diasNoMes);
+        console.log("Número de dias no mês (pós-API):", diasNoMes);
 
         let totalMinutos = 0;
         let totalMinutosExtras = 0;
@@ -63,6 +89,7 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
         console.log("Estrutura inicial de novosDados:", novosDados);
 
         const hoje = new Date();
+        console.log("Data atual:", hoje);
 
         novosDados = novosDados.map((item, index) => {
           const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
@@ -70,7 +97,12 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
           const feriado = feriadosPorto.includes(item.dia);
           const registo = registros.find((r) => new Date(r.timestamp).getDate() === index + 1);
 
-          console.log(`Processando dia ${index + 1}:`, { dataAtual, diaSemana, feriado, registo });
+          console.log(`Processando dia ${index + 1}:`, {
+            dataAtual,
+            diaSemana,
+            feriado,
+            registo,
+          });
 
           if (registo) {
             console.log("Registo encontrado:", registo);
@@ -88,10 +120,12 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
               extra,
             };
           } else if (dataAtual < hoje && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
-            console.log(`Dia ${index + 1} sem registo. Contabilizando como falta.`);
+            console.warn(`Dia ${index + 1} sem registo. Contabilizando como falta.`);
             diasFalta++;
             return { ...item, total: "0h 0m" };
           }
+
+          console.log(`Dia ${index + 1} é fim de semana ou feriado.`);
           return item;
         });
 
@@ -101,14 +135,14 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
           totalHoras: formatarMinutos(totalMinutos),
           totalExtras: formatarMinutos(totalMinutosExtras),
           diasFalta,
-          diasFerias
+          diasFerias,
         });
 
         setTotais({
           totalHoras: formatarMinutos(totalMinutos),
           totalExtras: formatarMinutos(totalMinutosExtras),
           diasFalta,
-          diasFerias
+          diasFerias,
         });
 
         setDados(novosDados);
@@ -119,7 +153,8 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 10000);
+    const interval = setInterval(fetchData, 1000000);
+    console.log("Intervalo configurado para 10 segundos.");
 
     return () => {
       console.log("Limpando intervalo.");
@@ -127,7 +162,7 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
     };
   }, [username, month]);
 
-  console.log("Estado final de dados:", dados);
+  console.log("Estado final de dados antes de renderizar:", dados);
 
 
   return (

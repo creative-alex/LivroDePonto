@@ -411,12 +411,15 @@ const checkLeave = async (req, res) => {
 };
 const getUserRecords = async (req, res) => {
   try {
+    console.log("✅ Iniciando getUserRecords...");
+    console.log("📥 Dados recebidos no body:", req.body);
+
     const { username, month } = req.body;
+
     if (!username || !month) {
       console.log("❌ Erro: Nome de user e mês são obrigatórios.");
       return res.status(400).json({ error: "O nome de user e o mês são obrigatórios" });
     }
-
 
     let userId = username
       .toLowerCase()
@@ -424,6 +427,7 @@ const getUserRecords = async (req, res) => {
       .replace(/\p{Diacritic}/gu, "")
       .replace(/\s+/g, "-");
 
+    console.log("🆔 userId formatado:", userId);
 
     const admin = require("firebase-admin");
     const db = admin.firestore();
@@ -431,14 +435,19 @@ const getUserRecords = async (req, res) => {
     const now = new Date();
     const year = now.getFullYear();
     const firstDay = new Date(year, month - 1, 1);
-    const lastDay = new Date(year, month, 0);
+    const lastDay = new Date(year, month, 1, 23, 59, 59);
 
+
+    console.log("📅 Período definido:");
+    console.log("➡️ Primeiro dia:", firstDay);
+    console.log("➡️ Último dia:", lastDay);
 
     const registrosRef = db
       .collection("registro-ponto")
       .doc(`user_${userId}`)
       .collection("Registros");
 
+    console.log("🔍 Consultando registros de ponto...");
 
     const snapshot = await registrosRef
       .where("timestamp", ">=", firstDay)
@@ -446,52 +455,69 @@ const getUserRecords = async (req, res) => {
       .orderBy("timestamp", "asc")
       .get();
 
+    console.log("📊 Snapshot de registros retornado:");
+    console.log("➡️ Quantidade de registros encontrados:", snapshot.size);
 
     // Criar lista de todas as datas possíveis no formato "DD-MM"
     const listaDeDatas = [];
     let tempDate = new Date(firstDay);
     while (tempDate <= lastDay) {
-      let dd = String(tempDate.getDate()).padStart(2, '0');
-      let mm = String(tempDate.getMonth() + 1).padStart(2, '0');
+      let dd = String(tempDate.getDate()).padStart(2, "0");
+      let mm = String(tempDate.getMonth() + 1).padStart(2, "0");
       listaDeDatas.push(`${dd}-${mm}`);
       tempDate.setDate(tempDate.getDate() + 1);
     }
 
+    console.log("📅 Lista de datas geradas:", listaDeDatas);
 
-    // Verificação de férias com divisão em lotes de 30 valores
     const feriasRef = db
       .collection("registro-ponto")
       .doc(`user_${userId}`)
       .collection("Ferias");
 
-
     let feriasDates = [];
+    console.log("🌴 Consultando férias em lotes de 30...");
+
     for (let i = 0; i < listaDeDatas.length; i += 30) {
       const batch = listaDeDatas.slice(i, i + 30);
+      console.log(`🔍 Buscando férias para o lote: ${i / 30 + 1}`, batch);
+
       const feriasSnapshot = await feriasRef.where("date", "in", batch).get();
-      feriasDates.push(...feriasSnapshot.docs.map(doc => doc.data().date));
+      console.log("➡️ Férias encontradas neste lote:", feriasSnapshot.size);
+
+      feriasDates.push(...feriasSnapshot.docs.map((doc) => doc.data().date));
     }
 
+    console.log("🌴 Lista final de datas de férias:", feriasDates);
 
     if (snapshot.empty && feriasDates.length === 0) {
       console.log("⚠️ Nenhum registro encontrado para o mês informado");
       return res.status(404).json({ error: "Nenhum registro encontrado para o mês informado" });
     }
 
-    const registros = snapshot.docs.map(doc => {
+    const registros = snapshot.docs.map((doc) => {
       const data = doc.data();
-      const dataFormatada = data.timestamp.toDate().toISOString().split('T')[0];
-      const diaMesFormatado = dataFormatada.split('-').reverse().slice(0, 2).join('-');
+      const dataFormatada = data.timestamp.toDate().toISOString().split("T")[0];
+      const diaMesFormatado = dataFormatada.split("-").reverse().slice(0, 2).join("-");
 
       const status = feriasDates.includes(diaMesFormatado) ? "Férias" : "Trabalho";
+
+      console.log("📅 Registro processado:", {
+        timestamp: data.timestamp.toDate().toISOString(),
+        horaEntrada: data.horaEntrada || "-",
+        horaSaida: data.horaSaida || "-",
+        status,
+      });
 
       return {
         timestamp: data.timestamp.toDate().toISOString(),
         horaEntrada: data.horaEntrada || "-",
         horaSaida: data.horaSaida || "-",
-        status
+        status,
       };
     });
+
+    console.log("✅ Registros finais:", registros);
 
     return res.status(200).json({ registros, ferias: feriasDates });
   } catch (error) {
@@ -499,6 +525,7 @@ const getUserRecords = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
 const updateUserTime = async (req, res) => {
   try {
 

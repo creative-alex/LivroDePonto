@@ -82,7 +82,7 @@ const NewUser = () => {
   };
 
   return (
-    <div className="form-container gradient-border">
+    <div className="form-container center gradient-border">
       <h2>Criação de Novo User</h2>
       {message && <p className="error-unique">{message}</p>}
       <form onSubmit={handleSubmit}>

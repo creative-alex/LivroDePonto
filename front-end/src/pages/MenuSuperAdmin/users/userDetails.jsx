@@ -126,42 +126,49 @@ const UserDetails = ({ selectedUser }) => {
 
   const handleSubmitClick = async () => {
     try {
-      const response = await fetch("http://localhost:4005/users/updateUserDetails", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editedData), 
-      });
-  
-      if (!response.ok) throw new Error("Erro ao atualizar user");
-  
-      const updatedData = await response.json();
-      setIsEditing(false);
-      setUserDetails(updatedData);
-      
-      // 🔴 Oculta os detalhes após o submit
-      setShowDetails(false);
+        const response = await fetch("http://localhost:4005/users/updateUserDetails", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(editedData),
+        });
+
+        if (!response.ok) throw new Error("Erro ao atualizar user");
+
+        const updatedData = await response.json();
+        setIsEditing(false);
+        setUserDetails(updatedData);
+
+        // 🔴 Oculta os detalhes após o submit
+        setShowDetails(false);
+
+        // 🔴 Verifica se o nome foi alterado antes de navegar
+        if (editedData.nome !== userDetails.nome) {
+            navigate(-1); // Volta para a página anterior
+        }else {
+          window.location.reload(); // Recarrega a página
+      }
     } catch (err) {
-      console.error("Error updating user data:", err.message);
-      setError(err.message);
+        console.error("Error updating user data:", err.message);
+        setError(err.message);
     }
-  };
+};
   
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p style={{ color: "red" }}>⚠ Erro: {error.message}</p>;
 
-  if (!showDetails) return null; // Ou uma mensagem: return <p>✅ Dados atualizados com sucesso!</p>;
+  if (!showDetails) return null; 
 
   return (
     <div className='flex'>
        {isEditing ? (
-  <div className="table-container">
+  <div className="form-container  gradient-border">
     <p className="input-group">
       <strong className="input-label">Nome:</strong>
       <input 
-        className="input-field" 
         type="text" 
         name="nome" 
+        className="form-input"
         value={editedData?.nome || ""} 
         onChange={handleInputChange} 
       />
@@ -169,7 +176,7 @@ const UserDetails = ({ selectedUser }) => {
     <p className="input-group">
       <strong className="input-label">Email:</strong>
       <input 
-        className="input-field" 
+        className="form-input" 
         type="text" 
         name="email" 
         value={editedData?.email || ""} 
@@ -180,14 +187,15 @@ const UserDetails = ({ selectedUser }) => {
       <strong className="input-label">Entidade:</strong> 
     </p>
     <EntidadeSelect 
-      className="input-field"
-      selectedEntity={editedData?.entidade || ""} 
-      onChange={handleEntidadeChange} 
+        className="form-select"
+        value={editedData?.entidade || ""} 
+        selectedEntity={editedData?.entidade || ""} 
+        onChange={handleEntidadeChange} 
     />
     <p className="input-group">
       <strong className="input-label">Função na Empresa:</strong>
       <input 
-        className="input-field" 
+        className="form-input" 
         type="text" 
         name="role" 
         value={editedData?.role || ""} 
@@ -197,7 +205,7 @@ const UserDetails = ({ selectedUser }) => {
     <p className="input-group">
       <strong className="input-label">Nova Password Temporária:</strong>
       <input 
-        className="input-field" 
+        className="form-input" 
         type="password" 
         name="newPassword" 
         minLength="6" 
@@ -205,23 +213,23 @@ const UserDetails = ({ selectedUser }) => {
         onChange={handleInputChange} 
       />
     </p>
-    <div className="button-group">
-      <button className="submit-button" onClick={handleSubmitClick}>Submeter</button>
-      <button className="cancel-button" onClick={handleCancelClick}>Cancelar</button>
+    <div className="button-container">
+      <button className="btn" onClick={handleSubmitClick}>Submeter</button>
+      <button className="btn" onClick={handleCancelClick}>Cancelar</button>
+      <DeleteUser onClick={handleDeleteClick} />   
     </div>
   </div>
 ) : (
-  <div className="table-container">
+  <div className="table-container  gradient-border">
     <ul>
       <li className='list-item'><strong>Nome:</strong> {userDetails.nome || "N/A"}</li>
       <li className='list-item'><strong>Email:</strong> {userDetails.email || "N/A"}</li>
       <li className='list-item'><strong>Entidade:</strong> {userDetails.entidade || "N/A"}</li>
       <li className='list-item'><strong>Função na Empresa:</strong> {userDetails.role}</li>
     </ul>
-    <div className="details-buttons">
+    <div className="button-container">
       <EditButton onClick={handleEditClick} />
       <ShowTimeLine onClick={handleShowTimeLine} />
-      <DeleteUser onClick={handleDeleteClick} />   
     </div>
             
 

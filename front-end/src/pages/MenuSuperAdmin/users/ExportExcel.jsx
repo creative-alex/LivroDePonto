@@ -106,7 +106,7 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const monthName = getMonthName(month);
-    const fileName = `registo_${monthName}_${username}.xlsx`;
+    const fileName = `Registo_${monthName}_${username}.xlsx`;
 
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -115,7 +115,7 @@ const ExportExcel = ({ dados, totais, username, month }) => {
   };
 
   return (
-    <button onClick={exportToExcel} className="ex">
+    <button onClick={exportToExcel} className="excel-btn">
       Exportar para Excel
     </button>
   );

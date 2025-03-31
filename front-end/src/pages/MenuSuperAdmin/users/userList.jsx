@@ -36,7 +36,7 @@ const UserList = ({ setSelectedUser }) => {
   if (error) return <p style={{ color: "red" }}>⚠ Erro: {error}</p>;
 
   return (
-    <div className="form-container gradient-border">
+    <div className="form-container center gradient-border">
       <h2 className="login-header">Colaboradores de {entityName}</h2>
       {employees.length > 0 ? (
         <ul className="entity-card">

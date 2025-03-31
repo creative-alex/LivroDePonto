@@ -84,8 +84,8 @@ const App = () => {
     </div>
   );
 
-  console.log(username);
 
+  
   return (
     <Router>
       <Routes>

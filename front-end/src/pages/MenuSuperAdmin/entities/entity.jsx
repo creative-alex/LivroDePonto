@@ -78,25 +78,24 @@ const Entity = () => {
   if (!entityData) return <p>Carregando...</p>;
 
   return (
-    <div className="form-container gradient-border">
-      <h2>Entidade Selecionada</h2>
+    <div className="form-container center gradient-border">
+      <h2>{entityData.nome}</h2>
       {isEditing ? (
         <div className="entidade-info">
-          <p><strong>Nome:</strong> <input type="text" name="nome" value={editedData?.nome || ""} onChange={handleInputChange} /></p>
-          <p><strong>NIF:</strong> <input type="text" name="nif" value={editedData?.nif || ""} onChange={handleInputChange} /></p>
-          <p><strong>Morada:</strong> <input type="text" name="morada" value={editedData?.morada || ""} onChange={handleInputChange} /></p>
-          <div className="entidade-botoes">
-            <button onClick={handleSubmitClick}>Submeter</button>
-            <button className="cancelar" onClick={handleCancelClick}>Cancelar</button>
+          <p><strong>Nome:</strong> <input className="form-input" type="text" name="nome" value={editedData?.nome || ""} onChange={handleInputChange} /></p>
+          <p><strong>NIF:</strong> <input className="form-input" type="text" name="nif" value={editedData?.nif || ""} onChange={handleInputChange} /></p>
+          <p><strong>Morada:</strong> <input className="form-input" type="text" name="morada" value={editedData?.morada || ""} onChange={handleInputChange} /></p>
+          <div className="button-container">
+            <button className="btn" onClick={handleSubmitClick}>Submeter</button>
+            <button className="btn" onClick={handleCancelClick}>Cancelar</button>
           </div>
         </div>
       ) : (
         <div className="entidade-info">
-          <p><strong>Nome:</strong> {entityData.nome}</p>
           <p><strong>NIF:</strong> {entityData.nif}</p>
           <p><strong>Morada:</strong> {entityData.morada}</p>
           <p><strong>Número de Colaboradores:</strong> {entityData.userCount}</p>
-          <div className="entidade-botoes">
+          <div className="button-container">
             <EditButton onClick={handleEditClick} />
             <ShowEmployeesButton onClick={handleShowEmployeesClick} />
           </div>
