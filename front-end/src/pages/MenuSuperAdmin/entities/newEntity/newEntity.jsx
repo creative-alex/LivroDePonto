@@ -98,6 +98,8 @@ const NovaEntidade = () => {
             type="text"
             className="form-input"
             value={nif}
+            minLength={9}
+            maxLength={9}
             onChange={(e) => setNif(e.target.value)}
             required
           />

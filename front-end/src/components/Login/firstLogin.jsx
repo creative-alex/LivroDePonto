@@ -1,19 +1,25 @@
 import React, { useState, useContext } from "react";
 import { UserContext } from "../../context/UserContext";
-import { useNavigate } from "react-router-dom"; // Importando useNavigate
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify"; // Importando Toastify
+import "react-toastify/dist/ReactToastify.css"; // Importando estilos do Toastify
 
 const FirstLoginComponent = ({ onComplete }) => {
   const [newPassword, setNewPassword] = useState("");
-  const [error, setError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const { userEmail } = useContext(UserContext);
-  const navigate = useNavigate(); // Usando o hook useNavigate para navegação
+  const navigate = useNavigate();
 
   const handlePasswordChange = async () => {
     try {
       if (!userEmail) {
         throw new Error("Erro: usuário não encontrado.");
       }
-      
+
+      if (newPassword !== confirmPassword) {
+        throw new Error("As senhas não coincidem.");
+      }
+
       const response = await fetch("http://localhost:4005/users/updateFirstLogin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,12 +34,13 @@ const FirstLoginComponent = ({ onComplete }) => {
 
       onComplete(); // Fecha o componente após sucesso
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message); // Exibe o erro como um toast
     }
   };
 
   return (
     <div className="form-container center gradient-border">
+      <ToastContainer position="top-center" autoClose={3000} /> {/* Container para os toasts */}
       <h2>Alterar Senha</h2>
       <input
         type="password"
@@ -42,8 +49,17 @@ const FirstLoginComponent = ({ onComplete }) => {
         onChange={(e) => setNewPassword(e.target.value)}
         className="form-input"
       />
-      <button className="btn" style={{ marginTop: "10px" }} onClick={handlePasswordChange}>Confirmar</button>
-      {error && <p>{error}</p>}
+      <input
+        type="password"
+        placeholder="Confirme a Nova Senha"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        className="form-input"
+        style={{ marginTop: "10px" }}
+      />
+      <button className="btn" style={{ marginTop: "10px" }} onClick={handlePasswordChange}>
+        Confirmar
+      </button>
     </div>
   );
 };

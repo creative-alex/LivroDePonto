@@ -97,8 +97,8 @@ const TableHours = ({ username, month }) => {
     };
   
     fetchData();
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
+   /*  const interval = setInterval(fetchData, 10);
+    return () => clearInterval(interval); */
   }, [username, month]); 
   const ativarEdicao = (index, campo, valorAtual) => {
     setEditando({ index, campo });

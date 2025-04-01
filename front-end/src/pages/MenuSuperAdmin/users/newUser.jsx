@@ -18,6 +18,21 @@ const NewUser = () => {
     event.preventDefault();
     setMessage('');
 
+    // Validação do formato do e-mail
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Por favor, insira um e-mail válido.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+
     const newUser = { nome, email, entidade, role };
 
     try {
@@ -118,6 +133,7 @@ const NewUser = () => {
             className="form-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            minLength={6}
             required
           />
         </div>

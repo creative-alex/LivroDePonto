@@ -14,6 +14,10 @@ h2{
   font-size: 2.5vw;
 }
 
+*{
+  font-family: 'Poppins', sans-serif;
+}
+
 body{
   background-color: var(--bg-color);
 }
@@ -206,6 +210,7 @@ body{
   color: var(--text-color);
   background-color: transparent;
   cursor: pointer;
+  font-size: 1vw;
 }
 
 .logout{
@@ -215,6 +220,7 @@ body{
   background-color: transparent;
   color: var(--text-color);
   cursor: pointer;
+  font-size: 1vw;
 }
 
 table {
