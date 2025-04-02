@@ -14,6 +14,7 @@ const TableHours = ({ username, month }) => {
   const [editando, setEditando] = useState(null);
   const [novoValor, setNovoValor] = useState("");
   const [contextMenu, setContextMenu] = useState(null);
+  const [atualizar, setAtualizar] = useState(false); // Novo estado para controlar atualizações
   
   useEffect(() => {
     if (!username || !month) return;
@@ -97,9 +98,7 @@ const TableHours = ({ username, month }) => {
     };
   
     fetchData();
-   /*  const interval = setInterval(fetchData, 10);
-    return () => clearInterval(interval); */
-  }, [username, month]); 
+  }, [username, month, atualizar]); // Adicione 'atualizar' como dependência
   const ativarEdicao = (index, campo, valorAtual) => {
     setEditando({ index, campo });
     setNovoValor(valorAtual === "-" ? "" : valorAtual);
@@ -125,6 +124,7 @@ const TableHours = ({ username, month }) => {
       });
 
       console.log("📩 Resposta do servidor:", response);
+      setAtualizar(!atualizar); // Alterne o estado para disparar o useEffect
     } catch (error) {
       console.error("❌ Erro ao atualizar hora:", error);
     }
