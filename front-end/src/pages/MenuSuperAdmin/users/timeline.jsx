@@ -14,91 +14,91 @@ const TableHours = ({ username, month }) => {
   const [editando, setEditando] = useState(null);
   const [novoValor, setNovoValor] = useState("");
   const [contextMenu, setContextMenu] = useState(null);
-  const [atualizar, setAtualizar] = useState(false); // Novo estado para controlar atualizações
   
   useEffect(() => {
     if (!username || !month) return;
-  
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:4005/users/calendar", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, month }),
-        });
-  
-        const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
-        let totalMinutos = 0;
-        let totalMinutosExtras = 0;
-  
-        let novosDados = Array.from({ length: diasNoMes }, (_, i) => ({
-          dia: `${String(i + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`,
-          horaEntrada: "-",
-          horaSaida: "-",
-          total: "-",
-          extra: "-",
-          isFerias: false,
-        }));
-  
-        const data = response.ok ? await response.json() : { registos: [], ferias: [] };
-        const registos = Array.isArray(data.registros) ? data.registros : [];
-        const ferias = Array.isArray(data.ferias) ? data.ferias : [];
-  
-        const hoje = new Date();
-  
-        novosDados = novosDados.map((item, index) => {
-          const registo = registos.find((r) => new Date(r.timestamp).getDate() === index + 1);
-          const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
-          const diaSemana = dataAtual.getDay();
-          const feriado = feriadosPorto.includes(`${String(index + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`);
-          const estaDeFerias = ferias.includes(item.dia);
-  
-          if (estaDeFerias) {
-            return { ...item, horaEntrada: "Férias", horaSaida: "Férias", total: "Férias", extra: "Férias", isFerias: true };
-          }
-  
-          if (registo) {
-            const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
-            totalMinutos += minutos;
-            totalMinutosExtras += minutosExtras;
-            return {
-              ...item,
-              horaEntrada: registo.horaEntrada || "-",
-              horaSaida: registo.horaSaida || "-",
-              total,
-              extra,
-            };
-          } else if (!estaDeFerias && dataAtual < hoje && dataAtual.toDateString() !== hoje.toDateString() && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
-            return { ...item, horaEntrada: "-", horaSaida: "-", total: "0h 0m", extra: "0h 0m" };
-          }
-  
-          return item;
-        });
-  
-        const diasFalta = novosDados.filter(d => d.total === "0h 0m" && !d.isFerias).length;
-        const diasFerias = novosDados.filter(d => d.isFerias).length;
 
-        setTotais({
-          totalHoras: formatarMinutos(totalMinutos),
-          totalExtras: formatarMinutos(totalMinutosExtras),
-          diasFalta,
-          diasFerias
-        });
-
-  
-        setDados(novosDados);
-      } catch (error) {
-        console.error("❌ Erro ao buscar horários:", error);
-        setTotais({
-          totalHoras: "0h 0m",
-          totalExtras: "0h 0m",
-          totalFaltas: "0h 0m",
-        });
-      }
-    };
-  
     fetchData();
-  }, [username, month, atualizar]); // Adicione 'atualizar' como dependência
+  }, [username, month]);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:4005/users/calendar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, month }),
+      });
+  
+      const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
+      let totalMinutos = 0;
+      let totalMinutosExtras = 0;
+  
+      let novosDados = Array.from({ length: diasNoMes }, (_, i) => ({
+        dia: `${String(i + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`,
+        horaEntrada: "-",
+        horaSaida: "-",
+        total: "-",
+        extra: "-",
+        isFerias: false,
+      }));
+  
+      const data = response.ok ? await response.json() : { registos: [], ferias: [] };
+      const registos = Array.isArray(data.registros) ? data.registros : [];
+      const ferias = Array.isArray(data.ferias) ? data.ferias : [];
+  
+      const hoje = new Date();
+  
+      novosDados = novosDados.map((item, index) => {
+        const registo = registos.find((r) => new Date(r.timestamp).getDate() === index + 1);
+        const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
+        const diaSemana = dataAtual.getDay();
+        const feriado = feriadosPorto.includes(`${String(index + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`);
+        const estaDeFerias = ferias.includes(item.dia);
+  
+        if (estaDeFerias) {
+          return { ...item, horaEntrada: "Férias", horaSaida: "Férias", total: "Férias", extra: "Férias", isFerias: true };
+        }
+  
+        if (registo) {
+          const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
+          totalMinutos += minutos;
+          totalMinutosExtras += minutosExtras;
+          return {
+            ...item,
+            horaEntrada: registo.horaEntrada || "-",
+            horaSaida: registo.horaSaida || "-",
+            total,
+            extra,
+          };
+        } else if (!estaDeFerias && dataAtual < hoje && dataAtual.toDateString() !== hoje.toDateString() && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
+          return { ...item, horaEntrada: "-", horaSaida: "-", total: "0h 0m", extra: "0h 0m" };
+        }
+  
+        return item;
+      });
+  
+      const diasFalta = novosDados.filter(d => d.total === "0h 0m" && !d.isFerias).length;
+      const diasFerias = novosDados.filter(d => d.isFerias).length;
+
+      setTotais({
+        totalHoras: formatarMinutos(totalMinutos),
+        totalExtras: formatarMinutos(totalMinutosExtras),
+        diasFalta,
+        diasFerias
+      });
+
+  
+      setDados(novosDados);
+    } catch (error) {
+      console.error("❌ Erro ao buscar horários:", error);
+      setTotais({
+        totalHoras: "0h 0m",
+        totalExtras: "0h 0m",
+        totalFaltas: "0h 0m",
+      });
+    }
+  };
+  
   const ativarEdicao = (index, campo, valorAtual) => {
     setEditando({ index, campo });
     setNovoValor(valorAtual === "-" ? "" : valorAtual);
@@ -124,7 +124,9 @@ const TableHours = ({ username, month }) => {
       });
 
       console.log("📩 Resposta do servidor:", response);
-      setAtualizar(!atualizar); // Alterne o estado para disparar o useEffect
+
+      // Recarregar os dados após salvar a edição
+      await fetchData();
     } catch (error) {
       console.error("❌ Erro ao atualizar hora:", error);
     }
@@ -134,8 +136,8 @@ const TableHours = ({ username, month }) => {
   const abrirContextMenu = (event, index) => {
     event.preventDefault();
     setContextMenu({
-      x: event.pageX, // Usa pageX para considerar o scroll
-      y: event.pageY, // Usa pageY para evitar deslocamento
+      x: event.pageX, 
+      y: event.pageY, 
       index,
       dia: dados[index].dia,
       isFerias: dados[index].isFerias
