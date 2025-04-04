@@ -216,8 +216,8 @@ const UserDetails = ({ selectedUser }) => {
     <div className="button-container">
       <button className="btn" onClick={handleSubmitClick}>Submeter</button>
       <button className="btn" onClick={handleCancelClick}>Cancelar</button>
-      <DeleteUser onClick={handleDeleteClick} />   
     </div>
+    <DeleteUser  onClick={handleDeleteClick} />   
   </div>
 ) : (
   <div className="table-container  gradient-border">

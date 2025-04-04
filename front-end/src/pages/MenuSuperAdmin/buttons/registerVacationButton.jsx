@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const RegisterVacation = ({ username, date }) => {
+const RegisterVacation = ({ username, date, onSuccess }) => {
   const [ferias, setFerias] = useState([]);
 
   const marcarFerias = async () => {
@@ -15,6 +15,7 @@ const RegisterVacation = ({ username, date }) => {
 
         console.log("📩 Resposta do servidor para férias:", response);
         setFerias([...ferias, date]);
+        if (onSuccess) onSuccess(); // Chama a função passada como prop
       } catch (error) {
         console.error("❌ Erro ao marcar férias:", error);
       }

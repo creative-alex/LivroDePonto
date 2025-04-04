@@ -1,6 +1,6 @@
 import React from 'react';
 
-const DeleteRegister = ({ username, date, onDelete }) => {
+const DeleteRegister = ({ username, date, onDelete, onSuccess }) => {
   const apagarregisto = async () => {
     try {
       const response = await fetch("http://localhost:4005/users/deleteRegister", {
@@ -15,6 +15,7 @@ const DeleteRegister = ({ username, date, onDelete }) => {
 
       console.log("🗑️ registo apagado para o dia:", date);
       if (onDelete) onDelete(date);
+      if (onSuccess) onSuccess(); 
     } catch (error) {
       console.error("❌ Erro ao apagar registo:", error);
     }

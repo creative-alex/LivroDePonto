@@ -146,19 +146,20 @@ const TableHours = ({ username, month }) => {
     
   return (
     <>
-     {contextMenu && (
-  <div className="context-menu"
-    style={{
-      top: contextMenu.y,
-      left: contextMenu.x,
-    }}
-    onClick={() => setContextMenu(null)} 
-  >
-    <RegisterVacation  username={username} date={contextMenu.dia} />
-    <DeleteRegister username={username} date={contextMenu.dia} />
-    <button>Cancelar</button>
-  </div>
-)}
+    {contextMenu && (
+      <div
+        className="context-menu"
+        style={{
+          top: contextMenu.y,
+          left: contextMenu.x,
+        }}
+        onClick={() => setContextMenu(null)}
+      >
+        <RegisterVacation username={username} date={contextMenu.dia} onSuccess={fetchData} />
+        <DeleteRegister username={username} date={contextMenu.dia} onSuccess={fetchData} />
+        <button>Cancelar</button>
+      </div>
+    )}
 
       <div className="table-container">
         <table>
