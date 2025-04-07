@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom"; // Importar Link e useLocation
 import EditButton from '../buttons/editEntityButton';
 import ShowTimeLine from '../buttons/showTimelineButton';
 import TimeLine from './timeline';
@@ -17,7 +17,12 @@ const UserDetails = ({ selectedUser }) => {
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [showDetails, setShowDetails] = useState(true);
   const navigate = useNavigate(); // Obtém a função navigate
+  const location = useLocation(); // Obter a localização atual
 
+  // Dividir o caminho em segmentos
+  const pathSegments = location.pathname
+    .split("/")
+    .filter((segment) => segment); // Remove segmentos vazios
 
   // Pega o uid do selectedUser, se não existir, pega do localStorage
   const userName = selectedUser?.uid || localStorage.getItem("selectedUserUID");
@@ -161,6 +166,24 @@ const UserDetails = ({ selectedUser }) => {
 
   return (
     <div className='flex'>
+      {/* Header dinâmico com links */}
+      <header className="dynamic-header flex-center">
+        <h3>
+          {pathSegments.map((segment, index) => {
+            // Construir o caminho acumulado para cada segmento
+            const pathToSegment = `/${pathSegments.slice(0, index + 1).join("/")}`;
+            return (
+              <span key={index}>
+                <Link to={pathToSegment} className="breadcrumb-link">
+                  {segment}
+                </Link>
+                {index < pathSegments.length - 1 && " / "}
+              </span>
+            );
+          })}
+        </h3>
+      </header>
+
        {isEditing ? (
   <div className="form-container  gradient-border">
     <p className="input-group">
@@ -220,6 +243,7 @@ const UserDetails = ({ selectedUser }) => {
     <DeleteUser  onClick={handleDeleteClick} />   
   </div>
 ) : (
+    
   <div className="table-container  gradient-border">
     <ul>
       <li className='list-item'><strong>Nome:</strong> {userDetails.nome || "N/A"}</li>
