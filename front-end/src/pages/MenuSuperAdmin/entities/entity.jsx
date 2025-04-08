@@ -52,7 +52,6 @@ const Entity = () => {
   };
   const handleInputChange = (e) => setEditedData({ ...editedData, [e.target.name]: e.target.value });
 
-  // Modifique o handleSubmitClick para navegar para a nova URL:
   const handleSubmitClick = async () => {
     try {
       const response = await fetch("http://localhost:4005/entity/updateEntity", {
@@ -60,17 +59,21 @@ const Entity = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ oldName, ...editedData }),
       });
-  
+
       if (!response.ok) throw new Error("Erro ao atualizar a entidade");
-      
+
       setIsEditing(false);
-      navigate(-1);
+
+      // Verifica se o nome foi alterado
+      if (editedData.nome !== oldName) {
+        navigate(-1); // Volta para a página anterior se o nome mudou
+      } else {
+        window.location.reload(); // Recarrega a página se o nome não mudou
+      }
     } catch (err) {
       setError(err.message);
     }
   };
-  
-  
 
   const handleShowEmployeesClick = () => navigate(`/entidades/${normalizeName(currentEntityName)}/users`);
 
