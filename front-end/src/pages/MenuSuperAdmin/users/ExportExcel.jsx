@@ -74,7 +74,7 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     ws.addRow([]);
     ws.addRow([]);
     ws.addRow([]);
-    ws.addRow(["", "", "", "", "Assinatura RH:", "_____________________________________________________________________"]);
+    ws.addRow(["", "", "", "", "Assinatura GRH:", "_____________________________________________________________________"]);
     ws.addRow([]);
 
     // Totais

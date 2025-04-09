@@ -153,7 +153,7 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 1000000);
+    const interval = setInterval(fetchData, 5000);
     console.log("Intervalo configurado para 10 segundos.");
 
     return () => {

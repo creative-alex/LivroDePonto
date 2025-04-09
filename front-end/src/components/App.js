@@ -11,7 +11,7 @@ function Home() {
         <img src={logo} className="App-logo" alt="logo" />
         <h1>Livro de Ponto</h1>
         <div>
-          <button className="App-button" onClick={() => navigate("/login")}>Área RH</button>
+          <button className="App-button" onClick={() => navigate("/login")}>Área GRH</button>
           <button className="App-button" onClick={() => navigate("/login")}>Área Colaborador</button>
         </div>
       </header>
