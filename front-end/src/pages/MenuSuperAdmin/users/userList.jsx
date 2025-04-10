@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
+import { useParams, Link, useLocation, useNavigate } from "react-router-dom"; // Adicione useNavigate
+import MultipleExcel from "./MultipleExcel";
 
 const UserList = ({ setSelectedUser }) => {
   const { entityName } = useParams();
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [selecionarMultiplos, setSelecionarMultiplos] = useState(false);
+  const [utilizadoresSelecionados, setUtilizadoresSelecionados] = useState([]);
+  const [mesSelecionado, setMesSelecionado] = useState(new Date().getMonth() + 1);
+
   const location = useLocation();
+  const navigate = useNavigate(); // Inicialize o useNavigate
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -29,43 +34,204 @@ const UserList = ({ setSelectedUser }) => {
     if (entityName) fetchEmployees();
   }, [entityName]);
 
-  const handleItemClick = (employee) => {
-    setSelectedUser(employee);
-    navigate(`/entidades/${entityName}/users/${encodeURIComponent(employee.nome.replace(/\s+/g, "-"))}`);
+  const handleCheckboxChange = (uid) => {
+    setUtilizadoresSelecionados((prev) =>
+      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid]
+    );
   };
 
-  // Dividir o caminho em segmentos para o header dinâmico
-  const pathSegments = location.pathname
-    .split("/")
-    .filter((segment) => segment); // Remove segmentos vazios
+  const exportarTodos = async () => {
+    try {
+      for (const user of employees) {
+        if (utilizadoresSelecionados.includes(user.uid)) {
+          // Buscar os registros de entrada e saída do usuário
+          const response = await fetch("http://localhost:4005/users/calendar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: user.nome, month: mesSelecionado }),
+          });
 
-  if (error) return <p style={{ color: "red" }}>⚠ Erro: {error}</p>;
+          if (!response.ok) {
+            console.error(`Erro ao buscar dados para o usuário ${user.nome}`);
+            continue;
+          }
+
+          const diasNoMes = new Date(new Date().getFullYear(), mesSelecionado, 0).getDate();
+          let totalMinutos = 0;
+          let totalMinutosExtras = 0;
+
+          let novosDados = Array.from({ length: diasNoMes }, (_, i) => ({
+            dia: `${String(i + 1).padStart(2, "0")}-${String(mesSelecionado).padStart(2, "0")}`,
+            horaEntrada: "-",
+            horaSaida: "-",
+            total: "-",
+            extra: "-",
+            isFerias: false,
+          }));
+
+          const data = await response.json();
+          const registos = Array.isArray(data.registros) ? data.registros : [];
+          const ferias = Array.isArray(data.ferias) ? data.ferias : [];
+
+          const hoje = new Date();
+
+          novosDados = novosDados.map((item, index) => {
+            const registo = registos.find((r) => new Date(r.timestamp).getDate() === index + 1);
+            const dataAtual = new Date(hoje.getFullYear(), mesSelecionado - 1, index + 1);
+            const diaSemana = dataAtual.getDay();
+            const feriado = false; // Substituir por lógica de feriados, se necessário
+            const estaDeFerias = ferias.includes(item.dia);
+
+            if (estaDeFerias) {
+              return { ...item, horaEntrada: "Férias", horaSaida: "Férias", total: "Férias", extra: "Férias", isFerias: true };
+            }
+
+            if (registo) {
+              const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
+              totalMinutos += minutos;
+              totalMinutosExtras += minutosExtras;
+              return {
+                ...item,
+                horaEntrada: registo.horaEntrada || "-",
+                horaSaida: registo.horaSaida || "-",
+                total,
+                extra,
+              };
+            } else if (!estaDeFerias && dataAtual < hoje && dataAtual.toDateString() !== hoje.toDateString() && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
+              return { ...item, horaEntrada: "-", horaSaida: "-", total: "0h 0m", extra: "0h 0m" };
+            }
+
+            return item;
+          });
+
+          const diasFalta = novosDados.filter((d) => d.total === "0h 0m" && !d.isFerias).length;
+          const diasFerias = novosDados.filter((d) => d.isFerias).length;
+
+          const totais = {
+            totalHoras: formatarMinutos(totalMinutos),
+            totalExtras: formatarMinutos(totalMinutosExtras),
+            diasFalta,
+            diasFerias,
+          };
+
+          // Exportar os dados para um arquivo Excel individual
+          await ExportExcel({
+            dados: novosDados,
+            totais,
+            username: user.nome,
+            month: mesSelecionado,
+          });
+        }
+      }
+      console.log("Exportação concluída!");
+    } catch (error) {
+      console.error("Erro ao exportar dados:", error);
+    }
+  };
+
+  const meses = [
+    { value: 1, label: "Janeiro" },
+    { value: 2, label: "Fevereiro" },
+    { value: 3, label: "Março" },
+    { value: 4, label: "Abril" },
+    { value: 5, label: "Maio" },
+    { value: 6, label: "Junho" },
+    { value: 7, label: "Julho" },
+    { value: 8, label: "Agosto" },
+    { value: 9, label: "Setembro" },
+    { value: 10, label: "Outubro" },
+    { value: 11, label: "Novembro" },
+    { value: 12, label: "Dezembro" },
+  ];
 
   return (
     <div className="form-container center gradient-border">
-      {/* Header dinâmico com links */}
       <header className="dynamic-header">
         <h3>
-          {pathSegments.map((segment, index) => {
-            const pathToSegment = `/${pathSegments.slice(0, index + 1).join("/")}`;
-            return (
+          {location.pathname
+            .split("/")
+            .filter(Boolean)
+            .map((segment, index, arr) => (
               <span key={index}>
-                <Link to={pathToSegment} className="breadcrumb-link">
+                <Link
+                  to={`/${arr.slice(0, index + 1).join("/")}`}
+                  className="breadcrumb-link"
+                >
                   {segment}
                 </Link>
-                {index < pathSegments.length - 1 && " / "}
+                {index < arr.length - 1 && " / "}
               </span>
-            );
-          })}
+            ))}
         </h3>
       </header>
 
       <h2 className="login-header">Colaboradores de {entityName}</h2>
+
+      <button onClick={() => setSelecionarMultiplos(!selecionarMultiplos)}>
+        {selecionarMultiplos
+          ? "Cancelar Seleção Múltipla"
+          : "Selecionar Vários"}
+      </button>
+
+      {selecionarMultiplos && (
+        <>
+          <div style={{ margin: "1rem 0" }}>
+            <button
+              onClick={() => {
+                if (utilizadoresSelecionados.length === employees.length) {
+                  setUtilizadoresSelecionados([]);
+                } else {
+                  setUtilizadoresSelecionados(employees.map((e) => e.uid));
+                }
+              }}
+            >
+              {utilizadoresSelecionados.length === employees.length
+                ? "Desmarcar Todos"
+                : "Selecionar Todos"}
+            </button>
+          </div>
+
+          <select
+            onChange={(e) => setMesSelecionado(Number(e.target.value))}
+            value={mesSelecionado}
+          >
+            {meses.map((m) => (
+              <option key={m.value} value={m.value}>
+                {m.label}
+              </option>
+            ))}
+          </select>
+
+          <button onClick={exportarTodos}>Exportar Selecionados</button>
+        </>
+      )}
+
       {employees.length > 0 ? (
         <ul className="entity-card">
           {employees.map((employee) => (
-            <li key={employee.uid} className="list-item" onClick={() => handleItemClick(employee)}>
-              {employee.nome} - {employee.role.charAt(0).toUpperCase() + employee.role.slice(1)}
+            <li key={employee.uid} className="list-item">
+              {selecionarMultiplos ? (
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={utilizadoresSelecionados.includes(employee.uid)}
+                    onChange={() => handleCheckboxChange(employee.uid)}
+                  />
+                  {employee.nome} - {employee.role}
+                </label>
+              ) : (
+                <span
+                  onClick={() => {
+                    setSelectedUser(employee);
+                    navigate(
+                      `/entidades/${entityName}/users/${employee.nome}`
+                    ); // Redireciona para a página do colaborador
+                  }}
+                  style={{ cursor: "pointer", color: "blue" }}
+                >
+                  {employee.nome} - {employee.role}
+                </span>
+              )}
             </li>
           ))}
         </ul>
