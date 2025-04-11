@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom"; // Adicione useNavigate
-import MultipleExcel from "./MultipleExcel";
+import { calcularHoras, formatarMinutos } from "./calcHours";
+import ExportExcel from "./ExportExcel";
+import MultipleExcel from "./MultipleExcel"; // Certifique-se de importar corretamente
 
 const UserList = ({ setSelectedUser }) => {
   const { entityName } = useParams();
@@ -42,24 +44,37 @@ const UserList = ({ setSelectedUser }) => {
 
   const exportarTodos = async () => {
     try {
+      console.log("Iniciando exportação...");
+  
+      const dadosPorUsuario = {};
+      console.log("Inicializando objeto de dados por usuário:", dadosPorUsuario);
+  
       for (const user of employees) {
+        console.log(`Processando usuário: ${user.nome}`);
+  
         if (utilizadoresSelecionados.includes(user.uid)) {
+          console.log(`Usuário ${user.nome} selecionado para exportação.`);
+  
           // Buscar os registros de entrada e saída do usuário
           const response = await fetch("http://localhost:4005/users/calendar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: user.nome, month: mesSelecionado }),
           });
-
+  
           if (!response.ok) {
             console.error(`Erro ao buscar dados para o usuário ${user.nome}`);
             continue;
           }
-
+  
+          console.log(`Dados recebidos com sucesso para o usuário ${user.nome}.`);
+  
           const diasNoMes = new Date(new Date().getFullYear(), mesSelecionado, 0).getDate();
+          console.log(`Número de dias no mês selecionado (${mesSelecionado}): ${diasNoMes}`);
+  
           let totalMinutos = 0;
           let totalMinutosExtras = 0;
-
+  
           let novosDados = Array.from({ length: diasNoMes }, (_, i) => ({
             dia: `${String(i + 1).padStart(2, "0")}-${String(mesSelecionado).padStart(2, "0")}`,
             horaEntrada: "-",
@@ -68,28 +83,43 @@ const UserList = ({ setSelectedUser }) => {
             extra: "-",
             isFerias: false,
           }));
-
+  
+          console.log("Dados iniciais criados para todos os dias do mês:", novosDados);
+  
           const data = await response.json();
+          console.log("Resposta da API processada:", data);
+  
           const registos = Array.isArray(data.registros) ? data.registros : [];
           const ferias = Array.isArray(data.ferias) ? data.ferias : [];
-
+  
+          console.log(`Registros encontrados: ${registos.length}`);
+          console.log(`Férias encontradas: ${ferias.length}`);
+  
           const hoje = new Date();
-
+          console.log("Data atual:", hoje);
+  
           novosDados = novosDados.map((item, index) => {
+            console.log(`Processando dados do dia ${index + 1}`);
+  
             const registo = registos.find((r) => new Date(r.timestamp).getDate() === index + 1);
+            console.log(`Registro encontrado para o dia ${index + 1}:`, registo);
+  
             const dataAtual = new Date(hoje.getFullYear(), mesSelecionado - 1, index + 1);
             const diaSemana = dataAtual.getDay();
             const feriado = false; // Substituir por lógica de feriados, se necessário
             const estaDeFerias = ferias.includes(item.dia);
-
+            console.log(`Dia da semana: ${diaSemana}, Feriado: ${feriado}, Está de férias: ${estaDeFerias}`);
+  
             if (estaDeFerias) {
+              console.log(`Usuário ${user.nome} está de férias no dia ${item.dia}`);
               return { ...item, horaEntrada: "Férias", horaSaida: "Férias", total: "Férias", extra: "Férias", isFerias: true };
             }
-
+  
             if (registo) {
               const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
               totalMinutos += minutos;
               totalMinutosExtras += minutosExtras;
+              console.log(`Horas calculadas para o dia ${item.dia}: Total: ${total}, Extra: ${extra}`);
               return {
                 ...item,
                 horaEntrada: registo.horaEntrada || "-",
@@ -98,36 +128,45 @@ const UserList = ({ setSelectedUser }) => {
                 extra,
               };
             } else if (!estaDeFerias && dataAtual < hoje && dataAtual.toDateString() !== hoje.toDateString() && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
+              console.log(`Dia ${item.dia} não possui registro e não é fim de semana ou feriado.`);
               return { ...item, horaEntrada: "-", horaSaida: "-", total: "0h 0m", extra: "0h 0m" };
             }
-
+  
             return item;
           });
-
+  
+          console.log("Novos dados para o usuário:", novosDados);
+  
           const diasFalta = novosDados.filter((d) => d.total === "0h 0m" && !d.isFerias).length;
           const diasFerias = novosDados.filter((d) => d.isFerias).length;
-
+  
+          console.log(`Dias em falta: ${diasFalta}`);
+          console.log(`Dias de férias: ${diasFerias}`);
+  
           const totais = {
             totalHoras: formatarMinutos(totalMinutos),
             totalExtras: formatarMinutos(totalMinutosExtras),
             diasFalta,
             diasFerias,
           };
-
-          // Exportar os dados para um arquivo Excel individual
-          await ExportExcel({
-            dados: novosDados,
-            totais,
-            username: user.nome,
-            month: mesSelecionado,
-          });
+  
+          console.log("Totais calculados:", totais);
+  
+          // Armazena os dados do usuário no objeto
+          dadosPorUsuario[user.nome] = { dados: novosDados, totais };
+          console.log(`Dados do usuário ${user.nome} armazenados:`, dadosPorUsuario[user.nome]);
         }
       }
+  
+      // Envia os dados para o MultipleExcel
+      await MultipleExcel({ dadosPorUsuario, month: mesSelecionado });
       console.log("Exportação concluída!");
+  
     } catch (error) {
       console.error("Erro ao exportar dados:", error);
     }
   };
+  
 
   const meses = [
     { value: 1, label: "Janeiro" },
