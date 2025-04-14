@@ -86,6 +86,11 @@ const UserDetails = ({ selectedUser }) => {
   };
 
   const handleDeleteClick = async () => {
+    const confirmDelete = window.confirm("Tem certeza que deseja apagar este usuário? Esta ação não pode ser desfeita.");
+    
+    if (!confirmDelete) {
+      return; // Se o usuário cancelar, interrompe a execução
+    }
   
     try {
       const response = await fetch(`http://localhost:4005/users/deleteUser`, {
@@ -239,8 +244,9 @@ const UserDetails = ({ selectedUser }) => {
     <div className="button-container">
       <button className="btn" onClick={handleSubmitClick}>Submeter</button>
       <button className="btn" onClick={handleCancelClick}>Cancelar</button>
-    </div>
     <DeleteUser  onClick={handleDeleteClick} />   
+
+    </div>
   </div>
 ) : (
     

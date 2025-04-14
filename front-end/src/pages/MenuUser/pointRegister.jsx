@@ -153,7 +153,7 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 5000);
+    const interval = setInterval(fetchData, 10000);
     console.log("Intervalo configurado para 10 segundos.");
 
     return () => {
@@ -171,10 +171,20 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
         <thead>
           <tr>
             <th>Dia</th>
-            <th>Hora Entrada</th>
+            <th>Hora Entrada</th>            
+            <th colSpan="2">Pausa Almoço</th> 
             <th>Hora Saída</th>
             <th>Total Horas</th>
             <th>Horas Extra</th>
+          </tr>
+          <tr>
+            <th></th> 
+            <th></th> 
+            <th>Entrada</th> 
+            <th>Saída</th> 
+            <th></th> 
+            <th></th> 
+            <th></th> 
           </tr>
         </thead>
         <tbody>
@@ -182,22 +192,24 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
             <tr key={index}>
               <td>{item.dia}</td>
               <td>{item.horaEntrada}</td>
+              <td>{item.pausaEntrada || "-"}</td> 
+              <td>{item.pausaSaida || "-"}</td> 
               <td>{item.horaSaida}</td>
               <td>{item.total}</td>
               <td>{item.extra}</td>
             </tr>
           ))}
           <tr>
-            <td colSpan="3"><strong>Totais</strong></td>
+            <td colSpan="4"><strong>Totais</strong></td>
             <td><strong>{totais.totalHoras}</strong></td>
             <td><strong>{totais.totalExtras}</strong></td>
           </tr>
           <tr>
-            <td colSpan="3"><strong>Dias de Falta</strong></td>
+            <td colSpan="4"><strong>Dias de Falta</strong></td>
             <td colSpan="2"><strong>{totais.diasFalta}</strong></td>
           </tr>
           <tr>
-            <td colSpan="3"><strong>Dias de Férias</strong></td>
+            <td colSpan="4"><strong>Dias de Férias</strong></td>
             <td colSpan="2"><strong>{totais.diasFerias}</strong></td>
           </tr>
         </tbody>

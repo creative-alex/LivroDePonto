@@ -172,22 +172,8 @@ p {
 }
 
 .delete-user {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.625rem 1.25rem;
-  font-size: 0.9375rem;
-  font-weight: 500;
   background-color: var(--danger-color);
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: var(--transition);
-  border: none;
-  white-space: nowrap;
-  margin: 10px auto;
-  display: block;
-  height: 4vw;
-  width: 20vw;
+  border-radius: var(--border-radius); 
 }
 
 .btn:focus {

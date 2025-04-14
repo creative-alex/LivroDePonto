@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Route, Routes, Navigate, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, Link, useNavigate } from "react-router-dom";
 import "./index.css";
 import Login from "./components/Login/login";
 import FirstLoginComponent from "./components/Login/firstLogin";
@@ -24,6 +24,7 @@ const App = () => {
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showHours, setShowHours] = useState(false);
+  const navigate = useNavigate(); // Inicializar o hook useNavigate
 
 
   useEffect(() => {
@@ -35,8 +36,19 @@ const App = () => {
       setIsLoggedIn(true);
       setIsAdmin(role === "SuperAdmin");
       setIsFirstLogin(firstLogin && role !== "SuperAdmin");
+
+      // Redireciona o usuário logado para a página correta
+      if (window.location.pathname === "/" || window.location.pathname === "/login" || window.location.pathname === "/first-login") {
+        if (role === "SuperAdmin") {
+          navigate("/admin");
+        } else if (firstLogin && role !== "SuperAdmin") {
+          navigate("/first-login");
+        } else {
+          navigate("/home");
+        }
+      }
     }
-  }, [setUsername, setUserEmail]);
+  }, [setUsername, setUserEmail, navigate]);
 
   const handleLoginSuccess = (role, nome, firstLogin, email) => {
     localStorage.setItem("user", JSON.stringify({ nome, role, email, firstLogin }));
@@ -77,9 +89,9 @@ const App = () => {
       <div className="flex-center button-container">
         <RegisterEntry username={username} />
         <RegisterLeave username={username} />
-        <ShowRegister onClick={() => setShowHours(true)} />
       </div>
-      {showHours && <TableHours username={username} />}
+      {/* Renderiza a tabela de horas diretamente */}
+      <TableHours username={username} />
       <LogoutButton className="flex-center button-container" onLogout={handleLogout} />
     </div>
   );
@@ -87,40 +99,38 @@ const App = () => {
 
   
   return (
-    <Router>
-      <Routes>
-        {/* Garante que Home aparece primeiro */}
-        <Route path="/" element={<Home />} />
-  
-        {/* Login separado para ser acessado pelos botões do Home */}
-        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-  
-        {/* Se o utilizador estiver autenticado, redireciona conforme o tipo de utilizador */}
-        {isLoggedIn && (
-          <>
-            {isFirstLogin && !isAdmin ? (
-              <Route path="/first-login" element={<FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />} />
-            ) : (
-              <>
-                {isAdmin ? (
-                  <>
-                    <Route path="/admin" element={<AdminMenu />} />
-                    <Route path="/entidades" element={<AllEntities />} />
-                    <Route path="/entidades/:entityName" element={<EntityDetail />} />
-                    <Route path="/entidades/:entityName/users" element={<UserList setSelectedUser={setSelectedUser} />} />
-                    <Route path="/entidades/:entityName/users/:userName" element={<UserDetails selectedUser={selectedUser} />} />
-                    <Route path="/nova-entidade" element={<NovaEntidade />} />
-                    <Route path="/novo-user" element={<NewUser />} />
-                  </>
-                ) : (
-                  <Route path="/home" element={<UserMenu />} />
-                )}
-              </>
-            )}
-          </>
-        )}
-      </Routes>
-    </Router>
+    <Routes>
+      {/* Garante que Home aparece primeiro */}
+      <Route path="/" element={<Home />} />
+
+      {/* Login separado para ser acessado pelos botões do Home */}
+      <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+
+      {/* Se o utilizador estiver autenticado, redireciona conforme o tipo de utilizador */}
+      {isLoggedIn && (
+        <>
+          {isFirstLogin && !isAdmin ? (
+            <Route path="/first-login" element={<FirstLoginComponent email={userEmail} onComplete={() => setIsFirstLogin(false)} />} />
+          ) : (
+            <>
+              {isAdmin ? (
+                <>
+                  <Route path="/admin" element={<AdminMenu />} />
+                  <Route path="/entidades" element={<AllEntities />} />
+                  <Route path="/entidades/:entityName" element={<EntityDetail />} />
+                  <Route path="/entidades/:entityName/users" element={<UserList setSelectedUser={setSelectedUser} />} />
+                  <Route path="/entidades/:entityName/users/:userName" element={<UserDetails selectedUser={selectedUser} />} />
+                  <Route path="/nova-entidade" element={<NovaEntidade />} />
+                  <Route path="/novo-user" element={<NewUser />} />
+                </>
+              ) : (
+                <Route path="/home" element={<UserMenu />} />
+              )}
+            </>
+          )}
+        </>
+      )}
+    </Routes>
   );
   
 };
@@ -128,6 +138,8 @@ const App = () => {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <UserProvider>
-    <App />
+    <Router> {/* Mova o Router para cá */}
+      <App />
+    </Router>
   </UserProvider>
 );
