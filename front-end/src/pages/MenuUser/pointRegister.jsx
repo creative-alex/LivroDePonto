@@ -190,7 +190,7 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
         <tbody>
           {dados.map((item, index) => (
             <tr key={index}>
-              <td>{item.dia}</td>
+              <td>{item.dia}</td> 
               <td>{item.horaEntrada}</td>
               <td>{item.pausaEntrada || "-"}</td> 
               <td>{item.pausaSaida || "-"}</td> 
