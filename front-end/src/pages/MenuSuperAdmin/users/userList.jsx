@@ -44,6 +44,48 @@ const UserList = ({ setSelectedUser }) => {
 
   const exportarTodos = async () => {
     try {
+      console.log("Iniciando verificação de registros...");
+  
+      const usuariosSemRegistros = [];
+  
+      for (const user of employees) {
+        if (utilizadoresSelecionados.includes(user.uid)) {
+          console.log(`Verificando registros para o usuário: ${user.nome}`);
+  
+          const response = await fetch("http://localhost:4005/users/calendar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: user.nome, month: mesSelecionado }),
+          });
+  
+          if (!response.ok) {
+            console.error(`Erro ao buscar dados para o usuário ${user.nome}`);
+            continue;
+          }
+  
+          const data = await response.json();
+          const registos = Array.isArray(data.registros) ? data.registros : [];
+  
+          if (registos.length === 0) {
+            console.warn(`Usuário ${user.nome} não possui registros.`);
+            usuariosSemRegistros.push(user.nome);
+          }
+        }
+      }
+  
+      if (usuariosSemRegistros.length > 0) {
+        const confirmar = window.confirm(
+          `Os seguintes usuários não possuem registros: ${usuariosSemRegistros.join(
+            ", "
+          )}. Deseja continuar com a exportação?`
+        );
+  
+        if (!confirmar) {
+          console.log("Exportação cancelada pelo administrador.");
+          return;
+        }
+      }
+  
       console.log("Iniciando exportação...");
   
       const dadosPorUsuario = {};
