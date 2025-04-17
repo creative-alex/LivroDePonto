@@ -2,7 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { UserContext } from "../../context/UserContext";
-import { useNavigate } from "react-router-dom"; // Importar o hook
+import { useNavigate } from "react-router-dom"; 
+import logo from "../../assets/logo.png";
+import capa from "../../assets/capa.jpg";
+import footer from "../../assets/footer.png";
 
 // Carregar variáveis de ambiente
 const firebaseConfig = {
@@ -108,14 +111,19 @@ const Login = ({ onLoginSuccess }) => {
     }
   };
   return (
-  <div className="form-container gradient-border center ">
-    <h2>Bem-Vindo/a</h2>
+  <>
+    <div>
+      <img src={capa} alt="Capa" className="capa" />
+    <h1>Bom dia!</h1>
+    </div>
+    <div className="login-form">
+      <h2>Login</h2>
     <form onSubmit={handleSubmit}>
       <div className="form-group">
-        <label htmlFor="email">Email:</label>
         <input
           type="email"
           id="email"
+          placeholder="Email"
           className="form-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -123,10 +131,10 @@ const Login = ({ onLoginSuccess }) => {
         />
       </div>
       <div className="form-group">
-        <label htmlFor="password">Password:</label>
         <input
           type="password"
           id="password"
+          placeholder="Password"
           className="form-input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -134,10 +142,13 @@ const Login = ({ onLoginSuccess }) => {
         />
       </div>
       {error && <p className="error-unique">{error}</p>}
-      <button className="btn" type="submit">Login</button>
+      <button className="btn login" type="submit">→</button>
     </form>
   </div>
-  
+  <footer className="footer">
+    <img src={footer} alt="Rodapé" className="footer-image" />
+    </footer>
+  </>
   );
 };
 
