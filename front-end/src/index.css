@@ -63,7 +63,7 @@ h1, h2, h3, h4 {
 h1 {
   font-size: 3rem;
   color: white;
-  margin: 0 auto
+  padding: 40vh 5vw;
 }
 
 h2 {
@@ -122,7 +122,7 @@ p {
 /* ========================= */
 .login-form {
   position: absolute;
-  top: 40%;
+  top: 35%;
   right: 10%;
   padding: 2rem;
   width: 50vw;
@@ -266,8 +266,8 @@ p {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 55px;
-  height: 55px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
   background-color: var(--primary-color);
   color: #fff;
@@ -520,6 +520,7 @@ tr:hover td {
 /*        Capa Login        */
 /* ========================= */
 
+
 .capa {
   position: absolute;
   top: 0;
@@ -552,4 +553,12 @@ tr:hover td {
 .footer img {
   object-fit: cover; /* para cortar e ajustar */
   transform: scale(0.5);
+}
+
+
+.logo{
+  width: 30vw;
+  position: absolute;
+  top: 0;
+  left: 30%;
 }

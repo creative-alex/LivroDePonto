@@ -113,9 +113,10 @@ const Login = ({ onLoginSuccess }) => {
   return (
   <>
     <div>
-      <img src={capa} alt="Capa" className="capa" />
     <h1>Bom dia!</h1>
+      <img src={capa} alt="Capa" className="capa" />
     </div>
+    <img src={logo} alt="Logo" className="logo" />
     <div className="login-form">
       <h2>Login</h2>
     <form onSubmit={handleSubmit}>

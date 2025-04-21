@@ -15,7 +15,10 @@ import { UserProvider, UserContext } from "./context/UserContext";
 import UserList from "./pages/MenuSuperAdmin/users/userList";
 import UserDetails from "./pages/MenuSuperAdmin/users/userDetails";
 import LogoutButton from './components/LogoutButton/logoutButton';
-import Home from "./components/App"
+import Home from "./components/App";
+import logo from "./assets/logo.png";
+import capa from "./assets/capa.jpg";
+import footer from "./assets/footer.png";
 
 const App = () => {
   const { setUsername, username, setUserEmail, userEmail } = useContext(UserContext);
@@ -67,6 +70,12 @@ const App = () => {
   };
 
   const AdminMenu = () => (
+    <>
+    <div>
+        <h1>Bom dia!</h1>
+          <img src={capa} alt="Capa" className="capa" />
+          <LogoutButton onLogout={handleLogout} />
+        </div>
     <div>
       <div className="flex-center button-container">
         <Link to="/entidades">
@@ -79,8 +88,8 @@ const App = () => {
           <button className="btn-menu gradient-border">Criar User</button>
         </Link>
       </div>
-      <LogoutButton onLogout={handleLogout} />
     </div>
+    </>
   );
   
 
@@ -100,10 +109,10 @@ const App = () => {
   
   return (
     <Routes>
-      {/* Garante que Home aparece primeiro */}
-      <Route path="/" element={<Home />} />
+      {/* Página inicial sempre será o login */}
+      <Route path="/" element={<Navigate to="/login" />} />
 
-      {/* Login separado para ser acessado pelos botões do Home */}
+      {/* Página de login */}
       <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
 
       {/* Se o utilizador estiver autenticado, redireciona conforme o tipo de utilizador */}
