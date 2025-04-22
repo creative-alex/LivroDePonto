@@ -46,6 +46,7 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   margin: 0;
   padding: 0;
+  font-weight: 500 ;
 }
 
 body {
@@ -247,21 +248,35 @@ p {
 }
 
 .button-container {
-  margin: 25px;
+  position: absolute;
   display: flex;
-  gap: 0.75rem;
+  flex-direction: column;
+  top: 35%;
+  left: 35%;
+  gap: 1rem;
+  padding: 2rem;
+  color: var(--text-color);
+  z-index: 5;
+  overflow: hidden;
 }
 
 .btn-menu{
-  background-color: var(--bg-secondary);
+  font-size: 1.3rem;
+  background-color: transparent;
   color: var(--text-color);
-  border: 1px solid var(--border-color);
-  width:  7vw;
-  height: 7vw;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  width: 24vw;
+  height: 8vh;
   cursor: pointer;
 }
 
-.login {
+.btn-menu:hover {
+  background-color: var(--primary-color);
+  color: white
+}
+
+.login, .logout {
   all: unset;
   display: flex;
   justify-content: center;
@@ -278,14 +293,17 @@ p {
   margin-left: auto; /* Alinha à direita dentro do form */
 }
 
+
 .logout{
-  background-color: var(--bg-secondary);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  width: 22vw;
-  height: 7vw;
-  margin: 15px auto;
-  cursor: pointer;
+  margin-left: 5vw;
+  position: absolute;
+  bottom: 5vh;
+}
+
+.logout-icon {
+  filter: brightness(0) invert(1);
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 
@@ -539,7 +557,7 @@ tr:hover td {
 /*          Footer           */
 /* ========================= */
 
-.footer{
+.footer {
   position: fixed;
   bottom: 0;
   height: 100px;
@@ -550,15 +568,17 @@ tr:hover td {
   align-items: center;
 }
 
+
+
 .footer img {
   object-fit: cover; /* para cortar e ajustar */
-  transform: scale(0.5);
+  transform: scale(0.45);
 }
 
 
 .logo{
-  width: 30vw;
+  width: 25vw;
   position: absolute;
-  top: 0;
-  left: 30%;
+  top: 5%;
+  left: 33.5%;
 }

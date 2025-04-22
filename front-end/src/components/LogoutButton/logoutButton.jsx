@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Exit from "../../assets/exit.png";
 
 const LogoutButton = ({ onLogout }) => {
   const navigate = useNavigate();
@@ -10,8 +11,8 @@ const LogoutButton = ({ onLogout }) => {
   };
 
   return (
-    <button className="flex-center button-container logout gradient-border" onClick={handleClick}>
-      Logout
+    <button className=" logout gradient-border" onClick={handleClick}>
+      <img src={Exit} alt="Logout" className="logout-icon" />
     </button>
   );
 };

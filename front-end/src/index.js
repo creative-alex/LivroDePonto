@@ -71,15 +71,16 @@ const App = () => {
 
   const AdminMenu = () => (
     <>
-    <div>
+    <div style={{ width: '30vw' }}>
         <h1>Bom dia!</h1>
           <img src={capa} alt="Capa" className="capa" />
           <LogoutButton onLogout={handleLogout} />
-        </div>
+    </div>
+    <img src={logo} alt="Logo" className="logo" />
     <div>
       <div className="flex-center button-container">
         <Link to="/entidades">
-        <button className="btn-menu gradient-border">Mostrar Entidades & Users</button>        
+        <button className="btn-menu gradient-border">Entidades & Users</button>        
         </Link>
         <Link to="/nova-entidade">
           <button className="btn-menu gradient-border">Criar Entidade</button>
@@ -89,6 +90,9 @@ const App = () => {
         </Link>
       </div>
     </div>
+    <footer className="footer">
+        <img src={footer} alt="Rodapé" className="footer-image" />
+        </footer>
     </>
   );
   
