@@ -35,7 +35,7 @@
   --shadow-md: 0 10px 15px -3px rgba(200, 147, 47, 0.2), 0 4px 6px -2px rgba(200, 147, 47, 0.15);
 
   /* Transições */
-  --transition: all 0.3s ease-in-out;
+  --transition: all 0.3s ease;
 }
 
 
@@ -77,9 +77,9 @@ p {
   color: var(--text-secondary);
 }
 
-/* ========================= */
-/*        Classes Utilitárias */
-/* ========================= */
+/* =========================== */
+/*    Classes Utilitárias      */
+/* =========================== */
 .flex-center {
   display: flex;
   justify-content: center;
@@ -116,6 +116,28 @@ p {
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   border: 1px solid var(--border-color);
+}
+
+.nav-container{
+  display: flex;
+  position: absolute;
+  top: 15px;
+  left: 20%;
+  gap: 5px;  
+}
+
+.ent-info{
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  color: var(--text-color);
+  width: 25vw;
+  height: 100vh;
+  background-color: rgba(169, 169, 169, 0.1);
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 5;
 }
 
 /* ========================= */
@@ -306,6 +328,12 @@ p {
   height: 1.5rem;
 }
 
+.nav-container button{
+  width: 12vw;
+  height: 5vh;
+  font-size: 0.9rem;
+}
+
 
 
 /* ========================= */
@@ -315,22 +343,34 @@ p {
   list-style: none;
 }
 
+.elist{
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 60vw;
+  position:absolute;
+  top: 10%; 
+  left: 20%;
+}
+
 .list-item {
   padding: 0.75rem 1rem;
   margin: 0.25rem 0;
-  background-color: var(--bg-secondary);
-  border-radius: var(--border-radius);
   transition: var(--transition);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--text-muted);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid transparent;
+  transition: var(--transition);
 }
 
 .list-item:hover {
-  background-color: var(--bg-tertiary);
-  border-color: var(--primary-color);
+  transition: var(--transition);
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .list-item.active {
@@ -545,11 +585,21 @@ tr:hover td {
   left: 0;
   width: auto;
   height: 100%;
-  background-color: var(--primary-muted); /* Usa o tom suave do dourado */
+  background-color: var(--primary-muted); 
   box-shadow: var(--shadow);
   transition: var(--transition);
   overflow: hidden;
   z-index: -1;
+}
+
+.cut{
+  width: 15vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.cut img{
+  object-fit: cover; 
 }
 
 

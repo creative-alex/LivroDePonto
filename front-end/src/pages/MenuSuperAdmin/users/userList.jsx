@@ -290,7 +290,7 @@ const UserList = ({ setSelectedUser }) => {
       {employees.length > 0 ? (
         <ul className="entity-card">
           {employees.map((employee) => (
-            <li key={employee.uid} className="list-item">
+            <li key={employee.uid} className="elist">
               {selecionarMultiplos ? (
                 <label>
                   <input
