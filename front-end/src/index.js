@@ -131,10 +131,9 @@ const App = () => {
                   <Route path="/admin" element={<AdminMenu />} />
                   <Route path="/entidades" element={<AllEntities />} />
                   <Route path="/entidades/:entityName" element={<EntityDetail />} />
-                  <Route path="/entidades/:entityName/users" element={<UserList setSelectedUser={setSelectedUser} />} />
-                  <Route path="/entidades/:entityName/users/:userName" element={<UserDetails selectedUser={selectedUser} />} />
                   <Route path="/nova-entidade" element={<NovaEntidade />} />
                   <Route path="/novo-user" element={<NewUser />} />
+                  <Route path="/:entityName/:userName" element={<UserDetails selectedUser={selectedUser} />} />
                 </>
               ) : (
                 <Route path="/home" element={<UserMenu />} />

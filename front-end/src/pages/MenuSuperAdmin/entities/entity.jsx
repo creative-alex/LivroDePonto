@@ -8,8 +8,8 @@ import LogoutButton from "../../../components/LogoutButton/logoutButton";
 const normalizeName = (name) => {
   return name
     .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-zA-Z0-9-]/g, "");
+    .replace(/\s+/g, "-") // Substitui espaços por "-"
+    .replace(/[^a-zA-Z0-9-]/g, ""); // Remove caracteres inválidos
 };
 
 const handleLogout = () => {
@@ -18,7 +18,7 @@ const handleLogout = () => {
 
 const Entity = () => {
   const { entityName } = useParams();
-  const formattedEntityName = decodeURIComponent(entityName);
+  const formattedEntityName = decodeURIComponent(entityName).replace(/%20/g, "-"); // Substitui "%20" por "-"
   const navigate = useNavigate();
 
   const [currentEntityName, setCurrentEntityName] = useState(formattedEntityName);
@@ -85,7 +85,7 @@ const Entity = () => {
           <img src={capa} alt="Capa" className="capa cut" />
       </div>
           <LogoutButton onLogout={handleLogout} />
-    </div>
+      </div>
       <div className="flex-center nav-container">
       <Link to="/entidades">
           <button className="btn-menu gradient-border">Entidades & Users </button>
@@ -101,9 +101,9 @@ const Entity = () => {
       {isEditing ? (
         <div className="ent-info">
           <p><strong>Nome:</strong> {entityData.nome}</p>
-          <p><strong>Nome:</strong> <input className="form-input" type="text" name="nome" value={editedData?.nome || ""} onChange={handleInputChange} /></p>
-          <p><strong>NIF:</strong> <input className="form-input" type="text" name="nif" value={editedData?.nif || ""} onChange={handleInputChange} /></p>
-          <p><strong>Morada:</strong> <input className="form-input" type="text" name="morada" value={editedData?.morada || ""} onChange={handleInputChange} /></p>
+          <p><strong>Nome:</strong> <input className="min-input" type="text" name="nome" value={editedData?.nome || ""} onChange={handleInputChange} /></p>
+          <p><strong>NIF:</strong> <input className="min-input" type="text" name="nif" value={editedData?.nif || ""} onChange={handleInputChange} /></p>
+          <p><strong>Morada:</strong> <input className="min-input" type="text" name="morada" value={editedData?.morada || ""} onChange={handleInputChange} /></p>
           <div className="button-container">
             <button className="btn" onClick={handleSubmitClick}>Submeter</button>
             <button className="btn" onClick={handleCancelClick}>Cancelar</button>
@@ -119,8 +119,7 @@ const Entity = () => {
         </div>
       )}
       {/* Renderiza a lista de usuários */}
-      <h3>Lista de Colaboradores</h3>
-      <UserList entityName={entityData.nome} />
+      <UserList entityName={normalizeName(entityData.nome)} setSelectedUser={(user) => navigate(`/${normalizeName(entityData.nome)}/${normalizeName(user.nome)}`)} />
     </div>
     </>
   );

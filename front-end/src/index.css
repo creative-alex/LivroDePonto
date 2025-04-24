@@ -59,6 +59,7 @@ h1, h2, h3, h4 {
   font-weight: 600;
   line-height: 1.25;
   margin-bottom: 1rem;
+  text-transform: capitalize;
 }
 
 h1 {
@@ -132,12 +133,30 @@ p {
   padding: 2rem;
   color: var(--text-color);
   width: 25vw;
-  height: 100vh;
+  height: 90vh;
   background-color: rgba(169, 169, 169, 0.1);
   position: absolute;
   top: 0;
   right: 0;
   z-index: 5;
+  overflow: hidden;
+}
+
+.dynamic-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  color: var(--text-color);
+  text-transform: capitilize;
+}
+
+.mini-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-color);
+  text-transform: capitilize;
 }
 
 /* ========================= */
@@ -210,6 +229,17 @@ p {
   color: var(--text-secondary);
   margin-top: 0.25rem;
 }
+
+.min-input {
+  border: none;
+  border-bottom: 2px solid var(--border-color); /* ou a cor que quiseres */
+  outline: none;
+  background-color: transparent; /* opcional, caso não queiras fundo */
+  padding: 5px; /* opcional, só para deixar mais bonito */
+}
+
+
+
 
 /* ========================= */
 /*        Botões             */
@@ -334,6 +364,15 @@ p {
   font-size: 0.9rem;
 }
 
+.exc {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+
 
 
 /* ========================= */
@@ -343,7 +382,7 @@ p {
   list-style: none;
 }
 
-.elist{
+.elist, .ulist {
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -352,6 +391,12 @@ p {
   position:absolute;
   top: 10%; 
   left: 20%;
+}
+
+.ulist{
+  gap: 1rem;
+  width: 45vw;
+  top:15%
 }
 
 .list-item {

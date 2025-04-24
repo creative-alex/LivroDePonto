@@ -5,6 +5,8 @@ import ShowTimeLine from '../buttons/showTimelineButton';
 import TimeLine from './timeline';
 import EntidadeSelect from '../combobox/allEntitiesSelect';
 import DeleteUser from '../buttons/deleteUser';
+import capa from '../../../assets/capa.jpg';
+import LogoutButton from '../../../components/LogoutButton/logoutButton';
 
 
 const UserDetails = ({ selectedUser }) => {
@@ -162,6 +164,10 @@ const UserDetails = ({ selectedUser }) => {
         setError(err.message);
     }
 };
+
+const handleLogout = () => {
+  localStorage.removeItem("user");
+};
   
 
   if (loading) return <p>Loading...</p>;
@@ -170,7 +176,25 @@ const UserDetails = ({ selectedUser }) => {
   if (!showDetails) return null; 
 
   return (
-    <div className='flex'>
+    <>
+    <div style={{ width: '30vw' }}>
+      <div className="cut">
+          <img src={capa} alt="Capa" className="capa cut" />
+      </div>
+          <LogoutButton onLogout={handleLogout} />
+      </div>
+        <div className="flex-center nav-container">
+            <Link to="/entidades">
+                <button className="btn-menu gradient-border">Entidades & Users </button>
+              </Link>
+              <Link to="/nova-entidade">
+                <button className="btn-menu gradient-border">Criar Entidade</button>
+              </Link>
+              <Link to="/novo-user">
+                <button className="btn-menu gradient-border">Criar User</button>
+              </Link>
+            </div>
+    <div className='ulist'>
       {/* Header dinâmico com links */}
       <header className="dynamic-header flex-center">
         <h3>
@@ -182,15 +206,16 @@ const UserDetails = ({ selectedUser }) => {
                 <Link to={pathToSegment} className="breadcrumb-link">
                   {segment}
                 </Link>
-                {index < pathSegments.length - 1 && " / "}
+                {index < pathSegments.length - 1 && " | "}
               </span>
             );
           })}
         </h3>
+        <EditButton onClick={handleEditClick} />
       </header>
 
        {isEditing ? (
-  <div className="form-container  gradient-border">
+  <div className=" gradient-border">
     <p className="input-group">
       <strong className="input-label">Nome:</strong>
       <input 
@@ -250,42 +275,46 @@ const UserDetails = ({ selectedUser }) => {
   </div>
 ) : (
     
-  <div className="table-container  gradient-border">
+  <div className="gradient-border">
     <ul>
       <li className='list-item'><strong>Nome:</strong> {userDetails.nome || "N/A"}</li>
       <li className='list-item'><strong>Email:</strong> {userDetails.email || "N/A"}</li>
       <li className='list-item'><strong>Entidade:</strong> {userDetails.entidade || "N/A"}</li>
       <li className='list-item'><strong>Função na Empresa:</strong> {userDetails.role}</li>
     </ul>
-    <div className="button-container">
-      <EditButton onClick={handleEditClick} />
-      <ShowTimeLine onClick={handleShowTimeLine} />
-    </div>
-            
 
-    {showMonths && (
-      <div className="button-container flex-center">
-        <div className="months-wrapper">
-          <h3>Selecione um mês:</h3>
-          <div className="months-container">
-            {["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
-              .map((month, index) => (
-                <button className="btn" key={index} onClick={() => handleSelectMonth(index + 1)}>
-                  {month}
-                </button>
-              ))}
-          </div>
-        </div>
-      </div>
-    )}
+  <div className="">
+  <header className="mini-header">
+    <h2 >Consultar assiduidade</h2>
+    <a>Selecione um mês</a>
+  </header>
+
+  <div className="relative">
+    <select
+      className="form-select appearance-none w-full px-3 py-2 border border-gray-200 rounded-md text-gray-800 font-medium focus:outline-none"
+      onChange={(e) => handleSelectMonth(parseInt(e.target.value, 10))}
+      value={selectedMonth || ""}
+    >
+      {[
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      ].map((month, index) => (
+        <option key={index} value={index + 1}>{month}</option>
+      ))}
+    </select>
+
+
+  </div>
+</div>
+
 
     {selectedMonth && <TimeLine username={userName} month={selectedMonth} />}
   </div>
 )}
 
     </div>
+    </>
   );
-  
 };
 
 export default UserDetails;

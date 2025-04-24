@@ -39,9 +39,6 @@ const EntityDetail = () => {
 
 const handleLogout = () => {
   localStorage.removeItem("user");
-  setIsLoggedIn(false);
-  setIsAdmin(false);
-  setIsFirstLogin(false);
 };
 
 const AllEntities = () => {

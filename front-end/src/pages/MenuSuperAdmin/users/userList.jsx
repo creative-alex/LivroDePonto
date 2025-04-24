@@ -226,7 +226,7 @@ const UserList = ({ setSelectedUser }) => {
   ];
 
   return (
-    <div className="form-container center gradient-border">
+    <div className="ulist center gradient-border">
       <header className="dynamic-header">
         <h3>
           {location.pathname
@@ -240,19 +240,16 @@ const UserList = ({ setSelectedUser }) => {
                 >
                   {segment}
                 </Link>
-                {index < arr.length - 1 && " / "}
+                {index < arr.length - 1 && " | "}
               </span>
             ))}
         </h3>
-      </header>
-
-      <h2 className="login-header">Colaboradores de {entityName}</h2>
-
-      <button onClick={() => setSelecionarMultiplos(!selecionarMultiplos)}>
+        <button className="exc" onClick={() => setSelecionarMultiplos(!selecionarMultiplos)}>
         {selecionarMultiplos
           ? "Cancelar Seleção Múltipla"
           : "Selecionar Vários"}
       </button>
+      </header>
 
       {selecionarMultiplos && (
         <>
@@ -290,27 +287,56 @@ const UserList = ({ setSelectedUser }) => {
       {employees.length > 0 ? (
         <ul className="entity-card">
           {employees.map((employee) => (
-            <li key={employee.uid} className="elist">
+            <li key={employee.uid} className="list-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               {selecionarMultiplos ? (
-                <label>
+                <label style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
                   <input
                     type="checkbox"
                     checked={utilizadoresSelecionados.includes(employee.uid)}
                     onChange={() => handleCheckboxChange(employee.uid)}
                   />
-                  {employee.nome} - {employee.role}
+                  {employee.nome}
+                  <span style={{ marginLeft: "10px", color: "yellow" }}>
+                    {/* Ícone de seta amarela */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="#C8932F"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 1 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
+                      />
+                    </svg>
+                  </span>
                 </label>
               ) : (
                 <span
                   onClick={() => {
-                    setSelectedUser(employee);
-                    navigate(
-                      `/entidades/${entityName}/users/${employee.nome}`
-                    ); // Redireciona para a página do colaborador
+                    if (setSelectedUser) {
+                      setSelectedUser(employee); // Chama a função passada como prop
+                    }
                   }}
-                  style={{ cursor: "pointer", color: "blue" }}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}
                 >
-                  {employee.nome} - {employee.role}
+                  {employee.nome}
+                  <span style={{ marginLeft: "10px", color: "yellow" }}>
+                    {/* Ícone de seta amarela */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="#C8932F"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 1 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
+                      />
+                    </svg>
+                  </span>
                 </span>
               )}
             </li>
