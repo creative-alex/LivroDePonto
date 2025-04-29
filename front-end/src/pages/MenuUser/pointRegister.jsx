@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
 import { calcularHoras, formatarMinutos } from "../../components/Hours/calcHours";
+import capa from "../../assets/capa.jpg";
+import LogoutButton from "../../components/LogoutButton/logoutButton";
+import EntryButton from "./buttons/entryRegisterButton";
+import ExitButton from "./buttons/exitRegisterButton";
+
 
 const feriadosPorto = [
   "01-01", "25-04", "01-05", "10-06", "15-08", "05-10", "01-11", "01-12", "08-12", "25-12"
@@ -153,68 +158,59 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 10000);
-    console.log("Intervalo configurado para 10 segundos.");
-
-    return () => {
-      console.log("Limpando intervalo.");
-      clearInterval(interval);
-    };
   }, [username, month]);
 
-  console.log("Estado final de dados antes de renderizar:", dados);
-
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+  };
 
   return (
+    <>
+    <div style={{ width: '30vw' }}>
+        <div className="cut">
+            <img src={capa} alt="Capa" className="capa cut" />
+        </div>
+            <LogoutButton onLogout={handleLogout} />
+    </div>
+    <div className="flex-center nav-container">
+      {/* Botão de Entrada */}
+      <EntryButton username={username} />
+      
+      {/* Botão de Saída */}
+      <ExitButton username={username} />
+    </div>
+    <div className="ent-info">
+                <h2>Totais</h2>
+                <p><strong>Horas Normais Mensais:</strong> {totais.totalHoras}</p>
+                <p><strong>Horas Extras Mensais:</strong> {totais.totalExtras}</p>
+                <p><strong>Dias de Falta:</strong> {totais.diasFalta}</p>
+                <p><strong>Dias de Férias:</strong> {totais.diasFerias}</p>
+              </div>
     <div className="table-container flex-center">
       <table>
         <thead>
           <tr>
             <th>Dia</th>
-            <th>Hora Entrada</th>            
-            <th colSpan="2">Pausa Almoço</th> 
+            <th>Hora Entrada</th>
             <th>Hora Saída</th>
             <th>Total Horas</th>
             <th>Horas Extra</th>
-          </tr>
-          <tr>
-            <th></th> 
-            <th></th> 
-            <th>Entrada</th> 
-            <th>Saída</th> 
-            <th></th> 
-            <th></th> 
-            <th></th> 
           </tr>
         </thead>
         <tbody>
           {dados.map((item, index) => (
             <tr key={index}>
-              <td>{item.dia}</td> 
+              <td>{item.dia}</td>
               <td>{item.horaEntrada}</td>
-              <td>{item.pausaEntrada || "-"}</td> 
-              <td>{item.pausaSaida || "-"}</td> 
               <td>{item.horaSaida}</td>
               <td>{item.total}</td>
               <td>{item.extra}</td>
             </tr>
           ))}
-          <tr>
-            <td colSpan="4"><strong>Totais</strong></td>
-            <td><strong>{totais.totalHoras}</strong></td>
-            <td><strong>{totais.totalExtras}</strong></td>
-          </tr>
-          <tr>
-            <td colSpan="4"><strong>Dias de Falta</strong></td>
-            <td colSpan="2"><strong>{totais.diasFalta}</strong></td>
-          </tr>
-          <tr>
-            <td colSpan="4"><strong>Dias de Férias</strong></td>
-            <td colSpan="2"><strong>{totais.diasFerias}</strong></td>
-          </tr>
         </tbody>
       </table>
     </div>
+    </>
   );
 };
 

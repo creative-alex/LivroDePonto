@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
+import capa from '../../../../assets/capa.jpg';
+import LogoutButton from '../../../../components/LogoutButton/logoutButton';
+
 
 const NovaEntidade = () => {
   const [nome, setNome] = useState('');
@@ -63,7 +67,27 @@ const NovaEntidade = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+  };
+
   return (
+    <>
+     <div className="cut">
+              <img src={capa} alt="Capa" className="capa cut" />
+      </div>
+      <LogoutButton onLogout={handleLogout} />
+       <div className="flex-center nav-container">
+                <Link to="/entidades">
+                    <button className="btn-menu gradient-border">Entidades & Users </button>
+                  </Link>
+                  <Link to="/nova-entidade">
+                    <button className="btn-menu gradient-border">Criar Entidade</button>
+                  </Link>
+                  <Link to="/novo-user">
+                    <button className="btn-menu gradient-border">Criar User</button>
+                  </Link>
+            </div>
     <div className="form-container center gradient-border">
       <h2>Criação de Nova Entidade</h2>
       <form onSubmit={handleSubmit}>
@@ -72,7 +96,7 @@ const NovaEntidade = () => {
           <input
             id="nome"
             type="text"
-            className="form-input"
+            className="create-input"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
             required
@@ -84,7 +108,7 @@ const NovaEntidade = () => {
           <input
             id="morada"
             type="text"
-            className="form-input"
+            className="create-input"
             value={morada}
             onChange={(e) => setMorada(e.target.value)}
             required
@@ -96,7 +120,7 @@ const NovaEntidade = () => {
           <input
             id="nif"
             type="text"
-            className="form-input"
+            className="create-input"
             value={nif}
             minLength={9}
             maxLength={9}
@@ -105,13 +129,12 @@ const NovaEntidade = () => {
           />
         </div>
 
-        <button className="btn btn-primary" type="submit">
-          Criar Entidade
-        </button>
+        <button className="btn login" type="submit">→</button>
       </form>
 
       <ToastContainer />
     </div>
+    </>
   );
 };
 

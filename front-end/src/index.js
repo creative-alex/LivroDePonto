@@ -39,7 +39,7 @@ const App = () => {
       setIsLoggedIn(true);
       setIsAdmin(role === "SuperAdmin");
       setIsFirstLogin(firstLogin && role !== "SuperAdmin");
-
+  
       // Redireciona o usuário logado para a página correta
       if (window.location.pathname === "/" || window.location.pathname === "/login" || window.location.pathname === "/first-login") {
         if (role === "SuperAdmin") {
@@ -52,6 +52,13 @@ const App = () => {
       }
     }
   }, [setUsername, setUserEmail, navigate]);
+  
+  // Adicione lógica para redirecionar após o primeiro login
+  useEffect(() => {
+    if (!isFirstLogin && isLoggedIn && !isAdmin) {
+      navigate("/home");
+    }
+  }, [isFirstLogin, isLoggedIn, isAdmin, navigate]);
 
   const handleLoginSuccess = (role, nome, firstLogin, email) => {
     localStorage.setItem("user", JSON.stringify({ nome, role, email, firstLogin }));
@@ -92,22 +99,45 @@ const App = () => {
     </div>
     <footer className="footer">
         <img src={footer} alt="Rodapé" className="footer-image" />
-        </footer>
+    </footer>
     </>
   );
   
 
-  const UserMenu = () => (
-    <div>
-      <div className="flex-center button-container">
-        <RegisterEntry username={username} />
-        <RegisterLeave username={username} />
-      </div>
-      {/* Renderiza a tabela de horas diretamente */}
-      <TableHours username={username} />
-      <LogoutButton className="flex-center button-container" onLogout={handleLogout} />
-    </div>
-  );
+  const UserMenu = () => {
+    const { username } = useContext(UserContext);
+  
+    if (!username) {
+      return <div>Carregando...</div>; // Exibir estado de carregamento
+    }
+  
+    return (
+      <>
+        <div style={{ width: '30vw' }}>
+          <h1>Bom dia, {username}!</h1>
+          <img src={capa} alt="Capa" className="capa" />
+          <LogoutButton onLogout={handleLogout} />
+        </div>
+        <img src={logo} alt="Logo" className="logo" />
+        <div>
+          <div className="flex-center button-container">
+            <RegisterEntry username={username} />
+            <RegisterLeave username={username} />
+            <button
+              className="btn-menu gradient-border"
+              onClick={() => navigate('/registos')}
+            >
+              Mostrar Registos
+            </button>
+          </div>
+          <LogoutButton className="flex-center button-container" onLogout={handleLogout} />
+        </div>
+        <footer className="footer">
+          <img src={footer} alt="Rodapé" className="footer-image" />
+        </footer>
+      </>
+    );
+  };
 
 
   
@@ -136,7 +166,10 @@ const App = () => {
                   <Route path="/:entityName/:userName" element={<UserDetails selectedUser={selectedUser} />} />
                 </>
               ) : (
-                <Route path="/home" element={<UserMenu />} />
+                <>
+                  <Route path="/home" element={<UserMenu />} />
+                  <Route path="/registos" element={<TableHours username={username} />} /> {/* Adicionada a rota para TableHours */}
+                </>
               )}
             </>
           )}

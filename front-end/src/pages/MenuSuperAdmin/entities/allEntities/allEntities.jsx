@@ -66,7 +66,7 @@ const AllEntities = () => {
       </div>
           <LogoutButton onLogout={handleLogout} />
     </div>
-      <div className="flex-center nav-container">
+      <div className=" nav-container">
       <Link to="/entidades">
           <button className="btn-menu gradient-border">Entidades & Users </button>
         </Link>

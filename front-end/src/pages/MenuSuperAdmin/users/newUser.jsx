@@ -3,6 +3,10 @@ import EntidadeSelect from '../combobox/allEntitiesSelect';
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import capa from '../../../assets/capa.jpg';
+import LogoutButton from '../../../components/LogoutButton/logoutButton';
+import { useNavigate, useLocation, Link } from "react-router-dom"; // Importar Link e useLocation
+
 
 const auth = getAuth();
 
@@ -96,7 +100,29 @@ const NewUser = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+  };
+
   return (
+    <>
+     <div className="flex-center nav-container">
+            <Link to="/entidades">
+                <button className="btn-menu gradient-border">Entidades & Users </button>
+              </Link>
+              <Link to="/nova-entidade">
+                <button className="btn-menu gradient-border">Criar Entidade</button>
+              </Link>
+              <Link to="/novo-user">
+                <button className="btn-menu gradient-border">Criar User</button>
+              </Link>
+        </div>
+    <div style={{ width: '30vw' }}>
+      <div className="cut">
+          <img src={capa} alt="Capa" className="capa cut" />
+      </div>
+          <LogoutButton onLogout={handleLogout} />
+      </div>
     <div className="form-container center gradient-border">
       <h2>Criação de Novo User</h2>
       {message && <p className="error-unique">{message}</p>}
@@ -106,7 +132,7 @@ const NewUser = () => {
           <input
             id="nome"
             type="text"
-            className="form-input"
+            className="create-input"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
             required
@@ -118,7 +144,7 @@ const NewUser = () => {
           <input
             id="email"
             type="email"
-            className="form-input"
+            className="create-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -130,7 +156,7 @@ const NewUser = () => {
           <input
             id="password"
             type="password"
-            className="form-input"
+            className="create-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             minLength={6}
@@ -143,7 +169,7 @@ const NewUser = () => {
           <input
             id="role"
             type="text"
-            className="form-input"
+            className="create-input"
             value={role}
             onChange={(e) => setRole(e.target.value)}
             required
@@ -161,13 +187,12 @@ const NewUser = () => {
           />
         </div>
 
-        <button className="btn btn-primary" type="submit">
-          Criar User
-        </button>
+        <button className="btn login" type="submit">→</button>
       </form>
 
       <ToastContainer />
     </div>
+    </>
   );
 };
 

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { UserContext } from "../../context/UserContext";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate, useLocation } from "react-router-dom"; 
+import { toast, ToastContainer } from "react-toastify";
 import logo from "../../assets/logo.png";
 import capa from "../../assets/capa.jpg";
 import footer from "../../assets/footer.png";
@@ -22,6 +23,14 @@ const Login = ({ onLoginSuccess }) => {
   const [error, setError] = useState("");
   const { username, setUsername } = useContext(UserContext);
   const navigate = useNavigate(); // Inicializar o hook
+  const location = useLocation(); // Obter o estado passado pelo navigate
+
+  useEffect(() => {
+    // Verifica se há uma mensagem de sucesso no estado
+    if (location.state?.successMessage) {
+      toast.success(location.state.successMessage);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const checkLocalStorage = () => {

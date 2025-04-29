@@ -80,13 +80,13 @@ const Entity = () => {
 
   return (
     <>
-       <div style={{ width: '30vw' }}>
-      <div className="cut">
-          <img src={capa} alt="Capa" className="capa cut" />
+      <div style={{ width: '30vw' }}>
+        <div className="cut">
+            <img src={capa} alt="Capa" className="capa cut" />
+        </div>
+            <LogoutButton onLogout={handleLogout} />
       </div>
-          <LogoutButton onLogout={handleLogout} />
-      </div>
-      <div className="flex-center nav-container">
+      <div className="nav-container">
       <Link to="/entidades">
           <button className="btn-menu gradient-border">Entidades & Users </button>
         </Link>

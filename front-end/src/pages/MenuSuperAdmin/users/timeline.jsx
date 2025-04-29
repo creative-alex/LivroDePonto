@@ -8,7 +8,7 @@ const feriadosPorto = [
   "01-01", "25-04", "01-05", "10-06", "15-08", "05-10", "01-11", "01-12", "08-12", "25-12"
 ];
 
-const TableHours = ({ username, month }) => {
+const TableHours = ({ username, month, onTotaisChange }) => {
   const [dados, setDados] = useState([]);
   const [totais, setTotais] = useState({totalHoras: "0h 0m", totalExtras: "0h 0m", diasFalta: 0, diasFerias: 0});  
   const [editando, setEditando] = useState(null);
@@ -80,15 +80,20 @@ const TableHours = ({ username, month }) => {
       const diasFalta = novosDados.filter(d => d.total === "0h 0m" && !d.isFerias).length;
       const diasFerias = novosDados.filter(d => d.isFerias).length;
 
-      setTotais({
+      const novosTotais = {
         totalHoras: formatarMinutos(totalMinutos),
         totalExtras: formatarMinutos(totalMinutosExtras),
         diasFalta,
         diasFerias
-      });
+      };
 
-  
+      setTotais(novosTotais);
       setDados(novosDados);
+
+      // Chama a função de callback para enviar os totais ao UserDetails
+      if (onTotaisChange) {
+        onTotaisChange(novosTotais);
+      }
     } catch (error) {
       console.error("❌ Erro ao buscar horários:", error);
       setTotais({
@@ -209,19 +214,6 @@ const TableHours = ({ username, month }) => {
                 <td>{item.extra}</td>
               </tr>
             ))}
-            <tr>
-              <td colSpan="3"><strong>Totais</strong></td>
-              <td><strong>{totais.totalHoras}</strong></td>
-              <td><strong>{totais.totalExtras}</strong></td>
-            </tr>
-            <tr>
-              <td colSpan="3"><strong>Dias de Falta</strong></td>
-              <td colSpan="2"><strong>{totais.diasFalta}</strong></td>
-            </tr>
-            <tr>
-              <td colSpan="3"><strong>Dias de Férias</strong></td>
-              <td colSpan="2"><strong>{totais.diasFerias}</strong></td>
-            </tr>
           </tbody>
         </table>
       </div>

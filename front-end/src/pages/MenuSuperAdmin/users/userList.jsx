@@ -316,7 +316,9 @@ const UserList = ({ setSelectedUser }) => {
                 <span
                   onClick={() => {
                     if (setSelectedUser) {
-                      setSelectedUser(employee); // Chama a função passada como prop
+                      setSelectedUser(employee); 
+                      localStorage.setItem("selectedUserUID", employee.uid); 
+                      navigate(`/user-details/${employee.uid}`); 
                     }
                   }}
                   style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}

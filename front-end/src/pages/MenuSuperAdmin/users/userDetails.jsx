@@ -18,6 +18,7 @@ const UserDetails = ({ selectedUser }) => {
   const [showMonths, setShowMonths] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [showDetails, setShowDetails] = useState(true);
+  const [totais, setTotais] = useState(null);
   const navigate = useNavigate(); // Obtém a função navigate
   const location = useLocation(); // Obter a localização atual
 
@@ -168,6 +169,10 @@ const UserDetails = ({ selectedUser }) => {
 const handleLogout = () => {
   localStorage.removeItem("user");
 };
+
+const handleTotaisChange = (novosTotais) => {
+  setTotais(novosTotais);
+};
   
 
   if (loading) return <p>Loading...</p>;
@@ -183,7 +188,7 @@ const handleLogout = () => {
       </div>
           <LogoutButton onLogout={handleLogout} />
       </div>
-        <div className="flex-center nav-container">
+        <div className=" nav-container">
             <Link to="/entidades">
                 <button className="btn-menu gradient-border">Entidades & Users </button>
               </Link>
@@ -193,23 +198,27 @@ const handleLogout = () => {
               <Link to="/novo-user">
                 <button className="btn-menu gradient-border">Criar User</button>
               </Link>
-            </div>
+        </div>
+
+            {totais && (
+              <div className="ent-info">
+                <h2>Totais</h2>
+                <p><strong>Horas Normais Mensais:</strong> {totais.totalHoras}</p>
+                <p><strong>Horas Extras Mensais:</strong> {totais.totalExtras}</p>
+                <p><strong>Dias de Falta:</strong> {totais.diasFalta}</p>
+                <p><strong>Dias de Férias:</strong> {totais.diasFerias}</p>
+              </div>
+            )}
+
     <div className='ulist'>
       {/* Header dinâmico com links */}
-      <header className="dynamic-header flex-center">
+      <header className="dynamic-header ">
         <h3>
-          {pathSegments.map((segment, index) => {
-            // Construir o caminho acumulado para cada segmento
-            const pathToSegment = `/${pathSegments.slice(0, index + 1).join("/")}`;
-            return (
-              <span key={index}>
-                <Link to={pathToSegment} className="breadcrumb-link">
-                  {segment}
-                </Link>
-                {index < pathSegments.length - 1 && " | "}
-              </span>
-            );
-          })}
+          <Link to="/entidades" className="breadcrumb-link">Entidades</Link> |{" "}
+          <Link to={`/entidades/${userDetails?.entidade}`} className="breadcrumb-link">
+            {userDetails?.entidade || "N/A"}
+          </Link> |{" "}
+          <span>{userDetails?.nome || "N/A"}</span>
         </h3>
         <EditButton onClick={handleEditClick} />
       </header>
@@ -221,7 +230,7 @@ const handleLogout = () => {
       <input 
         type="text" 
         name="nome" 
-        className="form-input"
+        className="min-input"
         value={editedData?.nome || ""} 
         onChange={handleInputChange} 
       />
@@ -229,7 +238,7 @@ const handleLogout = () => {
     <p className="input-group">
       <strong className="input-label">Email:</strong>
       <input 
-        className="form-input" 
+        className="min-input" 
         type="text" 
         name="email" 
         value={editedData?.email || ""} 
@@ -248,7 +257,7 @@ const handleLogout = () => {
     <p className="input-group">
       <strong className="input-label">Função na Empresa:</strong>
       <input 
-        className="form-input" 
+        className="min-input" 
         type="text" 
         name="role" 
         value={editedData?.role || ""} 
@@ -258,7 +267,7 @@ const handleLogout = () => {
     <p className="input-group">
       <strong className="input-label">Nova Password Temporária:</strong>
       <input 
-        className="form-input" 
+        className="min-input" 
         type="password" 
         name="newPassword" 
         minLength="6" 
@@ -266,7 +275,7 @@ const handleLogout = () => {
         onChange={handleInputChange} 
       />
     </p>
-    <div className="button-container">
+    <div >
       <button className="btn" onClick={handleSubmitClick}>Submeter</button>
       <button className="btn" onClick={handleCancelClick}>Cancelar</button>
     <DeleteUser  onClick={handleDeleteClick} />   
@@ -283,7 +292,7 @@ const handleLogout = () => {
       <li className='list-item'><strong>Função na Empresa:</strong> {userDetails.role}</li>
     </ul>
 
-  <div className="">
+  <div className="months-container">
   <header className="mini-header">
     <h2 >Consultar assiduidade</h2>
     <a>Selecione um mês</a>
@@ -295,6 +304,7 @@ const handleLogout = () => {
       onChange={(e) => handleSelectMonth(parseInt(e.target.value, 10))}
       value={selectedMonth || ""}
     >
+      <option value="" disabled>-- Selecione um Mês --</option>
       {[
         "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
         "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
@@ -302,13 +312,10 @@ const handleLogout = () => {
         <option key={index} value={index + 1}>{month}</option>
       ))}
     </select>
-
-
   </div>
 </div>
 
-
-    {selectedMonth && <TimeLine username={userName} month={selectedMonth} />}
+    {selectedMonth && <TimeLine username={userName} month={selectedMonth} onTotaisChange={handleTotaisChange} />}
   </div>
 )}
 
