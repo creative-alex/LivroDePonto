@@ -8,7 +8,7 @@ const EntryButton = ({ username }) => {
   useEffect(() => {
     const checkEntry = async () => {
       try {
-        const response = await fetch('http://localhost:4005/users/checkEntry', {
+        const response = await fetch('https://livrodeponto-fd4b.onrender.com/users/checkEntry', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
