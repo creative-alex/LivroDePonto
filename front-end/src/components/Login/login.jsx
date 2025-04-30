@@ -122,7 +122,7 @@ const Login = ({ onLoginSuccess }) => {
   return (
   <>
     <div>
-    <h1>Bom dia!</h1>
+    <h1>Bem-Vindo!</h1>
       <img src={capa} alt="Capa" className="capa" />
     </div>
     <img src={logo} alt="Logo" className="logo" />

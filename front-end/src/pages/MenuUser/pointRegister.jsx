@@ -36,14 +36,12 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
   });
 
   useEffect(() => {
-    console.log("Entrando no useEffect com deps:", { username, month });
 
     if (!username) {
       console.warn("Parâmetros inválidos:", { username, month });
       return;
     }
 
-    console.log("Iniciando fetchData...");
 
     const fetchData = async () => {
       try {
@@ -60,7 +58,6 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
           body: JSON.stringify({ username, month }),
         });
 
-        console.log("Resposta recebida da API:", response);
 
         if (!response.ok) {
           console.error("Erro na resposta da API:", response.status, response.statusText);
@@ -72,8 +69,6 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
 
         const { registros = [], ferias = [] } = respostaJson;
 
-        console.log("Registros obtidos:", registros);
-        console.log("Dias de férias obtidos:", ferias);
 
         const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
         console.log("Número de dias no mês (pós-API):", diasNoMes);
@@ -91,7 +86,6 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
           extra: "-",
         }));
 
-        console.log("Estrutura inicial de novosDados:", novosDados);
 
         const hoje = new Date();
         console.log("Data atual:", hoje);
@@ -134,7 +128,6 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
           return item;
         });
 
-        console.log("Novos dados após processamento:", novosDados);
 
         console.log("Resumo final:", {
           totalHoras: formatarMinutos(totalMinutos),
@@ -173,11 +166,9 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
             <LogoutButton onLogout={handleLogout} />
     </div>
     <div className="flex-center nav-container">
-      {/* Botão de Entrada */}
-      <EntryButton username={username} />
-      
-      {/* Botão de Saída */}
-      <ExitButton username={username} />
+      <EntryButton username={username}  onClick={() => {fetchData();}} />      
+     
+      <ExitButton username={username} onClick={() => {fetchData();}} />
     </div>
     <div className="ent-info">
                 <h2>Totais</h2>

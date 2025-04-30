@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const LeaveButton = ({ username }) => {
   const [isDisabled, setIsDisabled] = useState(false);
@@ -43,7 +45,7 @@ const LeaveButton = ({ username }) => {
         throw new Error('Erro ao registrar a saída');
       }
       
-      console.log('Saída registrada com sucesso!');
+      toast.success(`Saída registada às ${formattedTime}`, { position: 'top-right', autoClose: 3000 }); // Exibir toast
       setIsDisabled(true);
     } catch (error) {
       console.error('Erro:', error);

@@ -19,6 +19,7 @@ import Home from "./components/App";
 import logo from "./assets/logo.png";
 import capa from "./assets/capa.jpg";
 import footer from "./assets/footer.png";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
   const { setUsername, username, setUserEmail, userEmail } = useContext(UserContext);
@@ -53,10 +54,13 @@ const App = () => {
     }
   }, [setUsername, setUserEmail, navigate]);
   
-  // Adicione lógica para redirecionar após o primeiro login
+  
   useEffect(() => {
-    if (!isFirstLogin && isLoggedIn && !isAdmin) {
-      navigate("/home");
+    if (!isFirstLogin && isLoggedIn && !isAdmin) {      
+      const allowedPaths = ["/home", "/registos"];
+      if (!allowedPaths.includes(window.location.pathname)) {
+        navigate("/home");
+      }
     }
   }, [isFirstLogin, isLoggedIn, isAdmin, navigate]);
 
@@ -79,7 +83,7 @@ const App = () => {
   const AdminMenu = () => (
     <>
     <div style={{ width: '30vw' }}>
-        <h1>Bom dia!</h1>
+        <h1>Bem-Vindo!</h1>
           <img src={capa} alt="Capa" className="capa" />
           <LogoutButton onLogout={handleLogout} />
     </div>
@@ -114,7 +118,7 @@ const App = () => {
     return (
       <>
         <div style={{ width: '30vw' }}>
-          <h1>Bom dia, {username}!</h1>
+          <h1>Bem-Vindo, {username}!</h1>
           <img src={capa} alt="Capa" className="capa" />
           <LogoutButton onLogout={handleLogout} />
         </div>
@@ -142,6 +146,7 @@ const App = () => {
 
   
   return (
+    <>
     <Routes>
       {/* Página inicial sempre será o login */}
       <Route path="/" element={<Navigate to="/login" />} />
@@ -176,6 +181,8 @@ const App = () => {
         </>
       )}
     </Routes>
+    <ToastContainer/>
+    </>
   );
   
 };

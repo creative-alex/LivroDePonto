@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify'; // Importar Toastify
+import 'react-toastify/dist/ReactToastify.css'; // Importar estilos do Toastify
 
 const EntryButton = ({ username }) => {
   const [isDisabled, setIsDisabled] = useState(false);
@@ -43,7 +45,7 @@ const EntryButton = ({ username }) => {
         throw new Error('Erro ao registrar a entrada');
       }
       
-      console.log('Entrada registrada com sucesso!');
+      toast.success(`Entrada registada às ${formattedTime}`, { position: 'top-right', autoClose: 3000 }); // Exibir toast
       setIsDisabled(true);
     } catch (error) {
       console.error('Erro:', error);
