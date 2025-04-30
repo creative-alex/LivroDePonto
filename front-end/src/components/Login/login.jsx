@@ -66,45 +66,49 @@ const Login = ({ onLoginSuccess }) => {
       console.log("Tentando fazer login com email:", email);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("Login bem-sucedido:", userCredential);
-      
+
       const user = userCredential.user;
       console.log("Usuário autenticado:", user);
-      
+
       const token = await user.getIdToken();
       console.log("Token do usuário:", token);
 
       // Verifica token no backend
-      const response = await fetch("https://livrodeponto-fd4b.onrender.com/users/verifyToken", {  
+      const response = await fetch("http://localhost:4005/users/verifyToken", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
 
-      if (!response.ok) throw new Error("Erro ao autenticar");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erro ao autenticar o token");
+      }
       console.log("Resposta da verificação do token:", response);
 
       // Obtém o papel e nome do user
-      const roleResponse = await fetch("https://livrodeponto-fd4b.onrender.com/users/getUserRole", {
+      const roleResponse = await fetch("http://localhost:4005/users/getUserRole", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: user.email }),
       });
 
-      console.log("Resposta da obtenção do papel do usuário:", roleResponse);
+      if (!roleResponse.ok) {
+        const errorData = await roleResponse.json();
+        throw new Error(errorData.message || "Erro ao obter informações do usuário");
+      }
 
       const roleData = await roleResponse.json();
       console.log("Dados do papel do usuário:", roleData);
 
-      if (!roleResponse.ok) throw new Error(roleData.message || "Erro ao obter informações do user");
-
-      // Passa o papel, nome e isFirstLogin 
+      // Passa o papel, nome e isFirstLogin
       onLoginSuccess(roleData.role, roleData.nome, roleData.isFirstLogin, user.email);
       console.log("Login bem-sucedido, passando dados para o App:", roleData);
 
       // Atualiza o contexto
       setUsername(roleData.nome);
       console.log("Nome do usuário atualizado no contexto:", roleData.nome);
-      
+
       // Redireciona o usuário com base no papel
       if (roleData.role === "SuperAdmin") {
         navigate("/admin"); // Redireciona para o menu de admin
@@ -113,12 +117,13 @@ const Login = ({ onLoginSuccess }) => {
       } else {
         navigate("/home"); // Redireciona para o menu de usuário
       }
-      
     } catch (error) {
-      setError(error.message);
       console.error("Erro no login:", error);
+      setError("Erro no login: " + error.message);
+      toast.error("Erro no login: " + error.message); // Exibe um toast com o erro
     }
   };
+
   return (
   <>
     <div>
