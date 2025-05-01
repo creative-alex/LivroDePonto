@@ -166,9 +166,9 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
             <LogoutButton onLogout={handleLogout} />
     </div>
     <div className="flex-center nav-container">
-      <EntryButton username={username}  onClick={() => {fetchData();}} />      
+      <EntryButton username={username}  />      
      
-      <ExitButton username={username} onClick={() => {fetchData();}} />
+      <ExitButton username={username} />
     </div>
     <div className="ent-info">
                 <h2>Totais</h2>
