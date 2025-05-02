@@ -266,7 +266,6 @@ const registerEntry = async (req, res) => {
 };
 const checkEntry = async (req, res) => {
   try {
-
     const { username } = req.body;
 
     if (!username) {
@@ -288,26 +287,24 @@ const checkEntry = async (req, res) => {
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const yyyy = today.getFullYear();
 
+    const registroId = `registro_${dd}${mm}${yyyy}`;
+    const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
+    const registroDoc = await userDocRef.collection("Registros").doc(registroId).get();
 
-    const registrosRef = db.collection("registro-ponto").doc(`user_${userId}`).collection("Registros");
-    
-    const snapshot = await registrosRef
-      .where("timestamp", ">=", new Date(`${yyyy}-${mm}-${dd}T00:00:00.000Z`))
-      .where("timestamp", "<=", new Date(`${yyyy}-${mm}-${dd}T23:59:59.999Z`))
-      .orderBy("timestamp", "desc")
-      .limit(1)
-      .get();
-    
-    if (snapshot.empty || !snapshot.docs[0].data().horaEntrada) {
-      return res.status(200).json({ hasLeave: false });
+    if (registroDoc.exists) {
+      const data = registroDoc.data();
+      if (data.horaEntrada) {
+        return res.status(200).json({ hasEntry: true });
+      }
     }
-    
-    return res.status(200).json({ hasLeave: true });
+
+    return res.status(200).json({ hasEntry: false });
   } catch (error) {
-    console.error("Erro ao verificar saída:", error);
+    console.error("Erro ao verificar entrada:", error);
     return res.status(500).json({ error: error.message });
   }
 };
+
 const registerLeave = async (req, res) => {
   try {
 
