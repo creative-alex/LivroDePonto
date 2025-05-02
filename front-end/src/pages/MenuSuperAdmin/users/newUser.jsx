@@ -41,7 +41,7 @@ const NewUser = () => {
 
     try {
       // 1️⃣ Criar o usuário no banco de dados
-      const response = await fetch('http://localhost:4005/users/createUser', {
+      const response = await fetch('https://api-ls3q.onrender.com/users/createUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ const NewUser = () => {
 
       // Remover usuário do banco de dados em caso de erro no Firebase
       if (error.message.includes("auth/") && email) {
-        await fetch('http://localhost:4005/users/deleteUser', {
+        await fetch('https://api-ls3q.onrender.com/users/deleteUser', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),

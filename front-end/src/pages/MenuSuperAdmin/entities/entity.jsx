@@ -30,7 +30,7 @@ const Entity = () => {
   useEffect(() => {
     const fetchEntityData = async () => {
       try {
-        const response = await fetch("http://localhost:4005/entity/entityDetails", {
+        const response = await fetch("https://api-ls3q.onrender.com/entity/entityDetails", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name: normalizeName(currentEntityName) }),
@@ -60,7 +60,7 @@ const Entity = () => {
 
   const handleSubmitClick = async () => {
     try {
-      const response = await fetch("http://localhost:4005/entity/updateEntity", {
+      const response = await fetch("https://api-ls3q.onrender.com/entity/updateEntity", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ oldName: entityData.nome, ...editedData }),

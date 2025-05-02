@@ -23,7 +23,7 @@ const TableHours = ({ username, month, onTotaisChange }) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:4005/users/calendar", {
+      const response = await fetch("https://api-ls3q.onrender.com/users/calendar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, month }),
@@ -117,7 +117,7 @@ const TableHours = ({ username, month, onTotaisChange }) => {
     setDados(novoDados);
 
     try {
-      const response = await fetch("http://localhost:4005/users/update-time", {
+      const response = await fetch("https://api-ls3q.onrender.com/users/update-time", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

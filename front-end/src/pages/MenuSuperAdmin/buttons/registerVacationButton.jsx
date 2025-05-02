@@ -7,7 +7,7 @@ const RegisterVacation = ({ username, date, onSuccess }) => {
     if (!ferias.includes(date)) {
       console.log("🌴 Marcando férias para o dia:", date);
       try {
-        const response = await fetch("http://localhost:4005/users/vacation", {
+        const response = await fetch("https://api-ls3q.onrender.com/users/vacation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, date }),

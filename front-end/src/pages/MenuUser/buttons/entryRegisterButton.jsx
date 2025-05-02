@@ -33,7 +33,7 @@ const EntryButton = ({ username }) => {
     const formattedTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     try {
-      const response = await fetch('http://localhost:4005/users/registerEntry', {
+      const response = await fetch('https://api-ls3q.onrender.com/users/registerEntry', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

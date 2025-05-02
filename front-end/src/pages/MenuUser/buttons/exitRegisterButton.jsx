@@ -8,7 +8,7 @@ const LeaveButton = ({ username }) => {
   useEffect(() => {
     const checkLeave = async () => {
       try {
-        const response = await fetch('http://localhost:4005/users/checkLeave', {
+        const response = await fetch('https://api-ls3q.onrender.com/users/checkLeave', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -33,7 +33,7 @@ const LeaveButton = ({ username }) => {
     const formattedTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     try {
-      const response = await fetch('http://localhost:4005/users/registerLeave', {
+      const response = await fetch('https://api-ls3q.onrender.com/users/registerLeave', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -21,7 +21,7 @@ const NovaEntidade = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:4005/entity/createEntity', {
+      const response = await fetch('https://api-ls3q.onrender.com/entity/createEntity', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

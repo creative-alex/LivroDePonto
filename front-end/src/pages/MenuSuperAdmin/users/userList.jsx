@@ -18,7 +18,7 @@ const UserList = ({ setSelectedUser }) => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await fetch("http://localhost:4005/users/byEntity", {
+        const response = await fetch("https://api-ls3q.onrender.com/users/byEntity", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ entidadeNome: entityName }),
@@ -52,7 +52,7 @@ const UserList = ({ setSelectedUser }) => {
         if (utilizadoresSelecionados.includes(user.uid)) {
           console.log(`Verificando registros para o usuário: ${user.nome}`);
   
-          const response = await fetch("http://localhost:4005/users/calendar", {
+          const response = await fetch("https://api-ls3q.onrender.com/users/calendar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: user.nome, month: mesSelecionado }),
@@ -98,7 +98,7 @@ const UserList = ({ setSelectedUser }) => {
           console.log(`Usuário ${user.nome} selecionado para exportação.`);
   
           // Buscar os registros de entrada e saída do usuário
-          const response = await fetch("http://localhost:4005/users/calendar", {
+          const response = await fetch("https://api-ls3q.onrender.com/users/calendar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: user.nome, month: mesSelecionado }),

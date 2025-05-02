@@ -53,7 +53,7 @@ const UserDetails = ({ selectedUser }) => {
       setError(null);
   
       try {
-        const response = await fetch(`http://localhost:4005/users/userDetails`, {
+        const response = await fetch(`https://api-ls3q.onrender.com/users/userDetails`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userName }),
@@ -96,7 +96,7 @@ const UserDetails = ({ selectedUser }) => {
     }
   
     try {
-      const response = await fetch(`http://localhost:4005/users/deleteUser`, {
+      const response = await fetch(`https://api-ls3q.onrender.com/users/deleteUser`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userName }),
@@ -139,7 +139,7 @@ const UserDetails = ({ selectedUser }) => {
 
   const handleSubmitClick = async () => {
     try {
-        const response = await fetch("http://localhost:4005/users/updateUserDetails", {
+        const response = await fetch("https://api-ls3q.onrender.com/users/updateUserDetails", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(editedData),

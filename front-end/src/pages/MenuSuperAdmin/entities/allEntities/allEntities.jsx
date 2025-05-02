@@ -7,7 +7,7 @@ import LogoutButton from "../../../../components/LogoutButton/logoutButton";
 // Função para buscar as entidades
 const fetchEntities = async (setEntities, setEntityCount, setError) => {
   try {
-    const response = await fetch("http://localhost:4005/entity/showEntities", {
+    const response = await fetch("https://api-ls3q.onrender.com/entity/showEntities", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     });

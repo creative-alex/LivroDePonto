@@ -46,13 +46,13 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
     const fetchData = async () => {
       try {
         console.log("Enviando requisição para API com:", {
-          url: "http://localhost:4005/users/calendar",
+          url: "https://api-ls3q.onrender.com/users/calendar",
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, month }),
         });
 
-        const response = await fetch("http://localhost:4005/users/calendar", {
+        const response = await fetch("https://api-ls3q.onrender.com/users/calendar", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, month }),
