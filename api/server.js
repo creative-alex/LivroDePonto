@@ -5,6 +5,7 @@ const path = require("path");
 const serviceAccount = require(path.join(__dirname, "./db/serviceAccountKey.json"));
 const userRoute = require("./routes/userRoute");
 const entityRoute = require("./routes/entityRoute");
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
