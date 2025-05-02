@@ -203,15 +203,14 @@ const handleTotaisChange = (novosTotais) => {
             {totais && (
               <div className="ent-info">
                 <h2>Totais</h2>
-                <p><strong>Horas Normais Mensais:</strong> {totais.totalHoras}</p>
-                <p><strong>Horas Extras Mensais:</strong> {totais.totalExtras}</p>
-                <p><strong>Dias de Falta:</strong> {totais.diasFalta}</p>
-                <p><strong>Dias de Férias:</strong> {totais.diasFerias}</p>
+                <p><strong>Total Horas Normais:</strong> {totais.totalHoras}</p>
+                <p><strong>Total Horas Extras:</strong> {totais.totalExtras}</p>
+                <p><strong>Faltas:</strong> {totais.diasFalta}</p>
+                <p><strong>Férias:</strong> {totais.diasFerias}</p>
               </div>
             )}
 
     <div className='ulist'>
-      {/* Header dinâmico com links */}
       <header className="dynamic-header ">
         <h3>
           <Link to="/entidades" className="breadcrumb-link">Entidades</Link> |{" "}
@@ -255,7 +254,7 @@ const handleTotaisChange = (novosTotais) => {
         onChange={handleEntidadeChange} 
     />
     <p className="input-group">
-      <strong className="input-label">Função na Empresa:</strong>
+      <strong className="input-label">Função:</strong>
       <input 
         className="min-input" 
         type="text" 

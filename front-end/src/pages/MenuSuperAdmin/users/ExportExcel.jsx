@@ -15,8 +15,8 @@ const ExportExcel = ({ dados, totais, username, month }) => {
 
     // Cabeçalhos
     const headerRow = ws.addRow([
-      "Dia/Mês", "Hora Entrada", "Pausa", "Hora Saída", "Total Horas Normais", 
-      "Total Horas Extra", "Justificação de Atraso/Falta", "Assinatura Colaborador/a"
+      "Dia/Mês", "Hora Entrada", "Pausa", "Hora Saída", "Total Horas Trabalhadas", 
+      "Total Horas Extra", "Observação"
     ]);
 
     headerRow.eachCell((cell) => {
@@ -41,7 +41,7 @@ const ExportExcel = ({ dados, totais, username, month }) => {
       if (rowData.horaEntrada === "Férias" || rowData.horaSaida === "Férias") {
         rowData.pausa = "Férias";
     } else if (rowData.horaEntrada !== "-" && rowData.horaSaida !== "-") {
-        rowData.pausa = "30 min.";
+        rowData.pausa = "13h - 13h30";
     } else {
         rowData.pausa = "-";
     }
@@ -74,8 +74,12 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     ws.addRow([]);
     ws.addRow([]);
     ws.addRow([]);
-    ws.addRow(["", "", "", "", "Assinatura GRH:", "_____________________________________________________________________"]);
+    ws.addRow(["", "", "", "", "Nome do Responsavel:", "_____________________________________________________________________"]);
     ws.addRow([]);
+    ws.addRow(["", "", "", "", "Assinatura do Responsavel:", "_____________________________________________________________________"]);
+    ws.addRow([]);
+    ws.addRow(["", "", "", "", "Assinatura do Colaborador:", "_____________________________________________________________________"]);
+
 
     // Totais
     ws.addRow(["Descrição", "Total"]).eachCell((cell) => {
@@ -97,10 +101,9 @@ const ExportExcel = ({ dados, totais, username, month }) => {
       });
     });
 
-    // Ajustando colunas
     ws.columns = [
       { width: 15 }, { width: 15 }, { width: 10 }, { width: 15 }, 
-      { width: 20 }, { width: 15 }, { width: 30 }, { width: 25 }
+      { width: 20 }, { width: 15 }, { width: 30 }, { width: 0 }
     ];
     
     const buffer = await wb.xlsx.writeBuffer();

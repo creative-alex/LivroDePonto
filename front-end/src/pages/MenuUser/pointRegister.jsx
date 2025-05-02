@@ -172,19 +172,19 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
     </div>
     <div className="ent-info">
                 <h2>Totais</h2>
-                <p><strong>Horas Normais Mensais:</strong> {totais.totalHoras}</p>
-                <p><strong>Horas Extras Mensais:</strong> {totais.totalExtras}</p>
-                <p><strong>Dias de Falta:</strong> {totais.diasFalta}</p>
-                <p><strong>Dias de Férias:</strong> {totais.diasFerias}</p>
+                <p><strong>Horas Normais:</strong> {totais.totalHoras}</p>
+                <p><strong>Horas Extras:</strong> {totais.totalExtras}</p>
+                <p><strong>Faltas:</strong> {totais.diasFalta}</p>
+                <p><strong>Férias:</strong> {totais.diasFerias}</p>
               </div>
     <div className="table-container flex-center">
       <table>
         <thead>
           <tr>
-            <th>Dia</th>
+            <th>Data</th>
             <th>Hora Entrada</th>
             <th>Hora Saída</th>
-            <th>Total Horas</th>
+            <th>Horas Trabalhadas</th>
             <th>Horas Extra</th>
           </tr>
         </thead>

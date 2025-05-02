@@ -170,10 +170,10 @@ const TableHours = ({ username, month, onTotaisChange }) => {
         <table>
           <thead>
             <tr>
-              <th>Dia</th>
+              <th>Data</th>
               <th>Hora Entrada</th>
               <th>Hora Saída</th>
-              <th>Total Horas</th>
+              <th>Total Horas Trabalhadas</th>
               <th>Horas Extra</th>
             </tr>
           </thead>
