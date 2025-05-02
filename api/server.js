@@ -16,5 +16,5 @@ app.use("/entity", entityRoute);
 app.use("/users", userRoute);
 app.use("/auth", userRoute);
 
-const PORT = 4005;
+const PORT = 8080;
 app.listen(PORT, '0.0.0.0', () => console.log(`Servidor rodando na porta ${PORT}`));
