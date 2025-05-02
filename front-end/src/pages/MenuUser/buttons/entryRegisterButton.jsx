@@ -33,7 +33,11 @@ const EntryButton = ({ username }) => {
         }
       } catch (error) {
         console.error('Erro ao verificar entrada:', error);
-        toast.error('Erro ao verificar entrada. Tente novamente mais tarde.', { position: 'top-right', autoClose: 3000 });
+        if (error.message.includes('500')) {
+          toast.error('Erro interno no servidor. Tente novamente mais tarde.', { position: 'top-right', autoClose: 3000 });
+        } else {
+          toast.error('Erro ao verificar entrada. Tente novamente mais tarde.', { position: 'top-right', autoClose: 3000 });
+        }
       }
     };
 
