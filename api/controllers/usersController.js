@@ -266,7 +266,9 @@ const registerEntry = async (req, res) => {
 };
 const checkEntry = async (req, res) => {
   try {
+    console.log("checkEntry foi chamado");
     const { username } = req.body;
+    console.log("Username recebido:", username);
 
     if (!username) {
       console.log("Erro: Nome de user ausente.");
@@ -279,6 +281,8 @@ const checkEntry = async (req, res) => {
       .replace(/[̀-ͯ]/g, "")
       .replace(/\s+/g, "-");
 
+    console.log("userId formatado:", userId);
+
     const admin = require("firebase-admin");
     const db = admin.firestore();
 
@@ -286,16 +290,32 @@ const checkEntry = async (req, res) => {
     const dd = String(today.getDate()).padStart(2, "0");
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const yyyy = today.getFullYear();
+    const dataFormatada = `${dd}/${mm}/${yyyy}`;
 
     const registroId = `registro_${dd}${mm}${yyyy}`;
+    console.log("Data de hoje:", dataFormatada, "| ID do registro:", registroId);
+
     const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
-    const registroDoc = await userDocRef.collection("Registros").doc(registroId).get();
+    console.log("Referência do utilizador:", userDocRef.path);
+
+    const registroDocRef = userDocRef.collection("Registros").doc(registroId);
+    console.log("Referência do documento do registro:", registroDocRef.path);
+
+    const registroDoc = await registroDocRef.get();
+    console.log("Documento encontrado:", registroDoc.exists);
 
     if (registroDoc.exists) {
       const data = registroDoc.data();
+      console.log("Dados do registro:", data);
+
       if (data.horaEntrada) {
+        console.log("horaEntrada existente:", data.horaEntrada);
         return res.status(200).json({ hasEntry: true });
+      } else {
+        console.log("horaEntrada ausente");
       }
+    } else {
+      console.log("Registro do dia não encontrado");
     }
 
     return res.status(200).json({ hasEntry: false });
@@ -304,6 +324,7 @@ const checkEntry = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
 
 const registerLeave = async (req, res) => {
   try {
