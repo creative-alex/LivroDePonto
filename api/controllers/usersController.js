@@ -290,40 +290,43 @@ const checkEntry = async (req, res) => {
     const dd = String(today.getDate()).padStart(2, "0");
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const yyyy = today.getFullYear();
-    const dataFormatada = `${dd}/${mm}/${yyyy}`;
 
-    const registroId = `registro_${dd}${mm}${yyyy}`;
-    console.log("Data de hoje:", dataFormatada, "| ID do registro:", registroId);
+    const startOfDay = new Date(`${yyyy}-${mm}-${dd}T00:00:00.000Z`);
+    const endOfDay = new Date(`${yyyy}-${mm}-${dd}T23:59:59.999Z`);
 
-    const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
-    console.log("Referência do utilizador:", userDocRef.path);
+    const registrosRef = db
+      .collection("registro-ponto")
+      .doc(`user_${userId}`)
+      .collection("Registros");
 
-    const registroDocRef = userDocRef.collection("Registros").doc(registroId);
-    console.log("Referência do documento do registro:", registroDocRef.path);
+    const snapshot = await registrosRef
+      .where("timestamp", ">=", startOfDay)
+      .where("timestamp", "<=", endOfDay)
+      .orderBy("timestamp", "asc") // Entrada é normalmente o primeiro do dia
+      .limit(1)
+      .get();
 
-    const registroDoc = await registroDocRef.get();
-    console.log("Documento encontrado:", registroDoc.exists);
-
-    if (registroDoc.exists) {
-      const data = registroDoc.data();
-      console.log("Dados do registro:", data);
-
-      if (data.horaEntrada) {
-        console.log("horaEntrada existente:", data.horaEntrada);
-        return res.status(200).json({ hasEntry: true });
-      } else {
-        console.log("horaEntrada ausente");
-      }
-    } else {
-      console.log("Registro do dia não encontrado");
+    if (snapshot.empty) {
+      console.log("Nenhum registro encontrado para hoje.");
+      return res.status(200).json({ hasEntry: false });
     }
 
+    const data = snapshot.docs[0].data();
+    console.log("Dados encontrados:", data);
+
+    if (data.horaEntrada) {
+      console.log("horaEntrada existente:", data.horaEntrada);
+      return res.status(200).json({ hasEntry: true });
+    }
+
+    console.log("horaEntrada ausente.");
     return res.status(200).json({ hasEntry: false });
   } catch (error) {
     console.error("Erro ao verificar entrada:", error);
     return res.status(500).json({ error: error.message });
   }
 };
+
 
 
 const registerLeave = async (req, res) => {
