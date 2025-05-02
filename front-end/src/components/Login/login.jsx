@@ -74,7 +74,7 @@ const Login = ({ onLoginSuccess }) => {
       console.log("Token do usuário:", token);
 
       // Verifica token no backend
-      const response = await fetch("http://localhost:4005/users/verifyToken", {
+      const response = await fetch("https://api-ls3q.onrender.com/users/verifyToken", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
@@ -87,7 +87,7 @@ const Login = ({ onLoginSuccess }) => {
       console.log("Resposta da verificação do token:", response);
 
       // Obtém o papel e nome do user
-      const roleResponse = await fetch("http://localhost:4005/users/getUserRole", {
+      const roleResponse = await fetch("https://api-ls3q.onrender.com/users/getUserRole", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: user.email }),
