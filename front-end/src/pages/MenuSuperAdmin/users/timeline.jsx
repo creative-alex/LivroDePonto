@@ -178,42 +178,45 @@ const TableHours = ({ username, month, onTotaisChange }) => {
             </tr>
           </thead>
           <tbody>
-            {dados.map((item, index) => (
-             <tr key={index} onContextMenu={(e) => abrirContextMenu(e, index)}
-              >
-                <td>{item.dia}</td>
-                <td onClick={() => ativarEdicao(index, "horaEntrada", item.horaEntrada)}>
-                  {editando?.index === index && editando?.campo === "horaEntrada" ? (
-                    <input
-                      type="time"
-                      value={novoValor}
-                      onChange={(e) => setNovoValor(e.target.value)}
-                      onBlur={() => salvarEdicao(index)}
-                      onKeyDown={(e) => e.key === "Enter" && salvarEdicao(index)}
-                      autoFocus
-                    />
-                  ) : (
-                    item.horaEntrada
-                  )}
-                </td>
-                <td onClick={() => ativarEdicao(index, "horaSaida", item.horaSaida)}>
-                  {editando?.index === index && editando?.campo === "horaSaida" ? (
-                    <input
-                      type="time"
-                      value={novoValor}
-                      onChange={(e) => setNovoValor(e.target.value)}
-                      onBlur={() => salvarEdicao(index)}
-                      onKeyDown={(e) => e.key === "Enter" && salvarEdicao(index)}
-                      autoFocus
-                    />
-                  ) : (
-                    item.horaSaida
-                  )}
-                </td>
-                <td>{item.total}</td>
-                <td>{item.extra}</td>
-              </tr>
-            ))}
+            {dados.map((item, index) => {
+              const isLessThanEightHours = item.total !== "-" && parseInt(item.total.split("h")[0]) < 8;
+
+              return (
+                <tr key={index} onContextMenu={(e) => abrirContextMenu(e, index)}>
+                  <td>{item.dia}</td>
+                  <td onClick={() => ativarEdicao(index, "horaEntrada", item.horaEntrada)}>
+                    {editando?.index === index && editando?.campo === "horaEntrada" ? (
+                      <input
+                        type="time"
+                        value={novoValor}
+                        onChange={(e) => setNovoValor(e.target.value)}
+                        onBlur={() => salvarEdicao(index)}
+                        onKeyDown={(e) => e.key === "Enter" && salvarEdicao(index)}
+                        autoFocus
+                      />
+                    ) : (
+                      item.horaEntrada
+                    )}
+                  </td>
+                  <td onClick={() => ativarEdicao(index, "horaSaida", item.horaSaida)}>
+                    {editando?.index === index && editando?.campo === "horaSaida" ? (
+                      <input
+                        type="time"
+                        value={novoValor}
+                        onChange={(e) => setNovoValor(e.target.value)}
+                        onBlur={() => salvarEdicao(index)}
+                        onKeyDown={(e) => e.key === "Enter" && salvarEdicao(index)}
+                        autoFocus
+                      />
+                    ) : (
+                      item.horaSaida
+                    )}
+                  </td>
+                  <td className={isLessThanEightHours ? "less-than-eight" : ""}>{item.total}</td>
+                  <td>{item.extra}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

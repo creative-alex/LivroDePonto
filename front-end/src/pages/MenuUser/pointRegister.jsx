@@ -189,15 +189,19 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
           </tr>
         </thead>
         <tbody>
-          {dados.map((item, index) => (
-            <tr key={index}>
-              <td>{item.dia}</td>
-              <td>{item.horaEntrada}</td>
-              <td>{item.horaSaida}</td>
-              <td>{item.total}</td>
-              <td>{item.extra}</td>
-            </tr>
-          ))}
+          {dados.map((item, index) => {
+            const isLessThanEightHours = item.total !== "-" && parseInt(item.total.split("h")[0]) < 8;
+
+            return (
+              <tr key={index} onContextMenu={(e) => abrirContextMenu?.(e, index)}>
+                <td>{item.dia}</td>
+                <td>{item.horaEntrada}</td>
+                <td>{item.horaSaida}</td>
+                <td className={isLessThanEightHours ? "less-than-eight" : ""}>{item.total}</td>
+                <td>{item.extra}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

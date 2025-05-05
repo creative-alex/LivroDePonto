@@ -74,11 +74,11 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     ws.addRow([]);
     ws.addRow([]);
     ws.addRow([]);
-    ws.addRow(["", "", "", "", "Nome do Responsavel:", "_____________________________________________________________________"]);
+    ws.addRow(["", "", "", "", "Nome do/a Colaborador/a:", "____________________________________________"]);
     ws.addRow([]);
-    ws.addRow(["", "", "", "", "Assinatura do Responsavel:", "_____________________________________________________________________"]);
+    ws.addRow(["", "", "", "", "Assinatura do/a Responsavel:", "____________________________________________"]);
     ws.addRow([]);
-    ws.addRow(["", "", "", "", "Assinatura do Colaborador:", "_____________________________________________________________________"]);
+    ws.addRow(["", "", "", "", "Assinatura do/a Colaborador/a:", "____________________________________________"]);
 
 
     // Totais
@@ -103,7 +103,7 @@ const ExportExcel = ({ dados, totais, username, month }) => {
 
     ws.columns = [
       { width: 15 }, { width: 15 }, { width: 10 }, { width: 15 }, 
-      { width: 20 }, { width: 15 }, { width: 30 }, { width: 0 }
+      { width: 25 }, { width: 15 }, { width: 30 }, { width: 0 }
     ];
     
     const buffer = await wb.xlsx.writeBuffer();

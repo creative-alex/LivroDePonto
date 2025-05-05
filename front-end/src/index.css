@@ -436,6 +436,15 @@ h2 {
   font: inherit;
 }
 
+.btn-success {
+  color: green;
+  border-color: green;
+}
+
+.btn-success:hover {
+  background-color: green;
+  color: white;
+}
 
 
 /* ========================= */
@@ -738,4 +747,9 @@ tr:hover td {
   position: absolute;
   top: 5%;
   left: 33.5%;
+}
+
+.less-than-eight {
+  color: red;
+  font-weight: bold;
 }

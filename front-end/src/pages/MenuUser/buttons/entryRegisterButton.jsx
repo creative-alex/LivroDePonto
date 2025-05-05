@@ -53,7 +53,11 @@ const EntryButton = ({ username }) => {
   };
 
   return (
-    <button className="btn-menu gradient-border" onClick={handleClick} disabled={isDisabled}>
+    <button
+      className={`btn-menu gradient-border ${isDisabled ? 'btn-success' : ''}`}
+      onClick={handleClick}
+      disabled={isDisabled}
+    >
       {isDisabled ? 'Entrada Já Registrada' : 'Registrar Entrada'}
     </button>
   );
