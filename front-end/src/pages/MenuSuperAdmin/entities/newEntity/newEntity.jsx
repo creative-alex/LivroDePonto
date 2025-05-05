@@ -79,7 +79,7 @@ const NovaEntidade = () => {
       <LogoutButton onLogout={handleLogout} />
        <div className="flex-center nav-container">
                 <Link to="/entidades">
-                    <button className="btn-menu gradient-border">Entidades & Users </button>
+                    <button className="btn-menu gradient-border">Visualizar Entidades & Users </button>
                   </Link>
                   <Link to="/nova-entidade">
                     <button className="btn-menu gradient-border">Criar Entidade</button>
