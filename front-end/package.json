@@ -2,7 +2,7 @@
   "name": "front-end",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://livrodeponto-fi1o.onrender.com",
+  "homepage": ".",
   "dependencies": {
     "@fullcalendar/react": "^6.1.15",
     "@headlessui/react": "^2.2.0",
