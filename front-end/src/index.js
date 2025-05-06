@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Route, Routes, Navigate, Link, useNavigate } from "react-router-dom";
+import { HashRouter  as Router, Route, Routes, Navigate, Link, useNavigate } from "react-router-dom";
 import "./index.css";
 import Login from "./components/Login/login";
 import FirstLoginComponent from "./components/Login/firstLogin";
@@ -182,10 +182,10 @@ const App = () => {
 };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <UserProvider>
-    <Router>
-      <App />
-    </Router>
-  </UserProvider>
-);
+  root.render(
+    <UserProvider>
+      <Router>
+        <App />
+      </Router>
+    </UserProvider>
+  );
