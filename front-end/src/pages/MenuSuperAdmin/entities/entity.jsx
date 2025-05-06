@@ -68,8 +68,11 @@ const Entity = () => {
 
       if (!response.ok) throw new Error("Erro ao atualizar a entidade");
 
+      const newEntityName = normalizeName(editedData.nome); // Nome atualizado normalizado
+      setEntityData({ ...entityData, ...editedData }); // Atualiza o estado com os dados editados
       setIsEditing(false);
-      window.location.reload(); // Recarrega a página após a atualização
+      setCurrentEntityName(newEntityName); // Atualiza o nome atual da entidade
+      navigate(`/entidades/${newEntityName}`); // Redireciona para a nova rota
     } catch (err) {
       setError(err.message);
     }
@@ -100,7 +103,6 @@ const Entity = () => {
     <div className="gradient-border">
       {isEditing ? (
         <div className="ent-info">
-          <p><strong>Nome:</strong> {entityData.nome}</p>
           <p><strong>Nome:</strong> <input className="min-input" type="text" name="nome" value={editedData?.nome || ""} onChange={handleInputChange} /></p>
           <p><strong>NIF:</strong> <input className="min-input" type="text" name="nif" value={editedData?.nif || ""} onChange={handleInputChange} /></p>
           <p><strong>Morada:</strong> <input className="min-input" type="text" name="morada" value={editedData?.morada || ""} onChange={handleInputChange} /></p>

@@ -58,7 +58,7 @@ const EntryButton = ({ username }) => {
       onClick={handleClick}
       disabled={isDisabled}
     >
-      {isDisabled ? 'Entrada Já Registrada' : 'Registrar Entrada'}
+      {isDisabled ? 'Entrada Já Registrada' : 'Registar Entrada'}
     </button>
   );
 };

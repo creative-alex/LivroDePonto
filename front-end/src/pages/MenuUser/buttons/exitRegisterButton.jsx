@@ -58,7 +58,7 @@ const LeaveButton = ({ username }) => {
       onClick={handleClick}
       disabled={isDisabled}
     >
-      {isDisabled ? 'Saída Já Registrada' : 'Registrar Saída'}
+      {isDisabled ? 'Saída Já Registrada' : 'Registar Saída'}
     </button>
   );
 };
