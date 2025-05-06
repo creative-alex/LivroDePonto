@@ -34,22 +34,16 @@ const App = () => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      const { nome, role, email, firstLogin } = JSON.parse(storedUser);
-      setUsername(nome);
-      setUserEmail(email);
-      setIsLoggedIn(true);
-      setIsAdmin(role === "SuperAdmin");
-      setIsFirstLogin(firstLogin && role !== "SuperAdmin");
-  
-      // Redireciona o usuário logado para a página correta
-      if (window.location.pathname === "/" || window.location.pathname === "/login" || window.location.pathname === "/first-login") {
-        if (role === "SuperAdmin") {
-          navigate("/admin");
-        } else if (firstLogin && role !== "SuperAdmin") {
-          navigate("/first-login");
-        } else {
-          navigate("/home");
-        }
+      try {
+        const { nome, role, email, firstLogin } = JSON.parse(storedUser);
+        setUsername(nome);
+        setUserEmail(email);
+        setIsLoggedIn(true);
+        setIsAdmin(role === "SuperAdmin");
+        setIsFirstLogin(firstLogin && role !== "SuperAdmin");
+      } catch (error) {
+        console.error("Erro ao analisar o usuário armazenado:", error);
+        localStorage.removeItem("user");
       }
     }
   }, [setUsername, setUserEmail, navigate]);
@@ -190,7 +184,7 @@ const App = () => {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <UserProvider>
-    <Router> {/* Mova o Router para cá */}
+    <Router>
       <App />
     </Router>
   </UserProvider>
