@@ -108,7 +108,7 @@ const UserDetails = ({ selectedUser }) => {
         throw new Error(errorMessage || "Erro ao apagar user");
       }
   
-      navigate(-1); // Volta para a página anterior após eliminar o user
+      navigate(-2); // Volta para a página anterior após eliminar o user
     } catch (err) {
       console.log("Erro ao eliminar user", err);
     }
@@ -135,36 +135,47 @@ const UserDetails = ({ selectedUser }) => {
     console.log("🚀 Entidade selecionada:", e.target.value);
     setEditedData({ ...editedData, entidade: e.target.value });
   };
+
+  const normalizeName = (name) => {
+  return name
+    .trim()
+    .replace(/\s+/g, "-") // Substitui espaços por "-"
+    .replace(/[^a-zA-Z0-9-]/g, ""); // Remove caracteres inválidos
+};
   
 
   const handleSubmitClick = async () => {
     try {
-        const response = await fetch("https://api-ls3q.onrender.com/users/updateUserDetails", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(editedData),
-        });
-
-        if (!response.ok) throw new Error("Erro ao atualizar user");
-
-        const updatedData = await response.json();
-        setIsEditing(false);
-        setUserDetails(updatedData);
-
-        // 🔴 Oculta os detalhes após o submit
-        setShowDetails(false);
-
-        // 🔴 Verifica se o nome foi alterado antes de navegar
-        if (editedData.nome !== userDetails.nome) {
-            navigate(-1); // Volta para a página anterior
-        }else {
-          window.location.reload(); // Recarrega a página
+      const response = await fetch("https://api-ls3q.onrender.com/users/updateUserDetails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editedData),
+      });
+  
+      if (!response.ok) throw new Error("Erro ao atualizar user");
+  
+      const updatedData = await response.json();
+      setIsEditing(false);
+      setUserDetails(updatedData);
+  
+      // Atualiza o localStorage com o novo nome do usuário
+      localStorage.setItem("selectedUserUID", updatedData.uid);
+  
+      // Verifica se o nome ou entidade mudou
+      if (updatedData.nome !== userDetails.nome || updatedData.entidade !== userDetails.entidade) {
+        // Normaliza o nome da entidade antes de redirecionar
+        const normalizedEntityName = normalizeName(updatedData.entidade);
+        navigate(`/entidades/${normalizedEntityName}`);
+      } else {
+        // Apenas recarrega a página
+        window.location.reload();
       }
     } catch (err) {
-        console.error("Error updating user data:", err.message);
-        setError(err.message);
+      console.error("Erro ao atualizar os dados do usuário:", err.message);
+      setError(err.message);
     }
-};
+  };
+  
 
 const handleLogout = () => {
   localStorage.removeItem("user");

@@ -51,8 +51,9 @@ const App = () => {
   
   useEffect(() => {
     if (!isFirstLogin && isLoggedIn && !isAdmin) {      
-      const allowedPaths = ["/home", "/registos"];
-      if (!allowedPaths.includes(window.location.pathname)) {
+      const allowedPaths = ["#/home", "#/registos"]; // Inclua o hash nos caminhos permitidos
+      const currentPath = window.location.hash; // Use o hash para capturar o caminho atual
+      if (!allowedPaths.includes(currentPath)) {
         navigate("/home");
       }
     }
@@ -162,7 +163,7 @@ const App = () => {
                   <Route path="/entidades/:entityName" element={<EntityDetail />} />
                   <Route path="/nova-entidade" element={<NovaEntidade />} />
                   <Route path="/novo-user" element={<NewUser />} />
-                  <Route path="/:entityName/:userName" element={<UserDetails selectedUser={selectedUser} />} />
+                  <Route path="/user-details/:userName" element={<UserDetails selectedUser={selectedUser} />} />
                 </>
               ) : (
                 <>
