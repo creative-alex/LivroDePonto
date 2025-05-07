@@ -185,7 +185,7 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
             <th>Hora Entrada</th>
             <th>Hora Saída</th>
             <th>Horas Trabalhadas</th>
-            <th>Horas Extra</th>
+            {/*<th>Horas Extra</th>*/}
           </tr>
         </thead>
         <tbody>
@@ -198,7 +198,7 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
                   <td>{item.horaEntrada}</td>
                   <td>{item.horaSaida}</td>
                   <td className={isLessThanEightHours ? "less-than-eight" : ""}>{item.total}</td>
-                  <td>{item.extra}</td>
+                  {/*<td>{item.extra}</td>*/}
                 </tr>
               );
             })}

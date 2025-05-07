@@ -34,11 +34,15 @@ const UserDetails = ({ selectedUser }) => {
   useEffect(() => {
     if (selectedUser?.uid) {
       localStorage.setItem("selectedUserUID", selectedUser.uid);
+    } else if (!localStorage.getItem("selectedUserUID")) {
+      console.error("❌ Nenhum userName disponível!");
     }
   }, [selectedUser]);
 
 
   useEffect(() => {
+    console.log("🔍 userName usado na requisição:", userName);
+
     if (!userName) {
       console.log("❌ Nenhum userName fornecido, abortando requisição!");
       return;
@@ -108,7 +112,7 @@ const UserDetails = ({ selectedUser }) => {
         throw new Error(errorMessage || "Erro ao apagar user");
       }
   
-      navigate(-2); // Volta para a página anterior após eliminar o user
+      navigate(-2); 
     } catch (err) {
       console.log("Erro ao eliminar user", err);
     }
@@ -137,19 +141,27 @@ const UserDetails = ({ selectedUser }) => {
   };
 
   const normalizeName = (name) => {
-  return name
-    .trim()
-    .replace(/\s+/g, "-") // Substitui espaços por "-"
-    .replace(/[^a-zA-Z0-9-]/g, ""); // Remove caracteres inválidos
-};
+    if (!name) return ""; // Retorna uma string vazia se o nome for undefined ou null
+    return name
+      .trim()
+      .replace(/\s+/g, "-") // Substitui espaços por "-"
+      .replace(/[^a-zA-Z0-9-]/g, ""); // Remove caracteres inválidos
+  };
   
 
   const handleSubmitClick = async () => {
     try {
+      const dataToSend = {
+        ...editedData,
+        userName: userDetails?.uid || localStorage.getItem("selectedUserUID"),
+      };
+  
+      console.log("🔍 Dados enviados para atualização:", dataToSend);
+  
       const response = await fetch("https://api-ls3q.onrender.com/users/updateUserDetails", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editedData),
+        body: JSON.stringify(dataToSend),
       });
   
       if (!response.ok) throw new Error("Erro ao atualizar user");
@@ -163,11 +175,9 @@ const UserDetails = ({ selectedUser }) => {
   
       // Verifica se o nome ou entidade mudou
       if (updatedData.nome !== userDetails.nome || updatedData.entidade !== userDetails.entidade) {
-        // Normaliza o nome da entidade antes de redirecionar
         const normalizedEntityName = normalizeName(updatedData.entidade);
         navigate(`/entidades/${normalizedEntityName}`);
       } else {
-        // Apenas recarrega a página
         window.location.reload();
       }
     } catch (err) {
@@ -213,9 +223,9 @@ const handleTotaisChange = (novosTotais) => {
 
             {totais && (
               <div className="ent-info">
-                <h2>Totais</h2>
-                <p><strong>Total Horas Normais:</strong> {totais.totalHoras}</p>
-                <p><strong>Total Horas Extras:</strong> {totais.totalExtras}</p>
+                <h2>Horas Totais</h2>
+                <p><strong>Horas Normais:</strong> {totais.totalHoras}</p>
+                <p><strong>Horas Extra:</strong> {totais.totalExtras}</p>
                 <p><strong>Faltas:</strong> {totais.diasFalta}</p>
                 <p><strong>Férias:</strong> {totais.diasFerias}</p>
               </div>
