@@ -7,6 +7,7 @@ import EntidadeSelect from '../combobox/allEntitiesSelect';
 import DeleteUser from '../buttons/deleteUser';
 import capa from '../../../assets/capa.jpg';
 import LogoutButton from '../../../components/LogoutButton/logoutButton';
+import ExportExcel from './ExportExcel';
 
 
 const UserDetails = ({ selectedUser }) => {
@@ -21,6 +22,7 @@ const UserDetails = ({ selectedUser }) => {
   const [totais, setTotais] = useState(null);
   const navigate = useNavigate(); // Obtém a função navigate
   const location = useLocation(); // Obter a localização atual
+  const [dados, setDados] = useState([]); // Dados recebidos do TimeLine
 
   // Dividir o caminho em segmentos
   const pathSegments = location.pathname
@@ -194,6 +196,10 @@ const handleLogout = () => {
 const handleTotaisChange = (novosTotais) => {
   setTotais(novosTotais);
 };
+
+const handleDadosChange = (novosDados) => {
+  setDados(novosDados); // Atualiza os dados no estado
+};
   
 
   if (loading) return <p>Loading...</p>;
@@ -228,6 +234,8 @@ const handleTotaisChange = (novosTotais) => {
                 <p><strong>Horas Extra:</strong> {totais.totalExtras}</p>
                 <p><strong>Faltas:</strong> {totais.diasFalta}</p>
                 <p><strong>Férias:</strong> {totais.diasFerias}</p>
+                <ExportExcel month={selectedMonth} username={userName} dados={dados} totais={totais} />
+
               </div>
             )}
 
@@ -335,7 +343,7 @@ const handleTotaisChange = (novosTotais) => {
   </div>
 </div>
 
-    {selectedMonth && <TimeLine username={userName} month={selectedMonth} onTotaisChange={handleTotaisChange} />}
+    {selectedMonth && <TimeLine username={userName} month={selectedMonth} onTotaisChange={handleTotaisChange} onDadosChange={handleDadosChange} />}
   </div>
 )}
 

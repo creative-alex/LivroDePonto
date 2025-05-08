@@ -4,50 +4,76 @@ const db = admin.firestore();
 
 const createUser = async (req, res) => {
   try {
-      const { nome, email, entidade, role } = req.body;
+    const { nome, email, entidade, role } = req.body;
 
-      if (!nome || !email || !entidade) {
-          console.log('Erro: Nome, email ou entidade ausentes.');
-          return res.status(400).json({ error: 'Nome, email e entidade são obrigatórios' });
+    // Validação básica
+    if (!nome || !email || !entidade) {
+      return res.status(400).json({ error: 'Nome, email e entidade são obrigatórios' });
+    }
+
+    // Gerar ID único
+    let baseUserId = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+    let userId = baseUserId;
+    let counter = 1;
+
+    // Verificar colisões no Firestore
+    let userDocRef = db.collection('users').doc(userId);
+    let docSnapshot = await userDocRef.get();
+
+    while (docSnapshot.exists) {
+      userId = `${baseUserId}-${String(++counter).padStart(2, '0')}`;
+      userDocRef = db.collection('users').doc(userId);
+      docSnapshot = await userDocRef.get();
+    }
+
+    // 1. Criar usuário no Firebase Authentication primeiro
+    const temporaryPassword = generateSecurePassword(); // Implemente esta função
+    let authUser;
+    try {
+      authUser = await admin.auth().createUser({
+        uid: userId, // Usar o mesmo ID do Firestore como UID
+        email,
+        password: temporaryPassword,
+        displayName: nome
+      });
+    } catch (authError) {
+      if (authError.code === 'auth/email-already-exists') {
+        return res.status(409).json({ error: 'Email já está em uso' });
       }
+      throw authError;
+    }
 
-      // Gerar o ID base do user
-      let baseUserId = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
-      let userId = baseUserId;
-      let counter = 1;
-
-      // Verificar se o ID já existe no Firestore
-      let userRef = db.collection('users').doc(userId);
-      let doc = await userRef.get();
-
-      while (doc.exists) {
-          counter++;
-          userId = `${baseUserId}-${String(counter).padStart(2, '0')}`; // id-02, id-03...
-          userRef = db.collection('users').doc(userId);
-          doc = await userRef.get();
-      }
-
-      // Criar referência da entidade no Firestore
-      const entityId = entidade.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
-      const entityRef = `entidades/${entityId}`;
-
-      const userRole = role.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
-
-      // Criar documento do user com ID único
-      await userRef.set({
-          nome,
-          email,
-          entidade: entityRef,
-          createdAt: new Date().toISOString(),
-          role: userRole,
-          isFirstLogin: true
+    // 2. Só então criar no Firestore
+    try {
+      const entityRef = `entidades/${entidade.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-')}`;
+      
+      await userDocRef.set({
+        nome,
+        email,
+        entidade: entityRef,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        role: role?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-') || 'user',
+        isFirstLogin: true
       });
 
-      res.status(201).json({ message: 'User criado com sucesso', id: userId });
+      // 3. Opcional: Enviar email de redefinição de senha
+      // await sendPasswordResetEmail(email); 
+
+      return res.status(201).json({ 
+        message: 'Usuário criado com sucesso',
+        id: userId,
+        temporaryPassword: temporaryPassword // Remover em produção!
+      });
+
+    } catch (firestoreError) {
+      // Rollback: Apagar usuário do Auth se o Firestore falhar
+      await admin.auth().deleteUser(userId);
+      throw firestoreError;
+    }
 
   } catch (error) {
-      console.error('Erro ao criar user no banco de dados:', error);
-      res.status(500).json({ error: 'Erro ao criar user no banco de dados' });
+    console.error('Erro no processo completo:', error);
+    return res.status(500).json({ error: 'Falha na criação do usuário' });
   }
 };
 const verifyToken = async (req, res) => {

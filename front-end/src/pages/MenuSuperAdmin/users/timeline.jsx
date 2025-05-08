@@ -8,7 +8,7 @@ const feriadosPorto = [
   "01-01", "25-04", "01-05", "10-06", "15-08", "05-10", "01-11", "01-12", "08-12", "25-12"
 ];
 
-const TableHours = ({ username, month, onTotaisChange }) => {
+const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
   const [dados, setDados] = useState([]);
   const [totais, setTotais] = useState({totalHoras: "0h 0m", totalExtras: "0h 0m", diasFalta: 0, diasFerias: 0});  
   const [editando, setEditando] = useState(null);
@@ -93,6 +93,9 @@ const TableHours = ({ username, month, onTotaisChange }) => {
       // Chama a função de callback para enviar os totais ao UserDetails
       if (onTotaisChange) {
         onTotaisChange(novosTotais);
+      }
+      if (onDadosChange) {
+        onDadosChange(novosDados);
       }
     } catch (error) {
       console.error("❌ Erro ao buscar horários:", error);
@@ -220,7 +223,6 @@ const TableHours = ({ username, month, onTotaisChange }) => {
           </tbody>
         </table>
       </div>
-      <ExportExcel month={month} username={username} dados={dados} totais={totais} />
     </>
   );
 };
