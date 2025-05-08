@@ -10,5 +10,6 @@ router.post('/createEntity', createEntity);
 router.post('/updateEntity', updateEntity);
 router.post('/showEntities', showEntity);
 router.post('/entityDetails', entityDetails);
+router.post('/deleteEntity', deleteEntity);
 
 module.exports = router;

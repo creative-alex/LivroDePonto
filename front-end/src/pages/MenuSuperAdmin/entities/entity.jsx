@@ -78,6 +78,25 @@ const Entity = () => {
     }
   };
 
+  const handleDeleteClick = async () => {
+    if (window.confirm("Tem certeza de que deseja apagar esta entidade?")) {
+      try {
+        const response = await fetch("https://api-ls3q.onrender.com/entity/deleteEntity", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: entityData.nome }),
+        });
+
+        if (!response.ok) throw new Error("Erro ao apagar a entidade");
+
+        alert("Entidade apagada com sucesso!");
+        navigate("/entidades"); // Redireciona para a lista de entidades
+      } catch (err) {
+        setError(err.message);
+      }
+    }
+  };
+
   if (error) return <p style={{ color: "red" }}>⚠ Erro: {error}</p>;
   if (!entityData) return <p>Carregando...</p>;
 
@@ -106,10 +125,8 @@ const Entity = () => {
           <p><strong>Nome:</strong> <input className="min-input" type="text" name="nome" value={editedData?.nome || ""} onChange={handleInputChange} /></p>
           <p><strong>NIF:</strong> <input className="min-input" type="text" name="nif" value={editedData?.nif || ""} onChange={handleInputChange} /></p>
           <p><strong>Morada:</strong> <input className="min-input" type="text" name="morada" value={editedData?.morada || ""} onChange={handleInputChange} /></p>
-          <div className="button-container">
             <button className="btn" onClick={handleSubmitClick}>Submeter</button>
             <button className="btn" onClick={handleCancelClick}>Cancelar</button>
-          </div>
         </div>
       ) : (
         <div className="ent-info">
@@ -117,7 +134,8 @@ const Entity = () => {
           <p><strong>NIF:</strong> {entityData.nif}</p>
           <p><strong>Morada:</strong> {entityData.morada}</p>
           <p><strong>Número de Colaboradores:</strong> {entityData.userCount}</p>
-          <EditButton onClick={handleEditClick} />          
+          <EditButton onClick={handleEditClick} />
+          <a onClick={handleDeleteClick} style={{ marginBottom: "20px", cursor: "pointer", textDecoration: "none" }}>Apagar Entidade</a> 
         </div>
       )}
       {/* Renderiza a lista de usuários */}

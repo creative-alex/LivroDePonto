@@ -83,19 +83,17 @@ const App = () => {
           <LogoutButton onLogout={handleLogout} />
     </div>
     <img src={logo} alt="Logo" className="logo" />
-    <div>
       <div className="flex-center button-container">
-        <Link to="/entidades">
-        <button className="btn-menu gradient-border">Visualizar Entidades & Users</button>        
+        <Link to="/entidades" className="see">
+        <button className="btn-menu see gradient-border">Visualizar Entidades & Users</button>        
         </Link>
-        <Link to="/nova-entidade">
-          <button className="btn-menu gradient-border">Criar Entidade</button>
+        <Link to="/nova-entidade" className="ent">
+          <button className="btn-menu ent gradient-border">Criar Entidade</button>
         </Link>
-        <Link to="/novo-user">
-          <button className="btn-menu gradient-border">Criar User</button>
+        <Link to="/novo-user" className="user">
+          <button className="btn-menu user gradient-border">Criar User</button>
         </Link>
       </div>
-    </div>
     <footer className="footer">
         <img src={footer} alt="Rodapé" className="footer-image" />
     </footer>

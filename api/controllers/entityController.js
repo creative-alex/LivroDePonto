@@ -162,8 +162,43 @@ const entityDetails = async (req, res) => {
     res.status(500).json({ error: "Erro no servidor." });
   }
 };
+const deleteEntity = async (req, res) => {
+  try {
+    const { name } = req.body;
 
+    if (!name) {
+      return res.status(400).json({ error: "O nome da entidade é obrigatório." });
+    }
+
+    // Gera o ID padronizado
+    const entityId = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+
+    // Verifica se a entidade existe
+    const entityRef = db.collection("entidades").doc(entityId);
+    const entitySnapshot = await entityRef.get();
+
+    if (!entitySnapshot.exists) {
+      return res.status(404).json({ error: "Entidade não encontrada." });
+    }
+
+    // Verifica se há colaboradores associados à entidade
+    const usersRef = db.collection('users');
+    const usersSnapshot = await usersRef.where('entidade', '==', `entidades/${entityId}`).get();
+
+    if (!usersSnapshot.empty) {
+      return res.status(400).json({ error: "Não é possível apagar a entidade. Existem colaboradores associados a ela." });
+    }
+
+    // Apaga a entidade
+    await entityRef.delete();
+
+    res.status(200).json({ message: "Entidade apagada com sucesso." });
+  } catch (error) {
+    console.error("Erro ao apagar entidade:", error);
+    res.status(500).json({ error: "Erro ao apagar entidade." });
+  }
+};
 
 
 module.exports = { createEntity, updateEntity, showEntity, 
-                   entityDetails};
+                   entityDetails, deleteEntity};
