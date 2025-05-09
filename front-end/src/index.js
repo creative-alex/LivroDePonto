@@ -118,10 +118,10 @@ const App = () => {
         <img src={logo} alt="Logo" className="logo" />
         <div>
           <div className="flex-center button-container">
-            <RegisterEntry username={username} />
-            <RegisterLeave username={username} />
+            <RegisterEntry className="ent" username={username} />
+            <RegisterLeave className="user" username={username} />
             <button
-              className="btn-menu gradient-border"
+              className="btn-menu see gradient-border"
               onClick={() => navigate('/registos')}
             >
               Mostrar Registos

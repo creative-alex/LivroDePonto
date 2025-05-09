@@ -260,8 +260,7 @@ const registerEntry = async (req, res) => {
       .replace(/\s+/g, "-");
 
     const admin = require("firebase-admin");
-    const db = admin.firestore();
-
+    const db = admin.firestore();                             
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, "0");
     const mm = String(today.getMonth() + 1).padStart(2, "0");
@@ -577,7 +576,6 @@ const getUserRecords = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
 const updateUserTime = async (req, res) => {
   try {
 
@@ -989,7 +987,43 @@ const deleteUser = async (req, res) => {
     return res.status(500).json({ error: "Erro ao apagar utilizador." });
   }
 };
+const createMedicalLeave = async (req, res) => {
+  try {
+    const { username, date } = req.body;
 
+    if (!username || !date ) {
+      console.log("Erro: Campos obrigatórios ausentes.");
+      return res.status(400).json({ error: "Faltam campos obrigatórios: username, date e/ou reason" });
+    }
+
+    // Gerando o userId no formato correto
+    let userId = username
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "-");
+
+    console.log("Registrando baixa médica para o user:", userId);
+
+    // Referência ao documento do user dentro da coleção "registro-ponto"
+    const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
+
+    // Criando um ID único para o registro baseado na data
+    const registroId = `registro_${date.replace(/-/g, "")}`;
+
+    // Criando um novo documento dentro da subcoleção "BaixasMedicas"
+    await userDocRef.collection("BaixasMedicas").doc(registroId).set({
+      date,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log("Baixa médica registrada com sucesso no Firestore.");
+    return res.status(201).json({ message: "Baixa médica registrada com sucesso", registroId });
+  } catch (error) {
+    console.error("Erro ao registrar baixa médica:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
 const ping = async (req, res) => {
   try {
     console.log("Ping recebido");
@@ -1004,4 +1038,4 @@ module.exports = { getUserInfo, verifyToken, createUser, registerEntry,
                   registerLeave, getUserRecords, getUsersByEntity, userDetails, 
                   checkEntry, checkLeave, updateUserTime, updateFirstLogin,
                   updateUserDetails, createVacation, deleteRegister,
-                  deleteUser, ping };
+                  deleteUser, createMedicalLeave, ping };

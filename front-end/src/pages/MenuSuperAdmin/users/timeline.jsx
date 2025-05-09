@@ -3,6 +3,7 @@ import ExportExcel from "./ExportExcel";
 import { calcularHoras, formatarMinutos } from "../../../components/Hours/calcHours";
 import RegisterVacation from "../buttons/registerVacationButton";
 import DeleteRegister from "../buttons/deleteRegisterButton";
+import MedicalLeave from "../buttons/medicalLeaveButton";
 
 const feriadosPorto = [
   "01-01", "25-04", "01-05", "10-06", "15-08", "05-10", "01-11", "01-12", "08-12", "25-12"
@@ -165,6 +166,7 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
       >
         <RegisterVacation username={username} date={contextMenu.dia} onSuccess={fetchData} />
         <DeleteRegister username={username} date={contextMenu.dia} onSuccess={fetchData} />
+        <MedicalLeave username={username} date={contextMenu.dia} onSuccess={fetchData} />
         <button>Cancelar</button>
       </div>
     )}
