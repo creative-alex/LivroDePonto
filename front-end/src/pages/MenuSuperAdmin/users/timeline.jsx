@@ -159,8 +159,8 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
       <div
         className="context-menu"
         style={{
-          top: contextMenu.y,
-          left: contextMenu.x,
+          top: `${contextMenu.y}px`,
+          left:  `${contextMenu.x}px`,
         }}
         onClick={() => setContextMenu(null)}
       >
