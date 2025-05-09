@@ -4,6 +4,8 @@ const { showEntity } = require('../controllers/entityController');
 const { createEntity } = require('../controllers/entityController'); 
 const { updateEntity } = require('../controllers/entityController');
 const { entityDetails } = require('../controllers/entityController');
+const { deleteEntity } = require('../controllers/entityController');
+
 
 // Rota para criar a entidade
 router.post('/createEntity', createEntity);
