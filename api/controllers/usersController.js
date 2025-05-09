@@ -990,8 +990,18 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const ping = async (req, res) => {
+  try {
+    console.log("Ping recebido");
+    res.status(200).json({ message: "Pong" });
+  } catch (error) {
+    console.error("Erro no ping:", error);
+    res.status(500).json({ error: "Erro no ping" });
+  }
+}
+
 module.exports = { getUserInfo, verifyToken, createUser, registerEntry, 
                   registerLeave, getUserRecords, getUsersByEntity, userDetails, 
                   checkEntry, checkLeave, updateUserTime, updateFirstLogin,
                   updateUserDetails, createVacation, deleteRegister,
-                  deleteUser, };
+                  deleteUser, ping };
