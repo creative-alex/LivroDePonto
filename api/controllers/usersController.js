@@ -244,9 +244,8 @@ const userDetails = async (req, res) => {
 };
 const registerEntry = async (req, res) => {
   try {
-
     const { time, username } = req.body;
-    
+
     if (!time || !username) {
       console.log("Erro: Campos obrigatórios ausentes.");
       return res.status(400).json({ error: "Faltam campos obrigatórios: entryTime e/ou nome" });
@@ -254,30 +253,29 @@ const registerEntry = async (req, res) => {
 
     // Gerando o userId no formato correto
     let userId = username
-  .toLowerCase()
-  .normalize("NFD")
-  .replace(/\p{Diacritic}/gu, "")
-  .replace(/\s+/g, "-");
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "-");
 
-if (!userId.startsWith("user_")) {
-  userId = `user_${userId}`;
-}
-
-    const admin = require("firebase-admin");
-    const db = admin.firestore();                             
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, "0");
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const yyyy = today.getFullYear();
-
-    // Criando um ID único para o registro baseado na data e hora
-    const registroId = `registro_${dd}${mm}${yyyy}`;
-
+    // Adicionar o prefixo apenas se o username não começar com "user_"
+    if (!username.toLowerCase().startsWith("user_")) {
+      userId = `user_${userId}`;
+    }
 
     console.log("Registrando entrada para o user:", userId);
 
     // Referência ao documento do user dentro da coleção "registro-ponto"
-    const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
+    const userDocRef = db.collection("registro-ponto").doc(userId);
+
+    // Criando um ID único para o registro baseado na data no formato DDMMYYYY
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const yyyy = today.getFullYear();
+    const registroId = `registro_${dd}${mm}${yyyy}`;
+
+    console.log("Gerado registroId:", registroId);
 
     // Criando um novo documento dentro da subcoleção "Registros"
     await userDocRef.collection("Registros").doc(registroId).set({
@@ -286,7 +284,6 @@ if (!userId.startsWith("user_")) {
     });
 
     console.log("Entrada registrada com sucesso no Firestore.");
-
     return res.status(201).json({ message: "Entrada registrada com sucesso", registroId });
   } catch (error) {
     console.error("Erro ao registrar entrada:", error);
@@ -1026,7 +1023,7 @@ const createMedicalLeave = async (req, res) => {
 
     if (!username || !date) {
       console.log("Erro: Campos obrigatórios ausentes.");
-      return res.status(400).json({ error: "Faltam campos obrigatórios: username, date e/ou reason" });
+      return res.status(400).json({ error: "Faltam campos obrigatórios: username e/ou date" });
     }
 
     // Gerando o userId no formato correto
@@ -1046,12 +1043,16 @@ const createMedicalLeave = async (req, res) => {
     // Referência ao documento do user dentro da coleção "registro-ponto"
     const userDocRef = db.collection("registro-ponto").doc(userId);
 
-    // Criando um ID único para o registro baseado na data
-    const registroId = `registro_${date.replace(/-/g, "")}`;
+    // Criando um ID único para o registro baseado na data no formato DDMMYYYY
+    const [day, month] = date.split("-");
+    const year = new Date().getFullYear(); // Assume o ano atual
+    const registroId = `registro_${day}${month}${year}`;
+
+    console.log("Gerado registroId:", registroId);
 
     // Criando um novo documento dentro da subcoleção "BaixasMedicas"
     await userDocRef.collection("BaixasMedicas").doc(registroId).set({
-      date,
+      date: `${day}-${month}-${year}`, // Armazena a data no formato DD-MM-YYYY
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
 
