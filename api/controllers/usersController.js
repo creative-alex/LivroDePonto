@@ -833,10 +833,14 @@ const createVacation = async (req, res) => {
 
     // Gerando o userId no formato correto
     let userId = username
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .replace(/\s+/g, "-");
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/\p{Diacritic}/gu, "")
+  .replace(/\s+/g, "-");
+
+   if (!userId.startsWith("user_")) {
+     userId = `user_${userId}`;
+   }
 
     console.log("Registrando férias para o user:", userId);
 
@@ -997,11 +1001,15 @@ const createMedicalLeave = async (req, res) => {
     }
 
     // Gerando o userId no formato correto
-    let userId = username
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .replace(/\s+/g, "-");
+   let userId = username
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/\p{Diacritic}/gu, "")
+  .replace(/\s+/g, "-");
+
+if (!userId.startsWith("user_")) {
+  userId = `user_${userId}`;
+}
 
     console.log("Registrando baixa médica para o user:", userId);
 
