@@ -1024,26 +1024,27 @@ const createMedicalLeave = async (req, res) => {
   try {
     const { username, date } = req.body;
 
-    if (!username || !date ) {
+    if (!username || !date) {
       console.log("Erro: Campos obrigatórios ausentes.");
       return res.status(400).json({ error: "Faltam campos obrigatórios: username, date e/ou reason" });
     }
 
     // Gerando o userId no formato correto
-   let userId = username
-  .toLowerCase()
-  .normalize("NFD")
-  .replace(/\p{Diacritic}/gu, "")
-  .replace(/\s+/g, "-");
+    let userId = username
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "-");
 
-if (!userId.startsWith("user_")) {
-  userId = `user_${userId}`;
-}
+    // Adicionar o prefixo apenas se o username não começar com "user_"
+    if (!username.toLowerCase().startsWith("user_")) {
+      userId = `user_${userId}`;
+    }
 
     console.log("Registrando baixa médica para o user:", userId);
 
     // Referência ao documento do user dentro da coleção "registro-ponto"
-    const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
+    const userDocRef = db.collection("registro-ponto").doc(userId);
 
     // Criando um ID único para o registro baseado na data
     const registroId = `registro_${date.replace(/-/g, "")}`;
