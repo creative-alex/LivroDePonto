@@ -851,34 +851,39 @@ const updateUserDetails = async (req, res) => {
 const createVacation = async (req, res) => {
   try {
     const { username, date } = req.body;
-    
+
     if (!username || !date) {
       console.log("Erro: Campos obrigatórios ausentes.");
       return res.status(400).json({ error: "Faltam campos obrigatórios: username e/ou date" });
     }
 
     // Gerando o userId no formato correto
-   let userId = username
-  .toLowerCase()
-  .normalize("NFD")
-  .replace(/\p{Diacritic}/gu, "")
-  .replace(/\s+/g, "-");
+    let userId = username
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "-");
 
-if (!userId.startsWith("user_")) {
-  userId = `user_{userId}`;
-}
+    // Adicionar o prefixo apenas se o username não começar com "user_"
+    if (!username.toLowerCase().startsWith("user_")) {
+      userId = `user_${userId}`;
+    }
 
     console.log("Registrando férias para o user:", userId);
 
     // Referência ao documento do user dentro da coleção "registro-ponto"
-    const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
-    
-    // Criando um ID único para o registro baseado na data
-    const registroId = `registro_${date.replace(/-/g, "")}`;
+    const userDocRef = db.collection("registro-ponto").doc(userId);
+
+    // Criando um ID único para o registro baseado na data no formato DDMMYYYY
+    const [day, month] = date.split("-");
+    const year = new Date().getFullYear(); // Assume o ano atual
+    const registroId = `registro_${day}${month}${year}`;
+
+    console.log("Gerado registroId:", registroId);
 
     // Criando um novo documento dentro da subcoleção "Ferias"
     await userDocRef.collection("Ferias").doc(registroId).set({
-      date,
+      date: `${day}-${month}-${year}`, // Armazena a data no formato DD-MM-YYYY
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
 

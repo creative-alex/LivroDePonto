@@ -41,11 +41,13 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
         total: "-",
         extra: "-",
         isFerias: false,
+        isBaixaMedica: false,
       }));
   
-      const data = response.ok ? await response.json() : { registos: [], ferias: [] };
+      const data = response.ok ? await response.json() : { registos: [], ferias: [], baixas: [] };
       const registos = Array.isArray(data.registros) ? data.registros : [];
       const ferias = Array.isArray(data.ferias) ? data.ferias : [];
+      const baixas = Array.isArray(data.baixas) ? data.baixas : [];
   
       const hoje = new Date();
   
@@ -55,9 +57,14 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
         const diaSemana = dataAtual.getDay();
         const feriado = feriadosPorto.includes(`${String(index + 1).padStart(2, "0")}-${String(month).padStart(2, "0")}`);
         const estaDeFerias = ferias.includes(item.dia);
+        const estaDeBaixaMedica = baixas.includes(item.dia);
   
         if (estaDeFerias) {
           return { ...item, horaEntrada: "Férias", horaSaida: "Férias", total: "Férias", extra: "Férias", isFerias: true };
+        }
+  
+        if (estaDeBaixaMedica) {
+          return { ...item, horaEntrada: "Baixa Médica", horaSaida: "Baixa Médica", total: "Baixa Médica", extra: "Baixa Médica", isBaixaMedica: true };
         }
   
         if (registo) {
@@ -71,21 +78,23 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
             total,
             extra,
           };
-        } else if (!estaDeFerias && dataAtual < hoje && dataAtual.toDateString() !== hoje.toDateString() && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
+        } else if (!estaDeFerias && !estaDeBaixaMedica && dataAtual < hoje && dataAtual.toDateString() !== hoje.toDateString() && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
           return { ...item, horaEntrada: "-", horaSaida: "-", total: "0h 0m", extra: "0h 0m" };
         }
   
         return item;
       });
   
-      const diasFalta = novosDados.filter(d => d.total === "0h 0m" && !d.isFerias).length;
+      const diasFalta = novosDados.filter(d => d.total === "0h 0m" && !d.isFerias && !d.isBaixaMedica).length;
       const diasFerias = novosDados.filter(d => d.isFerias).length;
+      const diasBaixaMedica = novosDados.filter(d => d.isBaixaMedica).length;
 
       const novosTotais = {
         totalHoras: formatarMinutos(totalMinutos),
         totalExtras: formatarMinutos(totalMinutosExtras),
         diasFalta,
-        diasFerias
+        diasFerias,
+        diasBaixaMedica,
       };
 
       setTotais(novosTotais);
