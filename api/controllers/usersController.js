@@ -868,7 +868,7 @@ const createVacation = async (req, res) => {
   .replace(/\s+/g, "-");
 
 if (!userId.startsWith("user_")) {
-  userId = `user_${userId}`;
+  userId = `user_{userId}`;
 }
 
     console.log("Registrando férias para o user:", userId);
