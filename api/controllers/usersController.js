@@ -488,7 +488,6 @@ const getUserRecords = async (req, res) => {
     const firstDay = new Date(year, month - 1, 1);
     const lastDay = new Date(year, month, 1, 23, 59, 59);
 
-
     console.log("📅 Período definido:");
     console.log("➡️ Primeiro dia:", firstDay);
     console.log("➡️ Último dia:", lastDay);
@@ -541,7 +540,28 @@ const getUserRecords = async (req, res) => {
 
     console.log("🌴 Lista final de datas de férias:", feriasDates);
 
-    if (snapshot.empty && feriasDates.length === 0) {
+    // Consultar baixas médicas
+    const baixasRef = db
+      .collection("registro-ponto")
+      .doc(`user_${userId}`)
+      .collection("BaixasMedicas");
+
+    let baixasDates = [];
+    console.log("🩺 Consultando baixas médicas em lotes de 30...");
+
+    for (let i = 0; i < listaDeDatas.length; i += 30) {
+      const batch = listaDeDatas.slice(i, i + 30);
+      console.log(`🔍 Buscando baixas médicas para o lote: ${i / 30 + 1}`, batch);
+
+      const baixasSnapshot = await baixasRef.where("date", "in", batch).get();
+      console.log("➡️ Baixas médicas encontradas neste lote:", baixasSnapshot.size);
+
+      baixasDates.push(...baixasSnapshot.docs.map((doc) => doc.data().date));
+    }
+
+    console.log("🩺 Lista final de datas de baixas médicas:", baixasDates);
+
+    if (snapshot.empty && feriasDates.length === 0 && baixasDates.length === 0) {
       console.log("⚠️ Nenhum registro encontrado para o mês informado");
       return res.status(404).json({ error: "Nenhum registro encontrado para o mês informado" });
     }
@@ -551,7 +571,12 @@ const getUserRecords = async (req, res) => {
       const dataFormatada = data.timestamp.toDate().toISOString().split("T")[0];
       const diaMesFormatado = dataFormatada.split("-").reverse().slice(0, 2).join("-");
 
-      const status = feriasDates.includes(diaMesFormatado) ? "Férias" : "Trabalho";
+      let status = "Trabalho";
+      if (feriasDates.includes(diaMesFormatado)) {
+        status = "Férias";
+      } else if (baixasDates.includes(diaMesFormatado)) {
+        status = "Baixa Médica";
+      }
 
       console.log("📅 Registro processado:", {
         timestamp: data.timestamp.toDate().toISOString(),
@@ -570,7 +595,7 @@ const getUserRecords = async (req, res) => {
 
     console.log("✅ Registros finais:", registros);
 
-    return res.status(200).json({ registros, ferias: feriasDates });
+    return res.status(200).json({ registros, ferias: feriasDates, baixas: baixasDates });
   } catch (error) {
     console.error("❌ Erro ao buscar registros de user:", error);
     return res.status(500).json({ error: error.message });
