@@ -471,7 +471,7 @@ const getUserRecords = async (req, res) => {
       return res.status(400).json({ error: "O nome de user e o mês são obrigatórios" });
     }
 
-    let userId = username
+    const userId = username
       .toLowerCase()
       .normalize("NFD")
       .replace(/\p{Diacritic}/gu, "")
@@ -491,6 +491,20 @@ const getUserRecords = async (req, res) => {
     console.log("➡️ Primeiro dia:", firstDay);
     console.log("➡️ Último dia:", lastDay);
 
+    // ========== [1] GERAR LISTA DE DATAS DO MÊS ==========
+    const listaDeDatas = [];
+    let tempDate = new Date(firstDay);
+    while (tempDate <= lastDay) {
+      const dd = String(tempDate.getDate()).padStart(2, "0");
+      const mm = String(tempDate.getMonth() + 1).padStart(2, "0");
+      const yyyy = tempDate.getFullYear();
+      listaDeDatas.push(`${dd}-${mm}-${yyyy}`);
+      tempDate.setDate(tempDate.getDate() + 1);
+    }
+
+    console.log("📅 Lista de datas geradas:", listaDeDatas);
+
+    // ========== [2] BUSCAR REGISTROS DE PONTO ==========
     const registrosRef = db
       .collection("registro-ponto")
       .doc(`user_${userId}`)
@@ -507,20 +521,7 @@ const getUserRecords = async (req, res) => {
     console.log("📊 Snapshot de registros retornado:");
     console.log("➡️ Quantidade de registros encontrados:", snapshot.size);
 
-    // Criar lista de todas as datas possíveis no formato "DD-MM"
-    const listaDeDatas = [];
-     let tempDate = new Date(firstDay);
-     while (tempDate <= lastDay) {
-       let dd = String(tempDate.getDate()).padStart(2, "0");
-       let mm = String(tempDate.getMonth() + 1).padStart(2, "0");
-       let yyyy = tempDate.getFullYear();
-       listaDeDatas.push(`${dd}-${mm}-${yyyy}`);
-       tempDate.setDate(tempDate.getDate() + 1);
-     }
-
-
-    console.log("📅 Lista de datas geradas:", listaDeDatas);
-
+    // ========== [3] BUSCAR FÉRIAS ==========
     const feriasRef = db
       .collection("registro-ponto")
       .doc(`user_${userId}`)
@@ -531,17 +532,13 @@ const getUserRecords = async (req, res) => {
 
     for (let i = 0; i < listaDeDatas.length; i += 30) {
       const batch = listaDeDatas.slice(i, i + 30);
-      console.log(`🔍 Buscando férias para o lote: ${i / 30 + 1}`, batch);
-
       const feriasSnapshot = await feriasRef.where("date", "in", batch).get();
-      console.log("➡️ Férias encontradas neste lote:", feriasSnapshot.size);
-
       feriasDates.push(...feriasSnapshot.docs.map((doc) => doc.data().date));
     }
 
     console.log("🌴 Lista final de datas de férias:", feriasDates);
 
-    // Consultar baixas médicas
+    // ========== [4] BUSCAR BAIXAS MÉDICAS ==========
     const baixasRef = db
       .collection("registro-ponto")
       .doc(`user_${userId}`)
@@ -552,56 +549,59 @@ const getUserRecords = async (req, res) => {
 
     for (let i = 0; i < listaDeDatas.length; i += 30) {
       const batch = listaDeDatas.slice(i, i + 30);
-      console.log(`🔍 Buscando baixas médicas para o lote: ${i / 30 + 1}`, batch);
-
       const baixasSnapshot = await baixasRef.where("date", "in", batch).get();
-      console.log("➡️ Baixas médicas encontradas neste lote:", baixasSnapshot.size);
-
       baixasDates.push(...baixasSnapshot.docs.map((doc) => doc.data().date));
     }
 
     console.log("🩺 Lista final de datas de baixas médicas:", baixasDates);
 
-    if (snapshot.empty && feriasDates.length === 0 && baixasDates.length === 0) {
-      console.log("⚠️ Nenhum registro encontrado para o mês informado");
-      return res.status(404).json({ error: "Nenhum registro encontrado para o mês informado" });
-    }
-
-    const registros = snapshot.docs.map((doc) => {
-      const data = doc.data();
-      const dataFormatada = data.timestamp.toDate().toISOString().split("T")[0];
-      const diaMesFormatado = dataFormatada.split("-").reverse().slice(0, 2).join("-");
-
-      let status = "Trabalho";
-      if (feriasDates.includes(diaMesFormatado)) {
-        status = "Férias";
-      } else if (baixasDates.includes(diaMesFormatado)) {
-        status = "Baixa Médica";
-      }
-
-      console.log("📅 Registro processado:", {
-        timestamp: data.timestamp.toDate().toISOString(),
-        horaEntrada: data.horaEntrada || "-",
-        horaSaida: data.horaSaida || "-",
-        status,
+    // ========== [5] MONTAR RESULTADO FINAL ==========
+    const registrosPorDia = listaDeDatas.map((dataStr) => {
+      // Verificar se existe registro de ponto para esta data
+      const registroPonto = snapshot.docs.find(doc => {
+        const dataDoc = doc.data().timestamp.toDate();
+        const dd = String(dataDoc.getDate()).padStart(2, "0");
+        const mm = String(dataDoc.getMonth() + 1).padStart(2, "0");
+        const yyyy = dataDoc.getFullYear();
+        return `${dd}-${mm}-${yyyy}` === dataStr;
       });
 
+      // Determinar status
+      let status = "Sem registro";
+      if (feriasDates.includes(dataStr)) {
+        status = "Férias";
+      } else if (baixasDates.includes(dataStr)) {
+        status = "Baixa Médica";
+      } else if (registroPonto) {
+        status = "Trabalho";
+      }
+
+      // Extrair horários se existir registro
+      const horaEntrada = registroPonto ? registroPonto.data().horaEntrada || "-" : "-";
+      const horaSaida = registroPonto ? registroPonto.data().horaSaida || "-" : "-";
+
       return {
-        timestamp: data.timestamp.toDate().toISOString(),
-        horaEntrada: data.horaEntrada || "-",
-        horaSaida: data.horaSaida || "-",
-        status,
+        data: dataStr,
+        horaEntrada,
+        horaSaida,
+        status
       };
     });
 
-    console.log("✅ Registros finais:", registros);
+    console.log("✅ Registros finais:", registrosPorDia);
 
-    return res.status(200).json({ registros, ferias: feriasDates, baixas: baixasDates });
+    return res.status(200).json({ 
+      registros: registrosPorDia,
+      ferias: feriasDates,
+      baixas: baixasDates 
+    });
+
   } catch (error) {
     console.error("❌ Erro ao buscar registros de user:", error);
     return res.status(500).json({ error: error.message });
   }
 };
+
 const updateUserTime = async (req, res) => {
   try {
 
