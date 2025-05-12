@@ -509,13 +509,15 @@ const getUserRecords = async (req, res) => {
 
     // Criar lista de todas as datas possíveis no formato "DD-MM"
     const listaDeDatas = [];
-    let tempDate = new Date(firstDay);
-    while (tempDate <= lastDay) {
-      let dd = String(tempDate.getDate()).padStart(2, "0");
-      let mm = String(tempDate.getMonth() + 1).padStart(2, "0");
-      listaDeDatas.push(`${dd}-${mm}`);
-      tempDate.setDate(tempDate.getDate() + 1);
-    }
+     let tempDate = new Date(firstDay);
+     while (tempDate <= lastDay) {
+       let dd = String(tempDate.getDate()).padStart(2, "0");
+       let mm = String(tempDate.getMonth() + 1).padStart(2, "0");
+       let yyyy = tempDate.getFullYear();
+       listaDeDatas.push(`${dd}-${mm}-${yyyy}`);
+       tempDate.setDate(tempDate.getDate() + 1);
+     }
+
 
     console.log("📅 Lista de datas geradas:", listaDeDatas);
 

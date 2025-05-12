@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const RegisterVacation = ({ username, date, onSuccess }) => {
   const [ferias, setFerias] = useState([]);
+  console.log("username", username);
 
   const marcarFerias = async () => {
     if (!ferias.includes(date)) {

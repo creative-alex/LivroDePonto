@@ -174,7 +174,7 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username,
+          username: cleanUsername(username),
           date: novoDados[index].dia,
           campo: editando.campo,
           valor: novoValor
@@ -213,9 +213,9 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
         }}
         onClick={() => setContextMenu(null)}
       >
-        <RegisterVacation username={username} date={contextMenu.dia} onSuccess={fetchData} />
-        <DeleteRegister username={username} date={contextMenu.dia} onSuccess={fetchData} />
-        <MedicalLeave username={username} date={contextMenu.dia} onSuccess={fetchData} />
+        <RegisterVacation username= {cleanUsername(username)} date={contextMenu.dia} onSuccess={fetchData} />
+        <DeleteRegister username= {cleanUsername(username) } date={contextMenu.dia} onSuccess={fetchData} />
+        <MedicalLeave username={cleanUsername(username)} date={contextMenu.dia} onSuccess={fetchData} />
         <button>Cancelar</button>
       </div>
     )}
