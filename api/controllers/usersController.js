@@ -258,8 +258,8 @@ const registerEntry = async (req, res) => {
       .replace(/\p{Diacritic}/gu, "")
       .replace(/\s+/g, "-");
 
-    // Adicionar o prefixo apenas se o username não começar com "user_"
-    if (!username.toLowerCase().startsWith("user_")) {
+    // Adicionar o prefixo apenas se o userId não começar com "user_"
+    if (!userId.startsWith("user_")) {
       userId = `user_${userId}`;
     }
 
@@ -352,8 +352,6 @@ const checkEntry = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
-
 
 const registerLeave = async (req, res) => {
   try {
