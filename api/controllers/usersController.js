@@ -254,10 +254,14 @@ const registerEntry = async (req, res) => {
 
     // Gerando o userId no formato correto
     let userId = username
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "-");
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/\p{Diacritic}/gu, "")
+  .replace(/\s+/g, "-");
+
+if (!userId.startsWith("user_")) {
+  userId = `user_${userId}`;
+}
 
     const admin = require("firebase-admin");
     const db = admin.firestore();                             
@@ -857,15 +861,15 @@ const createVacation = async (req, res) => {
     }
 
     // Gerando o userId no formato correto
-    let userId = username
+   let userId = username
   .toLowerCase()
   .normalize("NFD")
   .replace(/\p{Diacritic}/gu, "")
   .replace(/\s+/g, "-");
 
-   if (!userId.startsWith("user_")) {
-     userId = `user_${userId}`;
-   }
+if (!userId.startsWith("user_")) {
+  userId = `user_${userId}`;
+}
 
     console.log("Registrando férias para o user:", userId);
 
