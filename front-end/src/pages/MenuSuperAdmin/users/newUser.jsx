@@ -37,9 +37,11 @@ const NewUser = () => {
       return;
     }
 
-const newUser = { nome, email, entidade, role, temporaryPassword: password }; // ✅ Envia "password" como "temporaryPassword"
+    // Inclui a senha temporária no objeto enviado ao backend
+    const newUser = { nome, email, entidade, role, temporaryPassword: password };
+
     try {
-      // 1️⃣ Criar o usuário no banco de dados
+      // Enviar requisição para criar o usuário
       const response = await fetch('https://api-ls3q.onrender.com/users/createUser', {
         method: 'POST',
         headers: {
@@ -52,10 +54,7 @@ const newUser = { nome, email, entidade, role, temporaryPassword: password }; //
         throw new Error('Erro ao salvar user no banco de dados');
       }
 
-      // 2️⃣ Criar o usuário no Firebase Authentication
-      await createUserWithEmailAndPassword(auth, email, password);
-
-      // ✅ Notificação de Sucesso
+      // Notificação de sucesso
       toast.success('User criado com sucesso!', {
         position: "top-center",
         autoClose: 3000,
@@ -76,7 +75,7 @@ const newUser = { nome, email, entidade, role, temporaryPassword: password }; //
       setMessage(`Erro: ${error.message}`);
       console.error('Erro ao processar a requisição:', error);
 
-      // ❌ Notificação de Erro
+      // Notificação de erro
       toast.error(`Erro: ${error.message}`, {
         position: "top-right",
         autoClose: 5000,
