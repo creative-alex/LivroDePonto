@@ -63,7 +63,70 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
       const ferias = Array.isArray(data.ferias) ? data.ferias : [];
       const baixas = Array.isArray(data.baixas) ? data.baixas : [];
 
-      const hoje = new Date();
+      const hoje = new Date();      novosDados = novosDados.map((item, index) => {
+        const registo = registros.find((r) => {
+          const registoData = new Date(r.timestamp);
+          return registoData.getDate() === index + 1 && registoData.getMonth() + 1 === month;
+        });
+      
+        const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
+        const diaSemana = dataAtual.getDay();
+        const feriado = feriadosPorto.includes(item.dia);
+        const estaDeFerias = ferias.includes(item.dia);
+        const estaDeBaixaMedica = baixas.includes(item.dia);
+      
+        // Priorizar status de "Férias" ou "Baixa Médica"
+        if (estaDeFerias) {
+          return {
+            ...item,
+            horaEntrada: "Férias",
+            horaSaida: "Férias",
+            total: "Férias",
+            extra: "Férias",
+            isFerias: true,
+          };
+        }
+      
+        if (estaDeBaixaMedica) {
+          return {
+            ...item,
+            horaEntrada: "Baixa Médica",
+            horaSaida: "Baixa Médica",
+            total: "Baixa Médica",
+            extra: "Baixa Médica",
+            isBaixaMedica: true,
+          };
+        }
+      
+        // Caso exista um registro, exibir os dados do registro
+        if (registo) {
+          const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
+          totalMinutos += minutos;
+          totalMinutosExtras += minutosExtras;
+          return {
+            ...item,
+            horaEntrada: registo.horaEntrada || "-",
+            horaSaida: registo.horaSaida || "-",
+            total,
+            extra,
+          };
+        }
+      
+        // Caso não seja feriado, férias ou baixa médica, exibir como falta
+        if (
+          !estaDeFerias &&
+          !estaDeBaixaMedica &&
+          dataAtual < hoje &&
+          dataAtual.toDateString() !== hoje.toDateString() &&
+          diaSemana !== 0 &&
+          diaSemana !== 6 &&
+          !feriado
+        ) {
+          return { ...item, horaEntrada: "-", horaSaida: "-", total: "0h 0m", extra: "0h 0m" };
+        }
+      
+        return item;
+      });
 
       novosDados = novosDados.map((item, index) => {
         const registo = registros.find((r) => {
