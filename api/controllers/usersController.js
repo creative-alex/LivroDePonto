@@ -557,39 +557,39 @@ const getUserRecords = async (req, res) => {
 
     console.log("🩺 Lista final de datas de baixas médicas:", baixasDates);
 
-    if (snapshot.empty && feriasDates.length === 0 && baixasDates.length === 0) {
-      console.log("⚠️ Nenhum registro encontrado para o mês informado");
-      return res.status(404).json({ error: "Nenhum registro encontrado para o mês informado" });
-    }
-
-    const registros = snapshot.docs.map((doc) => {
-      const data = doc.data();
-      const dataFormatada = data.timestamp.toDate().toISOString().split("T")[0];
-      const diaMesAnoFormatado = dataFormatada.split("-").reverse().join("-");
+    // Processar todos os dias do mês
+    const registros = listaDeDatas.map((diaCompleto) => {
+      const [dd, mm, yyyy] = diaCompleto.split("-");
+      const dataAtual = `${dd}-${mm}-${yyyy}`;
 
       let status = "Trabalho";
-      let horaEntrada = data.horaEntrada || "-";
-      let horaSaida = data.horaSaida || "-";
+      let horaEntrada = "-";
+      let horaSaida = "-";
 
-      if (feriasDates.includes(diaMesAnoFormatado)) {
+      if (feriasDates.includes(dataAtual)) {
         status = "Férias";
         horaEntrada = "ferias";
         horaSaida = "ferias";
-      } else if (baixasDates.includes(diaMesAnoFormatado)) {
+      } else if (baixasDates.includes(dataAtual)) {
         status = "Baixa Médica";
         horaEntrada = "Baixa";
         horaSaida = "Baixa";
+      } else {
+        // Verificar se há registro de trabalho
+        const registo = snapshot.docs.find((doc) => {
+          const dataRegistro = doc.data().timestamp.toDate().toISOString().split("T")[0];
+          return dataRegistro === `${yyyy}-${mm}-${dd}`;
+        });
+
+        if (registo) {
+          const data = registo.data();
+          horaEntrada = data.horaEntrada || "-";
+          horaSaida = data.horaSaida || "-";
+        }
       }
 
-      console.log("📅 Registro processado:", {
-        timestamp: data.timestamp.toDate().toISOString(),
-        horaEntrada,
-        horaSaida,
-        status,
-      });
-
       return {
-        timestamp: data.timestamp.toDate().toISOString(),
+        dia: dataAtual,
         horaEntrada,
         horaSaida,
         status,
