@@ -62,11 +62,11 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
         isBaixaMedica: false,
       }));
 
-      novosDados = novosDados.map((item) => {
-        const registo = registros.find((r) => r.data === item.dia);
-      
+      novosDados = novosDados.map((item, index) => {
+        const registo = registos.find((r) => r.data === item.dia);
+
         if (registo) {
-          if (registo.status === "Férias") {
+          if (regito.status === "Férias") {
             return {
               ...item,
               horaEntrada: "Férias",
@@ -76,7 +76,7 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
               isFerias: true,
             };
           }
-      
+
           if (registo.status === "Baixa Médica") {
             return {
               ...item,
@@ -87,24 +87,22 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
               isBaixaMedica: true,
             };
           }
-      
-          // Verifique se há horas de entrada e saída
+
           const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
           totalMinutos += minutos;
           totalMinutosExtras += minutosExtras;
-      
+
           return {
             ...item,
-            horaEntrada: registo.horaEntrada || "-", // Mostra "-" se não houver hora de entrada
-            horaSaida: registo.horaSaida || "-",     // Mostra "-" se não houver hora de saída
+            horaEntrada: registo.horaEntrada || "-",
+            horaSaida: registo.horaSaida || "-",
             total,
             extra,
           };
         }
-      
+
         return item;
       });
-      
 
       const diasFalta = novosDados.filter((d) => d.total === "0h 0m" && !d.isFerias && !d.isBaixaMedica).length;
       const diasFerias = novosDados.filter((d) => d.isFerias).length;
