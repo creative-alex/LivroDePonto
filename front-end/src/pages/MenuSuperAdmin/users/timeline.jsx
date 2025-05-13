@@ -219,8 +219,8 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
         onClick={() => setContextMenu(null)}
       >
         <RegisterVacation username= {cleanUsername(username)} date={contextMenu.dia} onSuccess={fetchData} />
-        <DeleteRegister username= {cleanUsername(username) } date={contextMenu.dia} onSuccess={fetchData} />
         <MedicalLeave username={cleanUsername(username)} date={contextMenu.dia} onSuccess={fetchData} />
+        <DeleteRegister username= {cleanUsername(username) } date={contextMenu.dia} onSuccess={fetchData} />
         <button>Cancelar</button>
       </div>
     )}
