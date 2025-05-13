@@ -58,13 +58,9 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
       }));
 
       const data = response.ok ? await response.json() : { registros: [], ferias: [], baixas: [] };
-      console.log("📥 Dados recebidos:", data);
       const registros = Array.isArray(data.registros) ? data.registros : [];
       const ferias = Array.isArray(data.ferias) ? data.ferias : [];
       const baixas = Array.isArray(data.baixas) ? data.baixas : [];
-
-      console.log("🌴 Férias recebidas:", ferias); // Log para verificar as férias
-      console.log("🩺 Baixas médicas recebidas:", baixas); // Log para verificar as baixas médicas
 
       const hoje = new Date();
 

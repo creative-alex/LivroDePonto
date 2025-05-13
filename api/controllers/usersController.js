@@ -584,6 +584,13 @@ const registros = snapshot.docs.map((doc) => {
     horaSaida = "Baixa";
   }
 
+  console.log("📅 Registro processado:", {
+    timestamp: data.timestamp.toDate().toISOString(),
+    horaEntrada,
+    horaSaida,
+    status,
+  });
+
   return {
     timestamp: data.timestamp.toDate().toISOString(),
     horaEntrada,
@@ -591,7 +598,6 @@ const registros = snapshot.docs.map((doc) => {
     status,
   };
 });
-
 
 console.log("✅ Registros finais:", registros);
 
