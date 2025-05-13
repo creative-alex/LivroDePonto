@@ -43,11 +43,6 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
         body: JSON.stringify({ username: cleanUsername(username), month }),
       });
 
-      const data = response.ok ? await response.json() : { registros: [], ferias: [], baixas: [] };
-
-      console.log("📥 Dados recebidos do backend:", data);
-
-      const registros = Array.isArray(data.registros) ? data.registros : [];
       const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
       let totalMinutos = 0;
       let totalMinutosExtras = 0;
@@ -62,36 +57,51 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
         isBaixaMedica: false,
       }));
 
+      const data = response.ok ? await response.json() : { registros: [], ferias: [], baixas: [] };
+      const registros = Array.isArray(data.registros) ? data.registros : [];
+      const ferias = Array.isArray(data.ferias) ? data.ferias : [];
+      const baixas = Array.isArray(data.baixas) ? data.baixas : [];
+
+      const hoje = new Date();
+
       novosDados = novosDados.map((item, index) => {
-        const registo = registos.find((r) => r.data === item.dia);
+        const registo = registros.find((r) => {
+          const registoData = new Date(r.timestamp);
+          return registoData.getDate() === index + 1 && registoData.getMonth() + 1 === month;
+        });
+
+        const dataAtual = new Date(hoje.getFullYear(), month - 1, index + 1);
+        const diaSemana = dataAtual.getDay();
+        const feriado = feriadosPorto.includes(item.dia);
+        const estaDeFerias = ferias.includes(item.dia);
+        const estaDeBaixaMedica = baixas.includes(item.dia);
+
+        if (estaDeFerias) {
+          return {
+            ...item,
+            horaEntrada: "Férias",
+            horaSaida: "Férias",
+            total: "Férias",
+            extra: "Férias",
+            isFerias: true,
+          };
+        }
+
+        if (estaDeBaixaMedica) {
+          return {
+            ...item,
+            horaEntrada: "Baixa Médica",
+            horaSaida: "Baixa Médica",
+            total: "Baixa Médica",
+            extra: "Baixa Médica",
+            isBaixaMedica: true,
+          };
+        }
 
         if (registo) {
-          if (regito.status === "Férias") {
-            return {
-              ...item,
-              horaEntrada: "Férias",
-              horaSaida: "Férias",
-              total: "Férias",
-              extra: "Férias",
-              isFerias: true,
-            };
-          }
-
-          if (registo.status === "Baixa Médica") {
-            return {
-              ...item,
-              horaEntrada: "Baixa Médica",
-              horaSaida: "Baixa Médica",
-              total: "Baixa Médica",
-              extra: "Baixa Médica",
-              isBaixaMedica: true,
-            };
-          }
-
           const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
           totalMinutos += minutos;
           totalMinutosExtras += minutosExtras;
-
           return {
             ...item,
             horaEntrada: registo.horaEntrada || "-",
@@ -99,6 +109,16 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
             total,
             extra,
           };
+        } else if (
+          !estaDeFerias &&
+          !estaDeBaixaMedica &&
+          dataAtual < hoje &&
+          dataAtual.toDateString() !== hoje.toDateString() &&
+          diaSemana !== 0 &&
+          diaSemana !== 6 &&
+          !feriado
+        ) {
+          return { ...item, horaEntrada: "-", horaSaida: "-", total: "0h 0m", extra: "0h 0m" };
         }
 
         return item;
@@ -181,8 +201,6 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
       isFerias: dados[index].isFerias
     });
   };  
-
-  
     
   return (
     <>
