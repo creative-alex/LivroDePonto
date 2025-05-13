@@ -566,31 +566,32 @@ return res.status(404).json({ error: "Nenhum registro encontrado para o mês inf
 }
 
 const registros = snapshot.docs.map((doc) => {
-const data = doc.data();
-const dataFormatada = data.timestamp.toDate().toISOString().split("T")[0];
-const diaMesFormatado = dataFormatada.split("-").reverse().slice(0, 2).join("-");
+  const data = doc.data();
+  const dataFormatada = data.timestamp.toDate().toISOString().split("T")[0];
+  const diaMesFormatado = dataFormatada.split("-").reverse().slice(0, 2).join("-");
 
-let status = "Trabalho";
-if (feriasDates.includes(diaMesFormatado)) {
-status = "Férias";
-} else if (baixasDates.includes(diaMesFormatado)) {
-status = "Baixa Médica";
-}
+  let status = "Trabalho";
+  let horaEntrada = data.horaEntrada || "-";
+  let horaSaida = data.horaSaida || "-";
 
-console.log("📅 Registro processado:", {
-timestamp: data.timestamp.toDate().toISOString(),
-horaEntrada: data.horaEntrada || "-",
-horaSaida: data.horaSaida || "-",
-status,
+  if (feriasDates.includes(diaMesFormatado)) {
+    status = "Férias";
+    horaEntrada = "ferias";
+    horaSaida = "ferias";
+  } else if (baixasDates.includes(diaMesFormatado)) {
+    status = "Baixa Médica";
+    horaEntrada = "Baixa";
+    horaSaida = "Baixa";
+  }
+
+  return {
+    timestamp: data.timestamp.toDate().toISOString(),
+    horaEntrada,
+    horaSaida,
+    status,
+  };
 });
 
-return {
-timestamp: data.timestamp.toDate().toISOString(),
-horaEntrada: data.horaEntrada || "-",
-horaSaida: data.horaSaida || "-",
-status,
-};
-});
 
 console.log("✅ Registros finais:", registros);
 
