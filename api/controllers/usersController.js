@@ -570,9 +570,14 @@ const data = doc.data();
 const dataFormatada = data.timestamp.toDate().toISOString().split("T")[0];
 const diaMesFormatado = dataFormatada.split("-").reverse().slice(0, 2).join("-");
 
+console.log("📅 Registro processado:", {
+timestamp: data.timestamp.toDate().toISOString(),
+horaEntrada: data.horaEntrada || "-",
+horaSaida: data.horaSaida || "-",
+status,
+});
+
 let status = "Trabalho";
-let horaEntrada = data.horaEntrada || "-";
- let horaSaida = data.horaSaida || "-";
 if (feriasDates.includes(diaMesFormatado)) {
 status = "Férias";
 horaEntrada = "ferias";
@@ -582,13 +587,6 @@ status = "Baixa Médica";
 horaEntrada = "Baixa";
 horaSaida = "Baixa";
 }
-
-console.log("📅 Registro processado:", {
-timestamp: data.timestamp.toDate().toISOString(),
-horaEntrada: data.horaEntrada || "-",
-horaSaida: data.horaSaida || "-",
-status,
-});
 
 return {
 timestamp: data.timestamp.toDate().toISOString(),
