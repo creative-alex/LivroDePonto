@@ -157,7 +157,7 @@ const NewUser = () => {
             id="password"
             type="password"
             className="create-input"
-            value={password}
+            value={temporaryPassword}
             onChange={(e) => setPassword(e.target.value)}
             minLength={6}
             required

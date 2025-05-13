@@ -4,11 +4,11 @@ const db = admin.firestore();
 
 const createUser = async (req, res) => {
   try {
-    const { nome, email, entidade, role } = req.body;
+    const { nome, email, entidade, role, temporaryPassword } = req.body;
 
     // Validação básica
-    if (!nome || !email || !entidade) {
-      return res.status(400).json({ error: 'Nome, email e entidade são obrigatórios' });
+    if (!nome || !email || !entidade || !temporaryPassword) {
+      return res.status(400).json({ error: 'Nome, email, entidade e senha temporária são obrigatórios' });
     }
 
     // Gerar ID único
@@ -26,14 +26,13 @@ const createUser = async (req, res) => {
       docSnapshot = await userDocRef.get();
     }
 
-    // 1. Criar usuário no Firebase Authentication primeiro
-    const temporaryPassword = generateSecurePassword(); // Implemente esta função
+    // Criar usuário no Firebase Authentication
     let authUser;
     try {
       authUser = await admin.auth().createUser({
-        uid: userId, // Usar o mesmo ID do Firestore como UID
+        uid: userId,
         email,
-        password: temporaryPassword,
+        password: temporaryPassword, // Usar a senha enviada pelo frontend
         displayName: nome
       });
     } catch (authError) {
@@ -43,7 +42,7 @@ const createUser = async (req, res) => {
       throw authError;
     }
 
-    // 2. Só então criar no Firestore
+    // Criar usuário no Firestore
     try {
       const entityRef = `entidades/${entidade.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-')}`;
       
@@ -56,13 +55,9 @@ const createUser = async (req, res) => {
         isFirstLogin: true
       });
 
-      // 3. Opcional: Enviar email de redefinição de senha
-      // await sendPasswordResetEmail(email); 
-
       return res.status(201).json({ 
         message: 'Usuário criado com sucesso',
-        id: userId,
-        temporaryPassword: temporaryPassword // Remover em produção!
+        id: userId
       });
 
     } catch (firestoreError) {

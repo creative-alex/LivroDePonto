@@ -82,27 +82,33 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     ws.addRow([]);
     ws.addRow([]);
 
-    // Linha de totais + assinatura colaborador
-    ws.addRow([
-      "totais", "", "", "", "Assinatura do Colaborador:  _________________________________"
-    ]);
+    // Adicionar tabela pequena com totais
+    const totalHeaderRow = ws.addRow(["Resumo Mensal"]);
+    totalHeaderRow.eachCell((cell) => {
+      cell.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0070C0" } };
+      cell.alignment = { horizontal: "center", vertical: "middle" };
+    });
+    ws.mergeCells(`A${totalHeaderRow.number}:E${totalHeaderRow.number}`);
 
-    // Totais e assinaturas
-    ws.addRow([
-      "Total de Horas Trabalhadas", totais.totalHoras || "", "", "", ""
-    ]);
-    ws.addRow([
-      "Total de Horas Normais", "", "", "", "Assinatura do Responsavel:   _________________________________"
-    ]);
-    ws.addRow([
-      "Total Horas Extras", totais.totalExtras || "", "", "", ""
-    ]);
-    ws.addRow([
-      "Faltas", totais.diasFalta || "", "", "", ""
-    ]);
-    ws.addRow([
-      "Férias", totais.diasFerias || "", "", "", ""
-    ]);
+    ws.addRow(["Horas Totais Mensais", totais.totalHoras || "", "", "", ""]);
+    ws.addRow(["Horas Totais Normais", totais.totalNormais || "", "", "", ""]);
+    ws.addRow(["Horas Extras", totais.totalExtras || "", "", "", ""]);
+
+    // Estilizar as linhas de totais
+    const totalRows = ws.getRows(totalHeaderRow.number + 1, 3); // Pega as 3 linhas abaixo do cabeçalho
+    totalRows.forEach((row) => {
+      row.eachCell((cell) => {
+        cell.font = { bold: true, size: 12 };
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" }
+        };
+      });
+    });
 
     // Ajuste de largura das colunas
     ws.columns = [

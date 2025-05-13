@@ -11,9 +11,9 @@ const LogoutButton = ({ onLogout }) => {
   };
 
   return (
-    <button className=" logout gradient-border" onClick={handleClick}>
+    <a className=" logout gradient-border" onClick={handleClick}>
       <img src={Exit} alt="Logout" className="logout-icon" />
-    </button>
+    </a>
   );
 };
 
