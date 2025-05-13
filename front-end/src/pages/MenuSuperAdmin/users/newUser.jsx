@@ -37,8 +37,7 @@ const NewUser = () => {
       return;
     }
 
-    const newUser = { nome, email, entidade, role };
-
+const newUser = { nome, email, entidade, role, temporaryPassword: password }; // ✅ Envia "password" como "temporaryPassword"
     try {
       // 1️⃣ Criar o usuário no banco de dados
       const response = await fetch('https://api-ls3q.onrender.com/users/createUser', {
@@ -157,7 +156,7 @@ const NewUser = () => {
             id="password"
             type="password"
             className="create-input"
-            value={temporaryPassword}
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             minLength={6}
             required
