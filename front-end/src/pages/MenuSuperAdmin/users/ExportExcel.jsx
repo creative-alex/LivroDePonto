@@ -91,33 +91,56 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     });
     ws.mergeCells(`A${totalHeaderRow.number}:E${totalHeaderRow.number}`);
 
-    ws.addRow(["Horas Totais Mensais", totais.totalHoras || "", "", "", ""]);
-    ws.addRow(["Horas Totais Normais", totais.totalNormais || "", "", "", ""]);
-    ws.addRow(["Horas Extras", totais.totalExtras || "", "", "", ""]);
+    // Adicionar linhas de totais
+    const totaisData = [
+      ["Total de Horas", totais.totalHoras || ""],
+      ["Total de Horas Normais", totais.totalNormais || ""],
+      ["Total Horas Extras", totais.totalExtras || ""],
+      ["Faltas", totais.totalFaltas || ""],
+      ["Férias", totais.totalFerias || ""],
+      ["Baixa Médica", totais.totalBaixaMedica || ""],
+    ];
 
-    // Estilizar as linhas de totais
-    const totalRows = ws.getRows(totalHeaderRow.number + 1, 3); // Pega as 3 linhas abaixo do cabeçalho
-    totalRows.forEach((row) => {
-      row.eachCell((cell) => {
-        cell.font = { bold: true, size: 12 };
+    totaisData.forEach((row) => {
+      const newRow = ws.addRow([...row, "", "", ""]);
+      newRow.eachCell((cell, colNumber) => {
+        cell.font = { bold: colNumber === 1, size: 12 }; // Negrito na primeira coluna
         cell.alignment = { horizontal: "center", vertical: "middle" };
         cell.border = {
           top: { style: "thin" },
           left: { style: "thin" },
           bottom: { style: "thin" },
-          right: { style: "thin" }
+          right: { style: "thin" },
         };
       });
     });
 
-    // Ajuste de largura das colunas
+    // Ajustar largura das colunas
     ws.columns = [
-      { width: 15 }, // Dia/Mês
-      { width: 15 }, // Hora Entrada
-      { width: 15 }, // Pausa
-      { width: 15 }, // Hora Saída
-      { width: 60 }  // Observação/Assinaturas
+      { width: 25 }, // Nome do total
+      { width: 20 }, // Valor do total
+      { width: 15 }, // Coluna vazia
+      { width: 15 }, // Coluna vazia
+      { width: 40 }, // Assinaturas
     ];
+
+    // Adicionar linhas de assinatura
+    ws.addRow([]);
+    ws.addRow(["", "", "", "", "Assinatura do Colaborador:"]);
+    ws.addRow(["", "", "", "", "________________________________"]);
+    ws.addRow(["", "", "", "", "Assinatura do Responsável:"]);
+    ws.addRow(["", "", "", "", "________________________________"]);
+
+    // Estilizar as assinaturas
+    const assinaturaRows = ws.getRows(ws.lastRow.number - 3, 4); // Selecionar as 4 últimas linhas
+    assinaturaRows.forEach((row) => {
+      row.eachCell((cell, colNumber) => {
+        if (colNumber === 5) { // Apenas a última coluna (coluna E)
+          cell.font = { bold: true, size: 12 };
+          cell.alignment = { horizontal: "right", vertical: "middle" };
+        }
+      });
+    });
 
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
