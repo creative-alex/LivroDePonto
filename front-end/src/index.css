@@ -63,7 +63,7 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-  font-size: 4vw;
+  font-size: 3.3vw;
   color: white;
   padding: 15vh 5vw;
 }
@@ -417,8 +417,19 @@ h2 {
   overflow: hidden;
 }
 
+/* Tablet */
+@media (max-width: 900px) {
+  .button-container {
+    top: 30%;
+    left: 40%;
+    margin: 2rem auto;
+    grid-template-columns: 25vw 25vw;
+    width: 50vw;
+  }
+}
+
 .btn-menu{
-  font-size: 1.3rem;
+  font-size: 1.5vw;
   background-color: transparent;
   color: var(--text-color);
   border: 2px solid var(--border-color);
@@ -477,6 +488,15 @@ h2 {
   filter: brightness(0) invert(1);
   width: 1.5rem;
   height: 1.5rem;
+}
+
+/*Tablet Login e logout*/
+@media (max-width: 900px) {
+  .login, .logout {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
 }
 
 .nav-container button{
@@ -638,31 +658,6 @@ tr:hover td {
   font-weight: 500;
 }
 
-/* ========================= */
-/*        Responsividade     */
-/* ========================= */
-@media (max-width: 768px) {
-  .form-container {
-    padding: 1.5rem;
-    max-width: 100%;
-    margin: 1rem;
-  }
-  
-  .button-container {
-    flex-direction: column;
-  }
-  
-  .btn {
-    width: 100%;
-  }
-
-  .login{
-    width: 50px;
-    height: 50px;
-    font-size: 1.2rem;
-  }
-
-}
 
 /* ========================= */
 /*        Animações          */
@@ -833,11 +828,11 @@ tr:hover td {
 }
 
 /* Mobile */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .footer {
-    position: static;
-    width: 100vw;
-    height: 60px;
+    height: 80px;
+    right:10vw;
+    bottom: 0;
   }
   .footer img {
     width: 100vw;

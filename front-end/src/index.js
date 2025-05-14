@@ -127,7 +127,6 @@ const App = () => {
               Mostrar Registos
             </button>
           </div>
-          <LogoutButton className="flex-center button-container" onLogout={handleLogout} />
         </div>
         <footer className="footer">
           <img src={footer} alt="Rodapé" className="footer-image" />
