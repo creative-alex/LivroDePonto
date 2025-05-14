@@ -51,8 +51,19 @@ const AllEntities = () => {
   }, []);
 
   const handleItemClick = (entity) => {
-    navigate(`/entidades/${entity.replace(/\s+/g, "-")}`); // Navegação programática
+   navigate(`/entidades/${entity.toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/&/g, 'e')
+  .replace(/-/g, ' ')
+  .replace(/[^a-z0-9\s]/g, '')
+  .trim()
+  .replace(/\s+/g, '-')
+  .replace(/-+/g, '-')
+  .replace(/^-+|-+$/g, '')}`);
   };
+
+  
 
   if (error) return <p>Erro: {error}</p>;
   if (entities.length === 0) return <p>Nenhuma entidade encontrada.</p>;

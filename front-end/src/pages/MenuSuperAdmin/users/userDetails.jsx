@@ -234,9 +234,23 @@ const handleDadosChange = (novosDados) => {
       <header className="dynamic-header ">
         <h3>
           <Link to="/entidades" className="breadcrumb-link">Entidades</Link> |{" "}
-          <Link to={`/entidades/${userDetails?.entidade}`} className="breadcrumb-link">
-            {userDetails?.entidade || "N/A"}
-          </Link> |{" "}
+          <Link
+            to={`/entidades/${userDetails?.entidade
+              ?.toLowerCase()
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .replace(/&/g, 'e')
+              .replace(/-/g, ' ')
+              .replace(/[^a-z0-9\s]/g, '')
+              .trim()
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-')
+              .replace(/^-+|-+$/g, '')
+            }`}
+             className="breadcrumb-link"
+            >
+  {userDetails?.entidade}
+</Link> |{" "}
           <span>{userDetails?.nome || "N/A"}</span>
         </h3>
         <EditButton onClick={handleEditClick} />
