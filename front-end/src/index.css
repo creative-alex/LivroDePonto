@@ -576,10 +576,18 @@ h2 {
 /* ========================= */
 /*        Tabelas            */
 /* ========================= */
+.table-header{
+  position: sticky;
+  top: 0;
+}
+
 .table-container {
-  overflow-x: auto;
-  max-width: 90vw; /* Mais largura */
-  margin: 50px auto;
+    overflow-x: auto;
+    max-width: 90vw;
+    margin: 50px auto;
+    height: 85vh;
+    width: 48vw;
+    overflow: scroll;
 }
 
 table {

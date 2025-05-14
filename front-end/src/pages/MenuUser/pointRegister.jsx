@@ -172,8 +172,8 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
               </div>
     <div className="table-container flex-center">
       <table>
-        <thead>
-          <tr>
+        <thead className="table-header">
+          <tr >
             <th>Data</th>
             <th>Hora Entrada</th>
             <th>Hora Saída</th>
