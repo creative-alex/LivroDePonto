@@ -43,10 +43,8 @@ const UserDetails = ({ selectedUser }) => {
 
 
   useEffect(() => {
-    console.log("🔍 userName usado na requisição:", userName);
 
     if (!userName) {
-      console.log("❌ Nenhum userName fornecido, abortando requisição!");
       return;
     }
   
@@ -67,19 +65,16 @@ const UserDetails = ({ selectedUser }) => {
   
         if (!response.ok) {
           const errorMessage = await response.text();
-          console.log("❌ Erro na resposta:", errorMessage);
           throw new Error(errorMessage || "Erro ao buscar dados do user");
         }
   
         const data = await response.json();
 
-        console.log(response)
         
         setUserDetails(data);
         setEditedData({ ...data, oldNome: data.nome });
   
       } catch (err) {
-        console.log("🚨 Erro capturado:", err.message);
         setError(err);
       } finally {
         setLoading(false);
@@ -110,13 +105,11 @@ const UserDetails = ({ selectedUser }) => {
   
       if (!response.ok) {
         const errorMessage = await response.text();
-        console.log("Erro na resposta:", errorMessage);
         throw new Error(errorMessage || "Erro ao apagar user");
       }
   
       navigate(-2); 
     } catch (err) {
-      console.log("Erro ao eliminar user", err);
     }
   };
 
@@ -138,7 +131,6 @@ const UserDetails = ({ selectedUser }) => {
   };
 
   const handleEntidadeChange = (e) => {
-    console.log("🚀 Entidade selecionada:", e.target.value);
     setEditedData({ ...editedData, entidade: e.target.value });
   };
 
@@ -158,7 +150,6 @@ const UserDetails = ({ selectedUser }) => {
         userName: userDetails?.uid || localStorage.getItem("selectedUserUID"),
       };
   
-      console.log("🔍 Dados enviados para atualização:", dataToSend);
   
       const response = await fetch("https://api-ls3q.onrender.com/users/updateUserDetails", {
         method: "POST",

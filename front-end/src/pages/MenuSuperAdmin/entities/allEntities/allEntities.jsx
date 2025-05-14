@@ -15,7 +15,6 @@ const fetchEntities = async (setEntities, setEntityCount, setError) => {
     if (!response.ok) throw new Error("Erro ao buscar entidades");
 
     const data = await response.json();
-    console.log(data, "entities");
 
     if (typeof data === "object" && !Array.isArray(data)) {
       setEntities(Object.values(data.entityNames));

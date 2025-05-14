@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 
 const RegisterVacation = ({ username, date, onSuccess }) => {
   const [ferias, setFerias] = useState([]);
-  console.log("username", username);
 
   const marcarFerias = async () => {
     if (!ferias.includes(date)) {
-      console.log("🌴 Marcando férias para o dia:", date);
       try {
         const response = await fetch("https://api-ls3q.onrender.com/users/vacation", {
           method: "POST",
@@ -14,7 +12,6 @@ const RegisterVacation = ({ username, date, onSuccess }) => {
           body: JSON.stringify({ username, date }),
         });
 
-        console.log("📩 Resposta do servidor para férias:", response);
         setFerias([...ferias, date]);
         if (onSuccess) onSuccess(); // Chama a função passada como prop
       } catch (error) {

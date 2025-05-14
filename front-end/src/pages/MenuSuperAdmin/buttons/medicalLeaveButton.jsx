@@ -5,7 +5,6 @@ const MedicalLeaveButton = ({ username, date, onSuccess }) => {
 
   const marcarBaixaMedica = async () => {
     if (!medicalLeaves.includes(date)) {
-      console.log("🏥 Marcando baixa médica para o dia:", date);
       try {
         const response = await fetch("https://api-ls3q.onrender.com/users/medicalLeave", {
           method: "POST",
@@ -13,7 +12,6 @@ const MedicalLeaveButton = ({ username, date, onSuccess }) => {
           body: JSON.stringify({ username, date }),
         });
 
-        console.log("📩 Resposta do servidor para baixa médica:", response);
         setMedicalLeaves([...medicalLeaves, date]);
         if (onSuccess) onSuccess(); // Chama a função passada como prop
       } catch (error) {

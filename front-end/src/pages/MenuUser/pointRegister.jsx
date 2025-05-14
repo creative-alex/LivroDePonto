@@ -60,18 +60,15 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
 
 
         if (!response.ok) {
-          console.error("Erro na resposta da API:", response.status, response.statusText);
           throw new Error(`Erro HTTP: ${response.status}`);
         }
 
         const respostaJson = await response.json();
-        console.log("Dados JSON recebidos da API:", respostaJson);
 
         const { registros = [], ferias = [] } = respostaJson;
 
 
         const diasNoMes = new Date(new Date().getFullYear(), month, 0).getDate();
-        console.log("Número de dias no mês (pós-API):", diasNoMes);
 
         let totalMinutos = 0;
         let totalMinutosExtras = 0;
@@ -104,9 +101,7 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
           });
 
           if (registo) {
-            console.log("Registo encontrado:", registo);
             const { total, extra, minutos, minutosExtras } = calcularHoras(registo.horaEntrada, registo.horaSaida);
-            console.log("Horas calculadas:", { total, extra, minutos, minutosExtras });
 
             totalMinutos += minutos;
             totalMinutosExtras += minutosExtras;
@@ -119,12 +114,10 @@ const TableHours = ({ username, month = new Date().getMonth() + 1 }) => {
               extra,
             };
           } else if (dataAtual < hoje && diaSemana !== 0 && diaSemana !== 6 && !feriado) {
-            console.warn(`Dia ${index + 1} sem registo. Contabilizando como falta.`);
             diasFalta++;
             return { ...item, total: "0h 0m" };
           }
 
-          console.log(`Dia ${index + 1} é fim de semana ou feriado.`);
           return item;
         });
 

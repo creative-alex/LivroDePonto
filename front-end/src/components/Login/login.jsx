@@ -35,43 +35,32 @@ const Login = ({ onLoginSuccess }) => {
   useEffect(() => {
     const checkLocalStorage = () => {
       const storedName = localStorage.getItem("username");
-      console.log("Verificando nome armazenado no localStorage:", storedName);
       if (storedName !== username) {
-        console.log("Nome armazenado é diferente do nome atual");
       } else {
-        console.log("Nome armazenado e nome atual são iguais");
       }
     };
 
     const interval = setInterval(() => {
-      console.log("Verificando localStorage a cada 60 segundos...");
       checkLocalStorage();
     }, 60000);
 
     return () => {
       clearInterval(interval);
-      console.log("Limpeza do intervalo de verificação do localStorage");
     };
   }, [username]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Formulário de login enviado");
     setError("");
 
     const auth = getAuth(app);
-    console.log("Autenticando no Firebase...");
 
     try {
-      console.log("Tentando fazer login com email:", email);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login bem-sucedido:", userCredential);
 
       const user = userCredential.user;
-      console.log("Usuário autenticado:", user);
 
       const token = await user.getIdToken();
-      console.log("Token do usuário:", token);
 
       // Verifica token no backend
       const response = await fetch("https://api-ls3q.onrender.com/users/verifyToken", {
@@ -84,7 +73,6 @@ const Login = ({ onLoginSuccess }) => {
         const errorData = await response.json();
         throw new Error(errorData.message || "Erro ao autenticar o token");
       }
-      console.log("Resposta da verificação do token:", response);
 
       // Obtém o papel e nome do user
       const roleResponse = await fetch("https://api-ls3q.onrender.com/users/getUserRole", {
@@ -99,15 +87,12 @@ const Login = ({ onLoginSuccess }) => {
       }
 
       const roleData = await roleResponse.json();
-      console.log("Dados do papel do usuário:", roleData);
 
       // Passa o papel, nome e isFirstLogin
       onLoginSuccess(roleData.role, roleData.nome, roleData.isFirstLogin, user.email);
-      console.log("Login bem-sucedido, passando dados para o App:", roleData);
 
       // Atualiza o contexto
       setUsername(roleData.nome);
-      console.log("Nome do usuário atualizado no contexto:", roleData.nome);
 
       // Redireciona o usuário com base no papel
       if (roleData.role === "SuperAdmin") {

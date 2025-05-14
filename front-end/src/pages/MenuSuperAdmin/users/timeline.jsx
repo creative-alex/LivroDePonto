@@ -29,12 +29,10 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
     fetchData();
   }, [username, month]);
   
-  console.log("Username:", username);
 
   const cleanUsername = (username) =>
   username.startsWith("user_") ? username.slice(5) : username;
 
-  console.log("Cleaned Username:", cleanUsername(username));
   const fetchData = async () => {
     try {
       const response = await fetch("https://api-ls3q.onrender.com/users/calendar", {
@@ -58,7 +56,6 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
       }));
 
       const data = response.ok ? await response.json() : { registros: [], ferias: [], baixas: [] };
-      console.log("📥 Dados recebidos:", data);
       const registros = Array.isArray(data.registros) ? data.registros : [];
       const ferias = Array.isArray(data.ferias) ? data.ferias : [];
       const baixas = Array.isArray(data.baixas) ? data.baixas : [];
@@ -168,7 +165,6 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
   };
   const salvarEdicao = async (index) => {
     if (!novoValor) return;
-    console.log("💾 Salvando edição para:", { index, campo: editando.campo, novoValor });
 
     const novoDados = [...dados];
     novoDados[index][editando.campo] = novoValor;
@@ -186,7 +182,6 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
         }),
       });
 
-      console.log("📩 Resposta do servidor:", response);
 
       // Recarregar os dados após salvar a edição
       await fetchData();

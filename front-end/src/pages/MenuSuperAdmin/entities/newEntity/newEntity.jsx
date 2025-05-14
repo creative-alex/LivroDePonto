@@ -34,7 +34,6 @@ const NovaEntidade = () => {
       }
 
       const data = await response.json();
-      console.log('Entidade criada com sucesso:', data);
 
       // ✅ Notificação de Sucesso
       toast.success('Entidade criada com sucesso!', {

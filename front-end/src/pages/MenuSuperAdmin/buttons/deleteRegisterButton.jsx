@@ -13,7 +13,6 @@ const DeleteRegister = ({ username, date, onDelete, onSuccess }) => {
         throw new Error("Erro ao apagar o registo");
       }
 
-      console.log("🗑️ registo apagado para o dia:", date);
       if (onDelete) onDelete(date);
       if (onSuccess) onSuccess(); 
     } catch (error) {
