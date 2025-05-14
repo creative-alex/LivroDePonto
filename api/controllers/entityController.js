@@ -19,7 +19,18 @@ const createEntity = async (req, res) => {
     } 
 
     // Gerando um ID baseado no nome 
-    const entityId = nome.toLowerCase().replace(/\s+/g, '-'); // Ex: "Empresa XPTO" -> "empresa-xpto"
+    const entityId = nome
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/&/g, 'e')
+  .replace(/-/g, ' ')
+  .replace(/[^a-z0-9\s]/g, '')
+  .trim()
+  .replace(/\s+/g, '-')
+  .replace(/-+/g, '-')
+  .replace(/^-+|-+$/g, '');
+
 
     const data = {
       nome,
@@ -48,8 +59,29 @@ const updateEntity = async (req, res) => {
       return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
     }
 
-    const oldEntityId = `entidades/${oldName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-')}`;
-    const newEntityId = `entidades/${nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-')}`;
+   const oldEntityId = `entidades/${oldName
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/&/g, 'e')
+      .replace(/-/g, ' ')
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '')}`;
+
+    const newEntityId = `entidades/${nome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/&/g, 'e')
+      .replace(/-/g, ' ')
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '')}`;
 
     console.log(`Old Entity ID: ${oldEntityId}`);
     console.log(`New Entity ID: ${newEntityId}`);
@@ -138,7 +170,18 @@ const entityDetails = async (req, res) => {
     }
 
     // Gera o ID padronizado
-    const entityId = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+    const entityId = name
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/&/g, 'e')
+  .replace(/-/g, ' ')
+  .replace(/[^a-z0-9\s]/g, '')
+  .trim()
+  .replace(/\s+/g, '-')
+  .replace(/-+/g, '-')
+  .replace(/^-+|-+$/g, '');
+
     
     // Busca a entidade na coleção "entidades"
     const entityRef = db.collection("entidades").doc(entityId);
@@ -171,7 +214,18 @@ const deleteEntity = async (req, res) => {
     }
 
     // Gera o ID padronizado
-    const entityId = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+    const entityId = name
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/&/g, 'e')
+  .replace(/-/g, ' ')
+  .replace(/[^a-z0-9\s]/g, '')
+  .trim()
+  .replace(/\s+/g, '-')
+  .replace(/-+/g, '-')
+  .replace(/^-+|-+$/g, '');
+
 
     // Verifica se a entidade existe
     const entityRef = db.collection("entidades").doc(entityId);
