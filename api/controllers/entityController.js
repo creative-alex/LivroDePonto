@@ -171,16 +171,17 @@ const entityDetails = async (req, res) => {
 
     // Gera o ID padronizado
     const entityId = name
-  .toLowerCase()
-  .normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '')
-  .replace(/&/g, 'e')
-  .replace(/-/g, ' ')
-  .replace(/[^a-z0-9\s]/g, '')
-  .trim()
-  .replace(/\s+/g, '-')
-  .replace(/-+/g, '-')
-  .replace(/^-+|-+$/g, '');
+.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')    // Remove acentos
+    .replace(/&/g, 'e')                 // Substitui "&" por "e"
+    .replace(/-/g, ' ')                 // Converte hífens em espaços
+    .replace(/[^a-z0-9\s]/g, '')        // Remove caracteres especiais
+    .trim()
+    .replace(/\s+/g, '-')               // Substitui espaços por hífen
+    .replace(/-+/g, '-')                // Evita hífens duplicados
+    .replace(/^-+|-+$/g, '');           // Remove hífens nas extremidades
+
 
     
     // Busca a entidade na coleção "entidades"
