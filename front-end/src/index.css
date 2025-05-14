@@ -68,6 +68,14 @@ h1 {
   padding: 15vh 5vw;
 }
 
+/*Phone*/
+@media (max-width: 600px) {
+  h1 {
+    color: transparent;
+    padding: 15vh 5vw 0 5vw;
+  }
+}
+
 h2 {
   font-size: 1.5rem;
   color: var(--text-color);
@@ -251,12 +259,10 @@ h2 {
 @media (max-width: 600px) {
   .login-form {
     position: static;
-    width: 98vw;
+    width: 70vw;
     max-width: 100%;
     margin: 2rem auto;
-    padding: 1rem;
-    border-radius: var(--border-radius-mobile, 8px);
-    box-shadow: none;
+    background-color: transparent; 
   }
 }
 
@@ -301,6 +307,17 @@ h2 {
   background-color: transparent;
   color: #1e293b;
   transition: var(--transition);
+}
+
+/*Phone*/
+@media (max-width: 600px) {
+  .form-input,
+  .form-select {
+    height: 48px;
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--input-bg);
+  }
 }
 
 .form-select {
@@ -417,16 +434,6 @@ h2 {
   overflow: hidden;
 }
 
-/* Tablet */
-@media (max-width: 900px) {
-  .button-container {
-    top: 30%;
-    left: 40%;
-    margin: 2rem auto;
-    grid-template-columns: 25vw 25vw;
-    width: 50vw;
-  }
-}
 
 .btn-menu{
   font-size: 1.5vw;
@@ -454,6 +461,25 @@ h2 {
   grid-row: 2 / span 1;
   grid-column: 1 / span 1
 }
+
+/* Tablet */
+@media (max-width: 900px) {
+  .button-container {
+    top: 30%;
+    left: 0;
+    margin: 2rem auto;
+    grid-template-columns: 40vw 40vw;
+    width: 80vw;
+  }
+
+  .btn-menu {
+    height: 8vh;
+    font-size: 3vw;
+    color: var(--text-color);
+    border-color: var(--border-color); ;
+  }
+}
+
 
 .btn-menu:hover {
   background-color: var(--primary-color);
@@ -496,6 +522,15 @@ h2 {
     width: 50px;
     height: 50px;
     font-size: 1.2rem;
+  }
+}
+
+/*Phone Login e logout*/
+@media (max-width: 600px) {
+  .login, .logout {
+    font-size: 1rem;
+    right: 5%;
+    bottom: 15%;
   }
 }
 
@@ -546,7 +581,7 @@ h2 {
 .ulist{
   gap: 1rem;
   width: 45vw;
-  top:15%
+  top:10%
 }
 
 .list-item {
@@ -789,6 +824,17 @@ tr:hover td {
   }
 }
 
+/* Mobile */
+@media (max-width: 600px) {
+  .capa {
+    width: 100vw;
+    height: 75vh;
+    max-width: none;
+    left: 0;
+    top: 12%;
+  }
+}
+
 .cut{
   width: 15vw;
   height: 100vh;
@@ -821,7 +867,7 @@ tr:hover td {
 .footer img {
   width: 100vw;
   height: 100%;
-  object-fit: cover;
+  object-fit: scale-down;
   display: block;
   margin: 0;
   padding: 0;
@@ -838,14 +884,20 @@ tr:hover td {
 /* Mobile */
 @media (max-width: 768px) {
   .footer {
-    height: 80px;
-    right:10vw;
-    bottom: 0;
+    position: absolute;
+    width: 100%;
   }
   .footer img {
+    position: absolute;
     width: 100vw;
-    height: 60px;
+    height: 100%;
+    scale: 0.9;
+    object-fit: scale-down;
+    left: 10%;
+    bottom: -20px;
+    
   }
+  
 }
 
 
@@ -856,6 +908,17 @@ tr:hover td {
   position: absolute;
   top: 5%;
   left: 33.5%;
+}
+
+/*Phone*/
+@media (max-width: 600px) {
+  .logo {
+    width: 50vw;
+    top: 0;
+    left: 25%;
+    opacity: 1;  
+  }
+
 }
 
 .less-than-eight {
