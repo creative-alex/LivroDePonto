@@ -35,7 +35,7 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:8080/users/calendar", {
+      const response = await fetch("https://api-ls3q.onrender.com/users/calendar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: cleanUsername(username), month }),

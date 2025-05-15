@@ -3,7 +3,7 @@ import React from 'react';
 const DeleteRegister = ({ username, date, onDelete, onSuccess }) => {
   const apagarregisto = async () => {
     try {
-      const response = await fetch("http://localhost:8080/users/deleteRegister", {
+      const response = await fetch("https://api-ls3q.onrender.com/users/deleteRegister", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, date }),
