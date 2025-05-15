@@ -90,7 +90,7 @@ const UserDetails = ({ selectedUser }) => {
   };
 
   const handleDeleteClick = async () => {
-    const confirmDelete = window.confirm("Tem certeza que deseja apagar este usuário? Esta ação não pode ser desfeita.");
+    const confirmDelete = window.confirm("Tem a certeza que deseja apagar este colaborador? Esta ação não pode ser desfeita.");
     
     if (!confirmDelete) {
       return; // Se o usuário cancelar, interrompe a execução

@@ -493,150 +493,130 @@ const checkLeave = async (req, res) => {
   }
 };
 const getUserRecords = async (req, res) => {
-try {
-console.log("✅ Iniciando getUserRecords...");
-console.log("📥 Dados recebidos no body:", req.body);
+  try {
 
-const { username, month } = req.body;
+    const { username, month } = req.body;
 
-if (!username || !month) {
-console.log("❌ Erro: Nome de user e mês são obrigatórios.");
-return res.status(400).json({ error: "O nome de user e o mês são obrigatórios" });
-}
+    if (!username || !month) {
+      console.log("❌ Erro: Nome de user e mês são obrigatórios.");
+      return res.status(400).json({ error: "O nome de user e o mês são obrigatórios" });
+    }
 
-let userId = username
-.toLowerCase()
-.normalize("NFD")
-.replace(/\p{Diacritic}/gu, "")
-.replace(/\s+/g, "-");
+    let userId = username
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "-");
 
-console.log("🆔 userId formatado:", userId);
 
-const admin = require("firebase-admin");
-const db = admin.firestore();
+    const admin = require("firebase-admin");
+    const db = admin.firestore();
 
-const now = new Date();
-const year = now.getFullYear();
-const firstDay = new Date(year, month - 1, 1);
-const lastDay = new Date(year, month, 1, 23, 59, 59);
+    const now = new Date();
+    const year = now.getFullYear();
+    const firstDay = new Date(year, month - 1, 1);
+    const lastDay = new Date(year, month, 0, 23, 59, 59);
 
-console.log("📅 Período definido:");
-console.log("➡️ Primeiro dia:", firstDay);
-console.log("➡️ Último dia:", lastDay);
 
-const registrosRef = db
-.collection("registro-ponto")
-.doc(`user_${userId}`)
-.collection("Registros");
+    const registrosRef = db
+      .collection("registro-ponto")
+      .doc(`user_${userId}`)
+      .collection("Registros");
 
-console.log("🔍 Consultando registros de ponto...");
 
-const snapshot = await registrosRef
-.where("timestamp", ">=", firstDay)
-.where("timestamp", "<=", lastDay)
-.orderBy("timestamp", "asc")
-.get();
+    const snapshot = await registrosRef
+      .where("timestamp", ">=", firstDay)
+      .where("timestamp", "<=", lastDay)
+      .orderBy("timestamp", "asc")
+      .get();
 
-console.log("📊 Snapshot de registros retornado:");
-console.log("➡️ Quantidade de registros encontrados:", snapshot.size);
 
-// Criar lista de todas as datas possíveis no formato "DD-MM"
-const listaDeDatas = [];
-let tempDate = new Date(firstDay);
-while (tempDate <= lastDay) {
-let dd = String(tempDate.getDate()).padStart(2, "0");
-let mm = String(tempDate.getMonth() + 1).padStart(2, "0");
-listaDeDatas.push(`${dd}-${mm}`);
-tempDate.setDate(tempDate.getDate() + 1);
-}
+    // Criar lista de todas as datas possíveis no formato "DD-MM-YYYY"
+    const listaDeDatas = [];
+    let tempDate = new Date(firstDay);
+    while (tempDate <= lastDay) {
+      let dd = String(tempDate.getDate()).padStart(2, "0");
+      let mm = String(tempDate.getMonth() + 1).padStart(2, "0");
+      let yyyy = tempDate.getFullYear();
+      listaDeDatas.push(`${dd}-${mm}-${yyyy}`);
+      tempDate.setDate(tempDate.getDate() + 1);
+    }
 
-console.log("📅 Lista de datas geradas:", listaDeDatas);
+    // Referências
+    const feriasRef = db
+      .collection("registro-ponto")
+      .doc(`user_${userId}`)
+      .collection("Ferias");
 
-const feriasRef = db
-.collection("registro-ponto")
-.doc(`user_${userId}`)
-.collection("Ferias");
+    const baixasRef = db
+      .collection("registro-ponto")
+      .doc(`user_${userId}`)
+      .collection("BaixasMedicas");
 
-let feriasDates = [];
-console.log("🌴 Consultando férias em lotes de 30...");
+    let feriasDates = [];
 
-for (let i = 0; i < listaDeDatas.length; i += 30) {
-const batch = listaDeDatas.slice(i, i + 30);
-console.log(`🔍 Buscando férias para o lote: ${i / 30 + 1}`, batch);
+    for (let i = 0; i < listaDeDatas.length; i += 30) {
+      const batch = listaDeDatas.slice(i, i + 30);
 
-const feriasSnapshot = await feriasRef.where("date", "in", batch).get();
-console.log("➡️ Férias encontradas neste lote:", feriasSnapshot.size);
+      const feriasSnapshot = await feriasRef.where("date", "in", batch).get();
 
-feriasDates.push(...feriasSnapshot.docs.map((doc) => doc.data().date));
-}
+      feriasDates.push(...feriasSnapshot.docs.map((doc) => doc.data().date));
+    }
 
-console.log("🌴 Lista final de datas de férias:", feriasDates);
 
-// Consultar baixas médicas
-const baixasRef = db
-.collection("registro-ponto")
-.doc(`user_${userId}`)
-.collection("BaixasMedicas");
+    let baixasDates = [];
 
-let baixasDates = [];
-console.log("🩺 Consultando baixas médicas em lotes de 30...");
+    for (let i = 0; i < listaDeDatas.length; i += 30) {
+      const batch = listaDeDatas.slice(i, i + 30);
 
-for (let i = 0; i < listaDeDatas.length; i += 30) {
-const batch = listaDeDatas.slice(i, i + 30);
-console.log(`🔍 Buscando baixas médicas para o lote: ${i / 30 + 1}`, batch);
+      const baixasSnapshot = await baixasRef.where("date", "in", batch).get();
 
-const baixasSnapshot = await baixasRef.where("date", "in", batch).get();
-console.log("➡️ Baixas médicas encontradas neste lote:", baixasSnapshot.size);
+      baixasDates.push(...baixasSnapshot.docs.map((doc) => doc.data().date));
+    }
 
-baixasDates.push(...baixasSnapshot.docs.map((doc) => doc.data().date));
-}
 
-console.log("🩺 Lista final de datas de baixas médicas:", baixasDates);
+    if (snapshot.empty && feriasDates.length === 0 && baixasDates.length === 0) {
+      return res.status(404).json({ error: "Nenhum registro encontrado para o mês informado" });
+    }
 
-if (snapshot.empty && feriasDates.length === 0 && baixasDates.length === 0) {
-console.log("⚠️ Nenhum registro encontrado para o mês informado");
-return res.status(404).json({ error: "Nenhum registro encontrado para o mês informado" });
-}
+    const registros = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const dataFormatada = data.timestamp.toDate().toISOString().split("T")[0]; // "YYYY-MM-DD"
+      const [yyyy, mm, dd] = dataFormatada.split("-");
+      const diaMesAnoFormatado = `${dd}-${mm}-${yyyy}`;
 
-const registros = snapshot.docs.map((doc) => {
-const data = doc.data();
-const dataFormatada = data.timestamp.toDate().toISOString().split("T")[0];
-const diaMesFormatado = dataFormatada.split("-").reverse().slice(0, 2).join("-");
+      let status = "Trabalho";
+      let horaEntrada = data.horaEntrada || "-";
+      let horaSaida = data.horaSaida || "-";
 
-let status = "Trabalho";
-if (feriasDates.includes(diaMesFormatado)) {
-status = "Férias";
-horaEntrada = "ferias";
-horaSaida = "ferias";
-} else if (baixasDates.includes(diaMesFormatado)) {
-status = "Baixa Médica";
-horaEntrada = "Baixa";
-horaSaida = "Baixa";
-}
+      if (feriasDates.includes(diaMesAnoFormatado)) {
+        status = "Férias";
+        horaEntrada = "ferias";
+        horaSaida = "ferias";
+      } else if (baixasDates.includes(diaMesAnoFormatado)) {
+        status = "Baixa Médica";
+        horaEntrada = "Baixa";
+        horaSaida = "Baixa";
+      }
 
-console.log("📅 Registro processado:", {
-timestamp: data.timestamp.toDate().toISOString(),
-horaEntrada: data.horaEntrada || "-",
-horaSaida: data.horaSaida || "-",
-status,
-});
+      
 
-return {
-timestamp: data.timestamp.toDate().toISOString(),
-horaEntrada: data.horaEntrada || "-",
-horaSaida: data.horaSaida || "-",
-status,
+      return {
+        timestamp: data.timestamp.toDate().toISOString(),
+        horaEntrada,
+        horaSaida,
+        status,
+        
+      };
+    });
+
+
+    return res.status(200).json({ registros, ferias: feriasDates, baixas: baixasDates });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
-});
 
-console.log("✅ Registros finais:", registros);
-
-return res.status(200).json({ registros, ferias: feriasDates, baixas: baixasDates });
-} catch (error) {
-console.error("❌ Erro ao buscar registros de user:", error);
-return res.status(500).json({ error: error.message });
-}
-}
 
 const updateUserTime = async (req, res) => {
   try {
@@ -946,46 +926,55 @@ const deleteRegister = async (req, res) => {
       .replace(/\p{Diacritic}/gu, "")
       .replace(/\s+/g, "-");
 
-    console.log("🗑️ Apagando registros para user:", userId, "na data:", date);
+    // Função para formatar a data para o ID
+const formatDateForId = (date) => {
+  const [day, month, year] = date.split("-");
+  const ano = year ? year : new Date().getFullYear();
+  return `${day.padStart(2, "0")}${month.padStart(2, "0")}${ano}`;
+};
+
+
+    const registroId = `registro_${formatDateForId(date)}`;
 
     const userDocRef = db.collection("registro-ponto").doc(`user_${userId}`);
-    console.log("📌 Referência ao documento do user obtida:", userDocRef.path);
-    
     const registrosRef = userDocRef.collection("Registros");
     const feriasRef = userDocRef.collection("Ferias");
+    const baixasRef = userDocRef.collection("BaixasMedicas");
 
-    // Converter data do formato "01-01" para "DDMMYYYY"
-    const formatDateForRegister = (date) => {
-      const [day, month] = date.split("-");
-      const year = new Date().getFullYear();
-      return `${day}${month}${year}`;
-    };
-
-    const formattedDate = formatDateForRegister(date);
-    const registroId = `registro_${formattedDate}`;
-
+    // Busca por ID em todas as coleções
     console.log("📌 Buscando registro com ID:", registroId);
     const registroDoc = await registrosRef.doc(registroId).get();
+    const feriasDoc = await feriasRef.doc(registroId).get();
+    const baixasDoc = await baixasRef.doc(registroId).get();
 
-    console.log("📌 Buscando registros na coleção 'Ferias'...");
-    const snapshotFerias = await feriasRef.where("date", "==", date).get();
+    console.log(
+      "📌 Registros encontrados:",
+      registroDoc.exists ? 1 : 0,
+      "| Férias encontradas:",
+      feriasDoc.exists ? 1 : 0,
+      "| Baixas encontradas:",
+      baixasDoc.exists ? 1 : 0
+    );
 
-    console.log("📌 Registros encontrados:", registroDoc.exists ? 1 : 0, "| Férias encontradas:", snapshotFerias.size);
-
-    if (!registroDoc.exists && snapshotFerias.empty) {
+    if (!registroDoc.exists && !feriasDoc.exists && !baixasDoc.exists) {
       console.log("⚠️ Nenhum registro encontrado para a data informada");
       return res.status(404).json({ error: "Nenhum registro encontrado para a data informada" });
     }
 
     const batch = db.batch();
+
     if (registroDoc.exists) {
       console.log("🗑️ Deletando registro:", registroId);
       batch.delete(registroDoc.ref);
     }
-    snapshotFerias.forEach((doc) => {
-      console.log("🗑️ Deletando registro de férias:", doc.id);
-      batch.delete(doc.ref);
-    });
+    if (feriasDoc.exists) {
+      console.log("🗑️ Deletando registro de férias:", feriasDoc.id);
+      batch.delete(feriasDoc.ref);
+    }
+    if (baixasDoc.exists) {
+      console.log("🗑️ Deletando registro de baixa médica:", baixasDoc.id);
+      batch.delete(baixasDoc.ref);
+    }
 
     console.log("🔄 Executando batch delete...");
     await batch.commit();
@@ -996,7 +985,9 @@ const deleteRegister = async (req, res) => {
     console.error("❌ Erro ao apagar registros:", error);
     return res.status(500).json({ error: error.message });
   }
-};
+}
+
+
 const deleteUser = async (req, res) => {
   const { userName } = req.body;
   console.log(req.body);
@@ -1030,7 +1021,7 @@ const deleteUser = async (req, res) => {
 
     const registroPontoRef = db.collection("registro-ponto").doc(userId);
     const userRegRef = registroPontoRef.collection("Registro");
-    const userFerRef = registroPontoRef.collection("Férias");
+    const userFerRef = registroPontoRef.collection("Ferias");
 
     // Deleta os subdocumentos de Registro
     const registroSnapshot = await userRegRef.get();

@@ -35,7 +35,7 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("https://api-ls3q.onrender.com/users/calendar", {
+      const response = await fetch("http://localhost:8080/users/calendar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: cleanUsername(username), month }),
@@ -56,9 +56,37 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
       }));
 
       const data = response.ok ? await response.json() : { registros: [], ferias: [], baixas: [] };
+      console.log("Data fetched:", data);
       const registros = Array.isArray(data.registros) ? data.registros : [];
-      const ferias = Array.isArray(data.ferias) ? data.ferias : [];
-      const baixas = Array.isArray(data.baixas) ? data.baixas : [];
+      const ferias = Array.isArray(data.ferias)
+        ? data.ferias.map(dateStr => {
+            // Aceita "DD-MM-YYYY" ou "YYYY-MM-DD"
+            if (dateStr.length === 10 && dateStr[2] === "-") {
+              // "DD-MM-YYYY" → "DD-MM"
+              return dateStr.slice(0, 5);
+            }
+            if (dateStr.length === 10 && dateStr[4] === "-") {
+              // "YYYY-MM-DD" → "DD-MM"
+              return dateStr.slice(8, 10) + "-" + dateStr.slice(5, 7);
+            }
+            return dateStr;
+          })
+        : [];
+      console.log("Ferias:", ferias);
+      const baixas = Array.isArray(data.baixas)
+        ? data.baixas.map(dateStr => {
+            // Aceita "DD-MM-YYYY" ou "YYYY-MM-DD"
+            if (dateStr.length === 10 && dateStr[2] === "-") {
+              // "DD-MM-YYYY" → "DD-MM"
+              return dateStr.slice(0, 5);
+            }
+            if (dateStr.length === 10 && dateStr[4] === "-") {
+              // "YYYY-MM-DD" → "DD-MM"
+              return dateStr.slice(8, 10) + "-" + dateStr.slice(5, 7);
+            }
+            return dateStr;
+          })
+        : [];
 
       const hoje = new Date();      
       novosDados = novosDados.map((item, index) => {
@@ -193,9 +221,26 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
   };
   const abrirContextMenu = (event, index) => {
     event.preventDefault();
+
+    // Dimensões do menu (ajusta se mudares o CSS)
+    const menuWidth = 180;
+    const menuHeight = 160;
+
+    // Posição do clique
+    let x = event.clientX;
+    let y = event.clientY;
+
+    // Ajusta se sair fora do ecrã
+    if (x + menuWidth > window.innerWidth) {
+      x = window.innerWidth - menuWidth - 10;
+    }
+    if (y + menuHeight > window.innerHeight) {
+      y = window.innerHeight - menuHeight - 10;
+    }
+
     setContextMenu({
-      x: event.pageX, 
-      y: event.pageY, 
+      x,
+      y,
       index,
       dia: dados[index].dia,
       isFerias: dados[index].isFerias
@@ -208,8 +253,10 @@ const TableHours = ({ username, month, onTotaisChange, onDadosChange }) => {
       <div
         className="context-menu"
         style={{
+          position: "fixed", // importante para usar clientX/clientY
           top: `${contextMenu.y}px`,
-          left:  `${contextMenu.x}px`,
+          left: `${contextMenu.x}px`,
+          zIndex: 1000
         }}
         onClick={() => setContextMenu(null)}
       >
