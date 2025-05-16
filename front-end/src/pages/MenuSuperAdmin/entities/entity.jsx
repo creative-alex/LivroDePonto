@@ -7,10 +7,16 @@ import LogoutButton from "../../../components/LogoutButton/logoutButton";
 
 const normalizeName = (name) => {
   return name
-    .trim()
-    .replace(/\s+/g, "-") // Substitui espaços por "-"
-    .replace(/[^a-zA-Z0-9-]/g, ""); // Remove caracteres inválidos
-};
+   .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/&/g, 'e')
+      .replace(/-/g, ' ')
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '')};
 
 const handleLogout = () => {
   localStorage.removeItem("user");
@@ -20,7 +26,7 @@ const Entity = () => {
   const { entityName } = useParams();
   const formattedEntityName = decodeURIComponent(entityName).replace(/%20/g, "-"); // Substitui "%20" por "-"
   const navigate = useNavigate();
-
+  const [selectedUser, setSelectedUser] = useState(null);
   const [currentEntityName, setCurrentEntityName] = useState(formattedEntityName);
   const [entityData, setEntityData] = useState(null);
   const [error, setError] = useState(null);
@@ -139,8 +145,12 @@ const Entity = () => {
         </div>
       )}
       {/* Renderiza a lista de usuários */}
-      <UserList entityName={normalizeName(entityData.nome)} setSelectedUser={(user) => navigate(`/${normalizeName(entityData.nome)}/${normalizeName(user.nome)}`)} />
-    </div>
+       <UserList
+  entityName={normalizeName(entityData.nome)}
+  setSelectedUser={user => setSelectedUser(normalizeName(user.nome))}
+/>  
+         
+         </div>
     </>
   );
 };
