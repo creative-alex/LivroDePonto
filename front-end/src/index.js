@@ -165,7 +165,7 @@ const App = () => {
               ) : (
                 <>
                   <Route path="/home" element={<UserMenu />} />
-                  <Route path="/registos" element={<TableHours username={username} />} /> {/* Adicionada a rota para TableHours */}
+                  <Route path="/registos" element={<TableHours username={username} />} />
                 </>
               )}
             </>

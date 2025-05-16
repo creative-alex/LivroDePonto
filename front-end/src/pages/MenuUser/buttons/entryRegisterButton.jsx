@@ -42,7 +42,7 @@ const EntryButton = ({ username }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao registrar a entrada');
+        throw new Error('Erro ao registar a entrada');
       }
       
       toast.success(`Entrada registada às ${formattedTime}`, { position: 'top-right', autoClose: 3000 }); // Exibir toast

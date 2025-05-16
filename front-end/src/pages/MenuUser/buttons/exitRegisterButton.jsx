@@ -42,7 +42,7 @@ const LeaveButton = ({ username }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao registrar a saída');
+        throw new Error('Erro ao registar a saída');
       }
       
       toast.success(`Saída registada às ${formattedTime}`, { position: 'top-right', autoClose: 3000 }); // Exibir toast

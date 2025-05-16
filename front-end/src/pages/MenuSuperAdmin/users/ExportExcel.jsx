@@ -82,14 +82,49 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     ws.addRow([]);
     ws.addRow([]);
 
-    // Adicionar tabela pequena com totais
+    // --- Assinaturas (subiram para cima dos totais) ---
+    const assinaturaColStart = 4; // D
+    const assinaturaColEnd = 7;   // E
+
+    const rowAssColab = ws.addRow(["", "", "", "Assinatura do Colaborador: ________________________________", ""]);
+    ws.mergeCells(
+      ws.lastRow.number,
+      assinaturaColStart,
+      ws.lastRow.number,
+      assinaturaColEnd
+    );
+
+    ws.addRow();
+
+    const rowAssResp = ws.addRow(["", "", "", "Assinatura do Responsável: ________________________________", ""]);
+    ws.mergeCells(
+      ws.lastRow.number,
+      assinaturaColStart,
+      ws.lastRow.number,
+      assinaturaColEnd
+    );
+
+    const assinaturaRows = [
+      ws.getRow(rowAssColab.number),
+      ws.getRow(rowAssResp.number)
+    ];
+    assinaturaRows.forEach((row) => {
+      row.eachCell((cell, colNumber) => {
+        if (colNumber === assinaturaColStart) {
+          cell.font = { bold: true, size: 12 };
+          cell.alignment = { horizontal: "left", vertical: "middle" };
+        }
+      });
+    });
+
+    // --- Agora sim, tabela de totais ---
     const totalHeaderRow = ws.addRow(["Resumo Mensal"]);
     totalHeaderRow.eachCell((cell) => {
-      cell.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
+      cell.font = { bold: true, size: 12, color: { argb: "FFFFFFFF" } };
       cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0070C0" } };
       cell.alignment = { horizontal: "center", vertical: "middle" };
     });
-    ws.mergeCells(`A${totalHeaderRow.number}:E${totalHeaderRow.number}`);
+    ws.mergeCells(`A${totalHeaderRow.number}:B${totalHeaderRow.number}`);
 
     // Adicionar linhas de totais
     const totaisData = [
@@ -102,9 +137,9 @@ const ExportExcel = ({ dados, totais, username, month }) => {
     ];
 
     totaisData.forEach((row) => {
-      const newRow = ws.addRow([...row, "", "", ""]);
+      const newRow = ws.addRow(row); // Só as duas colunas necessárias!
       newRow.eachCell((cell, colNumber) => {
-        cell.font = { bold: colNumber === 1, size: 12 }; // Negrito na primeira coluna
+        cell.font = { bold: colNumber === 1, size: 12 };
         cell.alignment = { horizontal: "center", vertical: "middle" };
         cell.border = {
           top: { style: "thin" },
@@ -124,23 +159,6 @@ const ExportExcel = ({ dados, totais, username, month }) => {
       { width: 40 }, // Assinaturas
     ];
 
-    // Adicionar linhas de assinatura
-    ws.addRow([]);
-    ws.addRow(["", "", "", "", "Assinatura do Colaborador:"]);
-    ws.addRow(["", "", "", "", "________________________________"]);
-    ws.addRow(["", "", "", "", "Assinatura do Responsável:"]);
-    ws.addRow(["", "", "", "", "________________________________"]);
-
-    // Estilizar as assinaturas
-    const assinaturaRows = ws.getRows(ws.lastRow.number - 3, 4); // Selecionar as 4 últimas linhas
-    assinaturaRows.forEach((row) => {
-      row.eachCell((cell, colNumber) => {
-        if (colNumber === 5) { // Apenas a última coluna (coluna E)
-          cell.font = { bold: true, size: 12 };
-          cell.alignment = { horizontal: "right", vertical: "middle" };
-        }
-      });
-    });
 
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });

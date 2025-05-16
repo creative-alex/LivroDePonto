@@ -468,6 +468,7 @@ h2 {
     top: 30%;
     left: 0;
     margin: 2rem auto;
+    grid-template-rows: repeat(2, 1fr);
     grid-template-columns: 40vw 40vw;
     width: 80vw;
   }
